@@ -10,11 +10,13 @@
  */
 package Movimento;
 
+import Funcoes.Dates;
 import Funcoes.DbMain;
 import Funcoes.FuncoesGlobais;
 import Funcoes.LerValor;
 import Funcoes.StringManager;
 import Funcoes.VariaveisGlobais;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -25,7 +27,8 @@ import javax.swing.JOptionPane;
  */
 public class jSuperExtorno extends javax.swing.JInternalFrame {
     DbMain conn = VariaveisGlobais.conexao;
-
+    String dtPdf = null;
+    
     /** Creates new form jExtorno */
     public jSuperExtorno() {
         initComponents();   
@@ -162,6 +165,7 @@ public class jSuperExtorno extends javax.swing.JInternalFrame {
         jAutenticacao.selectAll();
         jValor.setText("0,00");
         jDesc.removeAllItems();
+        dtPdf = null;
     }//GEN-LAST:event_jAutenticacaoFocusGained
 
     private boolean ExtornaAvisos(String nrAut) {
@@ -294,8 +298,8 @@ public class jSuperExtorno extends javax.swing.JInternalFrame {
     }
     
     private void jbtExtornarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtExtornarActionPerformed
-
-        String sql = ""; String sItem = jDesc.getSelectedItem().toString();
+        String sql = ""; 
+        String sItem = jDesc.getSelectedItem().toString();
         boolean sucesso = false; String nrAut = jAutenticacao.getText().trim();
         String tpExt = "";
         if (sItem.indexOf("PC") > -1) {
@@ -338,6 +342,26 @@ public class jSuperExtorno extends javax.swing.JInternalFrame {
                 conn.Auditor("EXTORNO:" + tpExt, nrAut);
             } catch (Exception e) {msg = "Erro ao Extonar!!!\n\nAvise o superte técnico...";}
         }
+        
+        // Colocar Extornado no documento
+        if (sItem.indexOf("PC") > -1) {
+            // Nada
+        } else if (sItem.indexOf("AV") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("RC") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("ET") > -1) {
+            RenamePdf("reports/Extratos/", nrAut);
+        } else if (sItem.indexOf("DP") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("DS") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("BO") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("AD") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        }
+        
         JOptionPane.showMessageDialog(null, msg, "Atenção", JOptionPane.INFORMATION_MESSAGE);
         jAutenticacao.requestFocus();
     }//GEN-LAST:event_jbtExtornarActionPerformed
@@ -364,6 +388,9 @@ public class jSuperExtorno extends javax.swing.JInternalFrame {
         float fTot = 0;
         try {
             while (rs.next()) {
+                // Pega a data do documento
+                if(dtPdf == null) dtPdf = Dates.DateFormata("yyyy-MM-dd", rs.getDate("cx_data"));
+                
                 // verifica quando for cheque se o mesmo não foi depositado
                 String[][] cheque = conn.LerCamposTabela(new String[] {"ch_autenticacao"}, "Chequesbck", "ch_autenticacao = " + nAut);
                 if (cheque == null) {
@@ -383,6 +410,34 @@ public class jSuperExtorno extends javax.swing.JInternalFrame {
         return bret;
     }
 
+    private void RenamePdf(String sPath, String nAut) {
+        if (dtPdf != null) {
+            String pdfPath = sPath + Dates.iYear(Dates.StringtoDate(dtPdf, "yyyy-MM-dd")) + "/" + Dates.Month(Dates.StringtoDate(dtPdf, "yyyy-MM-dd")) + "/";
+            File dir = new File(pdfPath);
+            File[] files = dir.listFiles((d, name) -> name.contains(nAut));
+            String oldPdf = ""; 
+            String newPdf = "";
+            if (files != null) {
+                oldPdf = files[0].getPath();
+                int dotPdf = oldPdf.indexOf(".pdf");
+                if (dotPdf > - 1) {
+                    newPdf = oldPdf.substring(0, dotPdf) + "_EXTORNADO.pdf";
+                }
+                if (newPdf != "") {
+                    File oldFile = new File(oldPdf);
+                    File newFile = new File(newPdf);
+                    if (!newFile.exists()) {
+                        boolean sucesso = oldFile.renameTo(newFile);
+                        if (!sucesso) {
+                            JOptionPane.showMessageDialog(this, "Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf + "\n\nChame o suporte!!!");
+                            System.out.println("Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField jAutenticacao;
     private javax.swing.JComboBox jDesc;

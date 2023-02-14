@@ -64,6 +64,9 @@ public class jImovel extends javax.swing.JDialog {
         conj.add(AWTKeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, 0));
         this.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, conj);
 
+        // Desligar campo
+        iReter.setVisible(false);
+        
         if (!"".equals(VariaveisGlobais.rgimv)) {
             MoveToImovel(VariaveisGlobais.rgprp, VariaveisGlobais.rgimv);
         } else {

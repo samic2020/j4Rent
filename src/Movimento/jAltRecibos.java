@@ -22,6 +22,7 @@ import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -1246,6 +1247,7 @@ public class jAltRecibos extends javax.swing.JInternalFrame {
                 int resp = JOptionPane.showConfirmDialog(null, "Exclui o recibo deste contrato!!!", "Excluir", JOptionPane.YES_NO_OPTION);
                 if (resp == JOptionPane.YES_OPTION) {
                     String Sql = "DELETE FROM RECIBO WHERE contrato = '" + contrato + "' AND dtvencimento = '" + Dates.DateFormata("yyyy/MM/dd", Dates.StringtoDate(jVencimentos.getSelectedItem().toString(),"dd/MM/yyyy")) + "';";
+                    ExclusaoBoletaPdf(contrato, Dates.DateFormata("yyyy/MM/dd", Dates.StringtoDate(jVencimentos.getSelectedItem().toString(),"dd/MM/yyyy")));
                     if (conn.ExecutarComando(Sql) > 0) { 
                         conn.Auditor("EXCLUSAO: RECIBO", contrato + " "+ Dates.DateFormata("yyyy/MM/dd", Dates.StringtoDate(jVencimentos.getSelectedItem().toString(),"dd/MM/yyyy")));
                         jContrato.requestFocus(); 
@@ -1258,6 +1260,24 @@ public class jAltRecibos extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_jbtExcluirActionPerformed
 
+    private void ExclusaoBoletaPdf(String contrato, String vecto) {
+        String[][] dados = null;
+        try {
+            dados = conn.LerCamposTabela(new String[] {"boletapath"}, "RECIBO", "contrato = '" + contrato + "' AND dtvencimento = '" + vecto + "';");
+        } catch (Exception ex) {}
+       if (dados != null) {
+           if (dados[0][3] != null) {
+               File boletaPdf = new File(dados[0][3].toString());
+               boolean sucesso = boletaPdf.delete();
+               if (!sucesso) {
+                   System.out.println("Não foi possivel excluir " + dados[0][3].toString());
+               } else {
+                   System.out.println("Boleto excluido: " + dados[0][3].toString());
+               }
+           }
+       }    
+}
+    
     private void jContratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jContratoActionPerformed
         if (!bExecNome) {
             int pos = jContrato.getSelectedIndex();

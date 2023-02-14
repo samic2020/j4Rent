@@ -11,13 +11,16 @@
 package Movimento;
 
 import Funcoes.CriticaExtrato;
+import Funcoes.Dates;
 import Funcoes.DbMain;
 import Funcoes.FuncoesGlobais;
 import Funcoes.LerValor;
 import Funcoes.StringManager;
 import Funcoes.VariaveisGlobais;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import javax.swing.JOptionPane;
 
 /**
@@ -182,6 +185,8 @@ public class jExtorno extends javax.swing.JInternalFrame {
             
             sql = FuncoesGlobais.Subst("UPDATE ANTECIPADOS SET dtpagamento = Null, at_aut = '0' WHERE  at_aut = '&1.';", new String[] {nrAut});
             conn.ExecutarComando(sql);
+            
+            // Extornar o pdf
         } catch (Exception e) {sucesso = false;}
         return sucesso;
     }
@@ -242,6 +247,9 @@ public class jExtorno extends javax.swing.JInternalFrame {
 
             sql = FuncoesGlobais.Subst("UPDATE avisos SET tag = ' ', et_aut = '0' WHERE et_aut = '&1.';", new String[] {nrAut});
             conn.ExecutarComando(sql);        
+            
+            // Extornar o pdf
+            
         } catch (Exception e) {sucesso = false;}
         return sucesso;
     }
@@ -349,6 +357,26 @@ public class jExtorno extends javax.swing.JInternalFrame {
                 conn.Auditor("EXTORNO:" + tpExt, nrAut);
             } catch (Exception e) {msg = "Erro ao Extonar!!!\n\nAvise o superte técnico...";}
         }
+        
+        // Colocar Extornado no documento
+        if (sItem.indexOf("PC") > -1) {
+            // Nada
+        } else if (sItem.indexOf("AV") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("RC") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("ET") > -1) {
+            RenamePdf("reports/Extratos/", nrAut);
+        } else if (sItem.indexOf("DP") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("DS") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("BO") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        } else if (sItem.indexOf("AD") > -1) {
+            RenamePdf("reports/Recibos/", nrAut);
+        }
+        
         JOptionPane.showMessageDialog(null, msg, "Atenção", JOptionPane.INFORMATION_MESSAGE);
         jAutenticacao.requestFocus();
     }//GEN-LAST:event_jbtExtornarActionPerformed
@@ -396,6 +424,32 @@ public class jExtorno extends javax.swing.JInternalFrame {
         return bret;
     }
 
+    private void RenamePdf(String sPath, String nAut) {
+        String pdfPath = sPath + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+        File dir = new File(pdfPath);
+        File[] files = dir.listFiles((d, name) -> name.contains(nAut));
+        String oldPdf = ""; 
+        String newPdf = "";
+        if (files != null) {
+            oldPdf = files[0].getPath();
+            int dotPdf = oldPdf.indexOf(".pdf");
+            if (dotPdf > - 1) {
+                newPdf = oldPdf.substring(0, dotPdf) + "_EXTORNADO.pdf";
+            }
+            if (newPdf != "") {
+                File oldFile = new File(oldPdf);
+                File newFile = new File(newPdf);
+                if (!newFile.exists()) {
+                    boolean sucesso = oldFile.renameTo(newFile);
+                    if (!sucesso) {
+                        JOptionPane.showMessageDialog(this, "Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf + "\n\nChame o suporte!!!");
+                        System.out.println("Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf);
+                    }
+                }
+            }
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField jAutenticacao;
     private javax.swing.JComboBox jDesc;

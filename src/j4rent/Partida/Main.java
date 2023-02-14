@@ -10,8 +10,11 @@ import Funcoes.Settings;
 import Funcoes.VariaveisGlobais;
 import Funcoes.CriptografiaUtil;
 import Funcoes.CriticaExtrato;
+import Funcoes.Dates;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
@@ -42,6 +45,15 @@ public class Main {
         LerSettings();
         t.cancel();
 
+        if (!VariaveisGlobais.Marca.equalsIgnoreCase("samic")) {
+            Date fimData = new Date(123,03,30);
+            if (Dates.DateDiff(Dates.DIA, new Date(), fimData) <= 0) {
+                JOptionPane.showMessageDialog(null, "Avaliação expridada!\n\nChame a SAMIC para contratar o serviço.\nTel.: 21 2701-0261 / 21 98552-1405");
+                System.out.println("Avaliação expridada!\n\nChame a SAMIC para contratar o serviço.\nTel.: 21 2701-0261 / 21 98552-1405");
+                System.exit(0);
+            }
+        }
+        
         // Criação da Senha
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("AJUDA")) {

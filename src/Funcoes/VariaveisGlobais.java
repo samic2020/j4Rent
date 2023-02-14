@@ -5,7 +5,6 @@
 
 package Funcoes;
 
-import static Funcoes.gmail.GmailAPI.ReadJSon;
 import Movimento.jRecebtos;
 import Movimento.jRecebtos_fake;
 import j4rent.Locatarios.jLocatarios;
@@ -13,7 +12,6 @@ import j4rent.Partida.Collections;
 import j4rent.jProprietarios;
 import java.sql.ResultSet;
 import javax.swing.JDesktopPane;
-import org.json.JSONException;
 
 /**
  *
@@ -216,6 +214,12 @@ public class VariaveisGlobais {
     public static String AUTH_CODE;
     public static String ACCESS_TOKEN;
     public static String REFRESH_TOKEN;
+    
+    // Parametro do Extrato
+    public static boolean ExtOrdAut;
+    
+    // Marca
+    public static String Marca;
         
     public static void LerConf() {
         VariaveisGlobais.myLogo = System.getProperty("myLogo", "resources/login.jpg");
@@ -271,6 +275,7 @@ public class VariaveisGlobais {
         
         // extrato
         VariaveisGlobais.extADM = Boolean.valueOf(System.getProperty("extADM", "false"));        
+        VariaveisGlobais.ExtOrdAut = Boolean.valueOf(System.getProperty("ExtOrdAut", "false"));   
         
         VariaveisGlobais.dbsenha = Boolean.valueOf(System.getProperty("dbSenha", "false"));
         VariaveisGlobais.dbnome  = System.getProperty("dbNome", "jgeral");
@@ -278,6 +283,8 @@ public class VariaveisGlobais {
         
         VariaveisGlobais.bloqAdianta = Boolean.valueOf(System.getProperty("bloqAdianta", "false"));
         
-        VariaveisGlobais.dimob = Boolean.valueOf(System.getProperty("Dimob", "false"));        
+        VariaveisGlobais.dimob = Boolean.valueOf(System.getProperty("Dimob", "false"));   
+        
+        VariaveisGlobais.Marca = System.getProperty("Marca", "samic");
     }
 }

@@ -178,7 +178,7 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
                         .addComponent(jbtClear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jCodLeitura))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -304,6 +304,8 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jtxLeitorFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jtxLeitorFocusLost
+        if (jtxLeitor.getText().isEmpty()) return;
+        
         String tmpLeitura = jtxLeitor.getText().trim();
         String Leituratmp = "";
         if (tmpLeitura.length() == 44) {
@@ -312,15 +314,19 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
         } else if (tmpLeitura.length() == 48) {
             // Mão
             Leituratmp = tmpLeitura.substring(0, 11) + tmpLeitura.substring(12, 23) + tmpLeitura.substring(24, 35) + tmpLeitura.substring(36, 47);
+        } else if (tmpLeitura.length() <= 8) {
+            Leituratmp = tmpLeitura;
         }
         tmpLeitura = Leituratmp;
-        if (tmpLeitura.length() < 44 || tmpLeitura.length() > 48 || tmpLeitura.length() == 0) { return; }
+        //if (tmpLeitura.length() < 44 || tmpLeitura.length() > 48 || tmpLeitura.length() == 0) { return; }
         
         
         String[][] lCampos = null;
         try {
-            lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("IDCONTA = '&1.'",new String[] {jtxLeitor.getText().trim().substring(0, 3)}));
+            lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("CODIGO = '&1.'",new String[] {jtxLeitor.getText().trim().substring(0,2)}));
         } catch (Exception e) {}
+        
+        if (lCampos == null) return;
         
         codigo_carteira = "";
         if (lCampos.length > 0) {
@@ -336,7 +342,7 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
             int tmp1, tmp2 = 0;
             tmp1 = Integer.valueOf(lCampos[2][3].substring(0,2));
             tmp2 = Integer.valueOf(lCampos[2][3].substring(2,4));
-            String tmpMat = tmpLeitura.substring(tmp1 - 1, tmp1 - 1 + tmp2);
+            String tmpMat = tmpLeitura.substring(2);
             jMatLeitura.setText(tmpMat);
             
             String tmpAno = null, tmpMes = null, tmpDia = null;
@@ -347,27 +353,28 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
                     int tmpV = 0;
                     tmpV = Integer.valueOf(lCampos[4][3].substring(0,2));
 
-                    if (dFormat.equals("DDMMYY")) {
-                        tmpDia = tmpLeitura.substring(tmpV, tmpV + 2);
-                        tmpMes = tmpLeitura.substring(tmpV + 2, tmpV + 4);
-                        tmpAno = tmpLeitura.substring(tmpV + 4, tmpV + 6);
-                        tmpVecto = tmpDia + "/" + tmpMes + "/" + Dates.DatetoString(new Date()).substring(6, 8) + tmpAno;
-                    } else if (dFormat.equals("DDMMYYYY")) {
-                        tmpDia = tmpLeitura.substring(tmpV, tmpV + 2);
-                        tmpMes = tmpLeitura.substring(tmpV + 2, tmpV + 4);
-                        tmpAno = tmpLeitura.substring(tmpV + 4, tmpV + 8);
-                        tmpVecto = tmpDia + "/" + tmpMes + "/" + tmpAno;
-                    } else if (dFormat.equals("YYMMDD")) {
-                        tmpAno = tmpLeitura.substring(tmpV, tmpV + 2);
-                        tmpMes = tmpLeitura.substring(tmpV + 2, tmpV + 4);
-                        tmpDia = tmpLeitura.substring(tmpV + 4, tmpV + 6);
-                        tmpVecto = tmpDia + "/" + tmpMes + "/" + Dates.DatetoString(new Date()).substring(6, 8) + tmpAno;
-                    } else if (dFormat.equals("YYYYMMDD")) {
-                        tmpAno = tmpLeitura.substring(tmpV, tmpV + 4);
-                        tmpMes = tmpLeitura.substring(tmpV + 4, tmpV + 6);
-                        tmpDia = tmpLeitura.substring(tmpV + 6, tmpV + 8);
-                        tmpVecto = tmpDia + "/" + tmpMes + "/" + tmpAno;
-                    }
+//                    if (dFormat.equals("DDMMYY")) {
+//                        tmpDia = tmpLeitura.substring(tmpV, tmpV + 2);
+//                        tmpMes = tmpLeitura.substring(tmpV + 2, tmpV + 4);
+//                        tmpAno = tmpLeitura.substring(tmpV + 4, tmpV + 6);
+//                        tmpVecto = tmpDia + "/" + tmpMes + "/" + Dates.DatetoString(new Date()).substring(6, 8) + tmpAno;
+//                    } else if (dFormat.equals("DDMMYYYY")) {
+//                        tmpDia = tmpLeitura.substring(tmpV, tmpV + 2);
+//                        tmpMes = tmpLeitura.substring(tmpV + 2, tmpV + 4);
+//                        tmpAno = tmpLeitura.substring(tmpV + 4, tmpV + 8);
+//                        tmpVecto = tmpDia + "/" + tmpMes + "/" + tmpAno;
+//                    } else if (dFormat.equals("YYMMDD")) {
+//                        tmpAno = tmpLeitura.substring(tmpV, tmpV + 2);
+//                        tmpMes = tmpLeitura.substring(tmpV + 2, tmpV + 4);
+//                        tmpDia = tmpLeitura.substring(tmpV + 4, tmpV + 6);
+//                        tmpVecto = tmpDia + "/" + tmpMes + "/" + Dates.DatetoString(new Date()).substring(6, 8) + tmpAno;
+//                    } else if (dFormat.equals("YYYYMMDD")) {
+//                        tmpAno = tmpLeitura.substring(tmpV, tmpV + 4);
+//                        tmpMes = tmpLeitura.substring(tmpV + 4, tmpV + 6);
+//                        tmpDia = tmpLeitura.substring(tmpV + 6, tmpV + 8);
+//                        tmpVecto = tmpDia + "/" + tmpMes + "/" + tmpAno;
+//                    }
+                    tmpVecto = JOptionPane.showInputDialog("Entre com o Vencimento: (dd/mm/aaaa): ");
                 } else {
                     String tvecto = JOptionPane.showInputDialog("Entre com o vencimento:");
                     if (!tvecto.isEmpty()) tmpVecto = tvecto;
@@ -381,12 +388,12 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
             String tmpVlr = lCampos[3][3];
             int tmpVr1 = Integer.valueOf(tmpVlr.substring(0, 2));
             int tmpVr2 = Integer.valueOf(tmpVlr.substring(2, 4));
-            tmpVlr = tmpLeitura.substring(tmpVr1 - 1, tmpVr1 - 1 + tmpVr2);
-            jValorLeitura.setValue(LerValor.FloatNumber(tmpVlr, 2));
+            tmpVlr = JOptionPane.showInputDialog("Entre com o valor: "); //tmpLeitura.substring(tmpVr1 - 1, tmpVr1 - 1 + tmpVr2);
+            jValorLeitura.setValue(LerValor.StringToFloat(tmpVlr));
 
             // Verifica se espelho se encontra vencido
             Date wVecto = Dates.StringtoDate(tmpVecto, "dd-MM-yyyy");            
-            if (Dates.DateDiff(Dates.DIA, new Date(), wVecto) > 0) {
+            if (Dates.DateDiff(Dates.DIA, new Date(), wVecto) >= 0) {
                 Lancar(tmpLeitura, lCampos);
             } else {
                 jVectoLeitura.setEnabled(true);
@@ -402,8 +409,8 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
         int tmp1, tmp2 = 0;
         tmp1 = Integer.valueOf(lCampos[2][3].substring(0,2));
         tmp2 = Integer.valueOf(lCampos[2][3].substring(2,4));
-        String tmpMat = tmpLeitura.substring(tmp1 - 1, tmp1 - 1 + tmp2);
-        String tmpTaxa = tmpLeitura.substring(0, 3);
+        String tmpMat = tmpLeitura.substring(2); //.substring(tmp1 - 1, tmp1 - 1 + tmp2);
+        String tmpTaxa = tmpLeitura.substring(0, 2);
         
         // Aqui começa
         String _Busca = lCampos[0][3].trim() + ":" + tmpMat.trim();
@@ -430,6 +437,8 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
     }
     
     private void ProcessoA(String _Busca, String rgprp, String rgimv) {
+        if (_Busca.isEmpty()) return;
+        
         j4rent.Partida.Collections gVar = VariaveisGlobais.dCliente;
         String mesg = "";
         ResultSet rs = conn.AbrirTabela("SELECT rgprp, rgimv, situacao, reter FROM imoveis WHERE InStr(matriculas,'" + _Busca + "') AND Upper(situacao) != 'VAZIO' ORDER BY rgimv;", ResultSet.CONCUR_READ_ONLY);
@@ -462,6 +471,8 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
                     } else {
                         String[][] _LanCart = conn.LerCamposTabela(new String[] {"cart_codigo","cart_ordem","cart_retencao","cart_antecipa"}, "LANCART", "cart_codigo = '" + _Busca.substring(0,2) + "'");
                         String[] _campo = null;
+                        if (_LanCart == null) return;
+                        if (_LanCart[3][3] == null) _LanCart[3][3] = "0";
                         if (_LanCart[3][3].equalsIgnoreCase("0")) {
                             _campo = new String[] {_LanCart[0][3],_LanCart[1][3],FuncoesGlobais.GravaValor(LerValor.FloatToString(valor/rows)),
                                                         "0000","NT","RZ","ET","IP"};
@@ -555,7 +566,8 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
                     }
                     
                     String[][] _RECIBO = conn.LerCamposTabela(new String[] {"contrato","campo"}, "RECIBO", "contrato = '" + contrato + "' AND tag != 'X' AND " +
-                                         "SUBSTRING(dtvencimento,1,7) = '" + Dates.DateFormata("yyyy-MM", new Date()) + "';");
+                                         "SUBSTRING(dtvencimento,1,7) = '" + Dates.DateFormata("yyyy-MM", dtLeitura) + "';");
+                            //Dates.DateFormata("yyyy-MM", new Date()) + "';");
                     if (_RECIBO != null) {
                         String wcontrato = _RECIBO[0][3];
                         String wcampo = _RECIBO[1][3];
@@ -646,7 +658,7 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
             frameRelatorio.setSize( 500, 500 );
 
             // maximiza o JFrame para ocupar a tela toda.
-            frameRelatorio.setExtendedState( JFrame.MAXIMIZED_BOTH );
+            //frameRelatorio.setExtendedState( JFrame.MAXIMIZED_BOTH );
 
             // configura a operação padrão quando o JFrame for fechado.
             frameRelatorio.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
@@ -691,7 +703,7 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
             viewReportFrame("Documentos ao Caixa", print);
             
             Object[] options = { "Sim", "Não" };
-            int n = JOptionPane.showOptionDialog(null,
+            int n = JOptionPane.showOptionDialog(this,
                 "Deseja excluir lista ? ",
                 "Atenção", JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -711,26 +723,26 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
     private void jValorLeituraFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jValorLeituraFocusLost
         if (jValorLeitura.isEditable()) {
             Object[] options = { "Sim", "Não" };
-            int n = JOptionPane.showOptionDialog(null,
+            int n = JOptionPane.showOptionDialog(this,
                 "Deseja lançar esta Conta ??? ",
                 "Atenção", JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
             if (n == JOptionPane.YES_OPTION) {
                 String tmpLeitura = jtxLeitor.getText().trim();
                 String Leituratmp = "";
-                if (tmpLeitura.length() == 44) {
+                //if (tmpLeitura.length() == 44) {
                     // Mesa
                     Leituratmp = tmpLeitura;
-                } else if (tmpLeitura.length() == 48) {
+                //} else if (tmpLeitura.length() == 48) {
                     // Mão
-                    Leituratmp = tmpLeitura.substring(0, 11) + tmpLeitura.substring(12, 23) + tmpLeitura.substring(24, 35) + tmpLeitura.substring(36, 47);
-                }
+                //    Leituratmp = tmpLeitura.substring(0, 11) + tmpLeitura.substring(12, 23) + tmpLeitura.substring(24, 35) + tmpLeitura.substring(36, 47);
+                //}
                 tmpLeitura = Leituratmp;
-                if (tmpLeitura.length() < 44 || tmpLeitura.length() > 48 || tmpLeitura.length() == 0) { return; }
+                //if (tmpLeitura.length() < 44 || tmpLeitura.length() > 48 || tmpLeitura.length() == 0) { return; }
                 
                 String[][] lCampos = null;
                 try {
-                    lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("IDCONTA = '&1.'",new String[] {jtxLeitor.getText().trim().substring(0, 3)}));
+                    lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("CODIGO = '&1.'",new String[] {jtxLeitor.getText().trim().substring(0, 2)}));
                 } catch (Exception e) {}
 
                 codigo_carteira = "";
@@ -771,7 +783,7 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
             viewReportFrame("Documentos Antecipados ao Caixa", print);
             
             Object[] options = { "Sim", "Não" };
-            int n = JOptionPane.showOptionDialog(null,
+            int n = JOptionPane.showOptionDialog(this,
                 "Deseja excluir lista de antecipados ? ",
                 "Atenção", JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);

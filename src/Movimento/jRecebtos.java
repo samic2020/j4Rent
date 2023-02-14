@@ -147,7 +147,7 @@ public class jRecebtos extends javax.swing.JInternalFrame {
                 }
                 jVencimentos.setEnabled(true);
                 jQtde.setEnabled(true);
-                jtgbAvulso.setEnabled(true);
+                jtgbAvulso.setEnabled(false);
             }
         });
 
@@ -254,7 +254,7 @@ public class jRecebtos extends javax.swing.JInternalFrame {
                     jVencimentos.setEnabled(true);
                     jQtde.setEnabled(true);
                     lblQtde.setVisible(true);
-                    jtgbAvulso.setEnabled(true);
+                    jtgbAvulso.setEnabled(false);
                     jNomeLoca.setEnabled(true);
                     jContrato.setEnabled(true);
                     jContrato.requestFocus();
@@ -285,7 +285,7 @@ public class jRecebtos extends javax.swing.JInternalFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 LimpaTela();
                 ///////////////jtgbAvulso.setSelected(false);
-                jtgbAvulso.setEnabled(true);
+                jtgbAvulso.setEnabled(false);
                 lblQtde.setVisible(true);
                 jQtde.setVisible(true);
                 tRec.Enable(false);
@@ -303,7 +303,7 @@ public class jRecebtos extends javax.swing.JInternalFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 LimpaTela();
                 ////////////////jtgbAvulso.setSelected(false);
-                jtgbAvulso.setEnabled(true);
+                jtgbAvulso.setEnabled(false);
                 lblQtde.setVisible(true);
                 jQtde.setVisible(true);
                 tRec.Enable(false);
@@ -329,7 +329,7 @@ public class jRecebtos extends javax.swing.JInternalFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 LimpaTela();
                 ////////////////jtgbAvulso.setSelected(false);
-                jtgbAvulso.setEnabled(true);
+                jtgbAvulso.setEnabled(false);
                 lblQtde.setVisible(true);
                 jQtde.setVisible(true);
                 tRec.Enable(false);

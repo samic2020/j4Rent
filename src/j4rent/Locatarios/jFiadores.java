@@ -25,8 +25,6 @@ import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
@@ -64,7 +62,16 @@ public class jFiadores extends javax.swing.JDialog {
             jDados.setSelectedIndex(0);
             jrbFisica.requestFocus();
         } else {
-            try {if (DbMain.RecordCount(pResult) > 0) MoveToFiador("contrato", VariaveisGlobais.fcontrato);} catch (Exception ex) {}
+            try {
+                if (DbMain.RecordCount(pResult) > 0) {
+                    MoveToFiador("contrato", VariaveisGlobais.fcontrato);
+                    btGravar.setEnabled(true);
+                    EnabledDados(true);
+                } else {
+                    btGravar.setEnabled(false);
+                    EnabledDados(false);
+                }
+            } catch (Exception ex) {}
         }
         
         if (VariaveisGlobais.isBloqueado) {
@@ -314,6 +321,79 @@ public class jFiadores extends javax.swing.JDialog {
 
     }
 
+    private void EnabledDados(boolean value) {
+        jrbFisica.setEnabled(value);
+        mCpf.setEnabled(value);
+        mCnpj.setEnabled(value);
+
+        jDados.setEnabled(value);
+
+        jrbFisica.setEnabled(value);
+        jrbJuridica.setEnabled(value);
+
+        mIdentidade.setEnabled(value);
+
+        // Pessoa Física (limpar dados dos campos juridica)
+        mfNome.setEnabled(value);
+        mfDtNasc.setEnabled(value);
+        mfNacionalidade.setEnabled(value);
+        mfEstCivil.setEnabled(value);
+        mTelefone.setEnabled(value);
+        // tel2
+        mfMae.setEnabled(value);
+        mfPai.setEnabled(value);
+        mfEmpresa.setEnabled(value);
+        mfDtAdmis.setEnabled(value);
+        mfEndereco.setEnabled(value);
+        mfNumero.setEnabled(value);
+        mfCplto.setEnabled(value);
+        mfBairro.setEnabled(value);
+        mfCidade.setEnabled(value);
+        mfEstado.setEnabled(value);
+        mfCep.setEnabled(value);
+        mfTelEmpresa.setEnabled(value);
+        mfRamalEmpresa.setEnabled(value);
+        mfCargo.setEnabled(value);
+        mfSalario.setEnabled(value);
+        mfEmail.setEnabled(value);
+        mfConjugue.setEnabled(value);
+        mfDtNascConj.setEnabled(value);
+        mfCpfConj.setEnabled(value);
+        mfIdentidadeConj.setEnabled(value);
+        mfSalarioConj.setEnabled(value);
+        mfEmpresaConj.setEnabled(value);
+        mfEmpresaTelConj.setEnabled(value);
+        mfEmpresaRamalConj.setEnabled(value);
+
+        // Pessoa Jurica (limpar dados dos campos física)
+        mjRazao.setEnabled(value);
+        mjFantasia.setEnabled(value);
+        mjEndereco.setEnabled(value);
+        mjNumero.setEnabled(value);
+        mjCplto.setEnabled(value);
+        mjBairro.setEnabled(value);
+        mjCidade.setEnabled(value);
+        mjEstado.setEnabled(value);
+        mjCep.setEnabled(value);
+        mjTelefone.setEnabled(value);
+        mjRamal.setEnabled(value);
+        mjCelular.setEnabled(value);
+        mjDtContratoSocial.setEnabled(value);
+        mjEmail.setEnabled(value);
+
+        TableControl.header(jSocios, new String[][] {{"cpfcnpj","nomerazao","cargo"},{"150","500","150"}});
+
+        mEnderecoEnv.setEnabled(value);
+        mNumeroEnv.setEnabled(value);
+        mCpltoEnv.setEnabled(value);
+        mBairroEnv.setEnabled(value);
+        mCidadeEnv.setEnabled(value);
+        mEstadoEnv.setEnabled(value);
+        mCepEnv.setEnabled(value);
+    }
+
+    
+    
     private void GravarDados() throws SQLException {
         if (bNew) {
             pResult.moveToInsertRow();
@@ -1615,6 +1695,7 @@ public class jFiadores extends javax.swing.JDialog {
 
     private void btIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btIncluirActionPerformed
         bNew = true;
+        EnabledDados(true);
 
         // Bloqueio dos botões
         btIncluir.setEnabled(false);
@@ -1627,6 +1708,12 @@ public class jFiadores extends javax.swing.JDialog {
 
         jrbFisica.setEnabled(true);
         jrbJuridica.setEnabled(true);
+        
+        // 14-02-2023
+        mCpf.setEnabled(true);
+        mCnpj.setEnabled(false);
+        // 14-02-2023
+        
         jrbFisica.requestFocus();
 }//GEN-LAST:event_btIncluirActionPerformed
 

@@ -38,7 +38,7 @@ public class jReajuste extends javax.swing.JInternalFrame {
         TableControl.Clear(jtbImoveis);
         String sql = "SELECT c.contrato, c.rgimv, l.nomerazao AS nome, c.dtinicio, c.dttermino, c.dtvencimento, c.dtadito, " +
                 "StrVal(Mid(c.campo,6,10)) AS valor, ((Month(StrDate(c.dttermino)) = &1. AND Year(StrDate(c.dttermino)) = &2.)) AS pinta, " + 
-                "c.dtseguro FROM jgeral.CARTEIRA c, jgeral.locatarios l WHERE (c.contrato = l.contrato) AND ((Month(StrDate(c.dtinicio)) = &1. AND " + 
+                "c.dtseguro FROM jgeral.CARTEIRA c, jgeral.locatarios l, jgeral.imoveis i WHERE (l.rgimv = i.rgimv AND Upper(i.situacao) = 'OCUPADO') AND (c.contrato = l.contrato) AND ((Month(StrDate(c.dtinicio)) = &1. AND " + 
                 "Year(StrDate(c.dttermino)) >= &2.) OR (Month(StrDate(c.dttermino)) = &1. AND Year(StrDate(c.dttermino)) = &2.)) " + 
                 "ORDER BY Upper(l.nomerazao);";
         javax.swing.table.DefaultTableModel dtm = (javax.swing.table.DefaultTableModel)jtbImoveis.getModel();
