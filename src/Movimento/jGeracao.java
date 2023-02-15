@@ -12,13 +12,23 @@
 package Movimento;
 
 import Funcoes.*;
+import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 
 /**
  *
@@ -37,7 +47,7 @@ public class jGeracao extends javax.swing.JInternalFrame {
         jProgress.setVisible(false);
 
         // Seta Cabecario
-        TableControl.header(jLista, new String[][] {{"rgprp","rgimv","contrato","nome","vencimento"},{"0","0","120","500","100"}});
+        TableControl.header(jLista, new String[][] {{"rgprp","rgimv","contrato","nome","vencimento","cota"},{"0","0","120","500","100","60"}});
 
         EmDia();
         
@@ -69,13 +79,14 @@ public class jGeracao extends javax.swing.JInternalFrame {
         jLista = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jBusca = new javax.swing.JTextField();
+        jSelectBloqGer = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
         setTitle(".:: Geração de Vencimentos ::.");
         setVisible(true);
 
-        jGerar.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
+        jGerar.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
         jGerar.setText("Gerar Vencimentos");
         jGerar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -83,7 +94,7 @@ public class jGeracao extends javax.swing.JInternalFrame {
             }
         });
 
-        jSelectAll.setText("Selecionar Todos");
+        jSelectAll.setText("Todos");
         jSelectAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jSelectAllActionPerformed(evt);
@@ -117,6 +128,13 @@ public class jGeracao extends javax.swing.JInternalFrame {
             }
         });
 
+        jSelectBloqGer.setText("Lista Bloq p.Geração");
+        jSelectBloqGer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSelectBloqGerActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -124,17 +142,19 @@ public class jGeracao extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 763, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jGerar, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jGerar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jBusca, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
+                        .addComponent(jBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSelectAll)))
+                        .addComponent(jSelectAll)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jSelectBloqGer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -145,11 +165,12 @@ public class jGeracao extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jGerar, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-                    .addComponent(jProgress, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jProgress, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                    .addComponent(jSelectAll, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jSelectAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)))
+                        .addComponent(jLabel1)
+                        .addComponent(jSelectBloqGer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -179,7 +200,7 @@ public class jGeracao extends javax.swing.JInternalFrame {
                     int modelRow = jLista.convertRowIndexToModel(nRow);
                     if (!jLista.getModel().getValueAt(modelRow, 4).toString().substring(0, 1).equalsIgnoreCase("B")) {
                         rgimv = jLista.getModel().getValueAt(modelRow, 1).toString();
-                        aLst = FuncoesGlobais.ArrayAdd(aLst, "c.rgimv = '" + rgimv.trim() + "'");
+                        if (!jLista.getModel().getValueAt(modelRow, 5).toString().equalsIgnoreCase("00/00")) aLst = FuncoesGlobais.ArrayAdd(aLst, "c.rgimv = '" + rgimv.trim() + "'");
                     }
                 }
 
@@ -223,8 +244,47 @@ public class jGeracao extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jBuscaActionPerformed
 
+    private void jSelectBloqGerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSelectBloqGerActionPerformed
+        String query = "SELECT c.contrato, l.nomerazao, c.dtvencimento, c.dtinicio, c.dttermino, c.dtadito FROM carteira c, locatarios l WHERE (c.contrato = l.contrato) AND Mid(c.campo,17,4) = '0000' ORDER BY 2;";
+        ResultSet rs = conn.AbrirTabela(query, ResultSet.CONCUR_READ_ONLY);
+
+        //implementação da interface JRDataSource para DataSource ResultSet
+        JRResultSetDataSource jrRS = new JRResultSetDataSource( rs );
+
+        new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
+        String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+
+        String outFileName = pathName + "Zerados_" + Dates.DateFormata("ddMMyyyy", new Date()) + ".pdf";
+        String fileName = "reports/RelZerados.jasper";
+
+        //executa o relatório
+        try {
+            JasperPrint print = JasperFillManager.fillReport(fileName, null, jrRS);
+
+            JRExporter exporter = new JRPdfExporter();
+
+            // Configure the exporter (set output file name and print object)
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+
+            // Export the PDF file
+            exporter.exportReport();
+        
+            new toPreview(outFileName);
+//            if (!"jasper".equals(VariaveisGlobais.reader)) {
+//                ComandoExterno ce = new ComandoExterno();
+//                ComandoExterno.ComandoExterno(VariaveisGlobais.reader + " " + outFileName);
+//            } else {
+//                JasperViewer viewer = new JasperViewer(print, false);
+//                viewer.show();
+//            }
+
+        } catch (Exception ex) {ex.printStackTrace();}
+        DbMain.FecharTabela(rs);
+    }//GEN-LAST:event_jSelectBloqGerActionPerformed
+
     public void EmDia() {
-        String Sql = "select AtUnUpgrade(c.campo) AS upg, c.rgprp, c.rgimv, c.contrato, l.nomerazao, c.dtvencimento, l.boleta, (CountStr(c.campo,'*') = CountStr(c.campo,';') + 1) asupg from CARTEIRA c, locatarios l where c.contrato = l.contrato AND NOT IsNull(c.dtvencimento) AND (l.fiador1uf <> 'X' OR IsNull(l.fiador1uf)) order by l.nomerazao;";
+        String Sql = "select AtUnUpgrade(c.campo) AS upg, c.rgprp, c.rgimv, c.contrato, l.nomerazao, c.dtvencimento, l.boleta, (CountStr(c.campo,'*') = CountStr(c.campo,';') + 1) asupg, Mid(c.campo,17,4) as cota from CARTEIRA c, locatarios l where c.contrato = l.contrato AND NOT IsNull(c.dtvencimento) AND (l.fiador1uf <> 'X' OR IsNull(l.fiador1uf)) order by l.nomerazao;";
                 //"SELECT r.rgprp, r.rgimv, r.contrato, l.nomerazao, r.campo, r.dtvencimento, c.dtultrecebimento, l.boleta, 1 gerados FROM RECIBO r, locatarios l, CARTEIRA c where (r.tag <> 'X') AND (r.contrato = l.contrato and c.contrato = l.contrato) and (r.dtvencimento >= '" + Dates.DateFormata("yyyy-MM-dd", jInicial.getDate()) + "' AND r.dtvencimento <= '" + Dates.DateFormata("yyyy-MM-dd", jFinal.getDate()) + "') ORDER BY l.nomerazao;";
         ResultSet rs = conn.AbrirTabela(Sql, ResultSet.CONCUR_READ_ONLY);
 
@@ -232,7 +292,7 @@ public class jGeracao extends javax.swing.JInternalFrame {
        TableControl.Clear(jLista);
 
         jProgress.setVisible(true);
-        int b = 0;
+        int b = 0; int zerados = 0;
         try {
             rs.last();
             int rcount = rs.getRow();
@@ -243,6 +303,8 @@ public class jGeracao extends javax.swing.JInternalFrame {
                 String tcontrato = rs.getString("contrato").toUpperCase();
                 String tnome = rs.getString("nomerazao").trim();
                 Boolean tcampo = rs.getBoolean("upg");
+                String tcota = rs.getString("cota");
+                tcota = tcota.substring(0,2) + "/" + tcota.substring(2,4);                
                 String tvencto = "";
                 try {
                     tvencto = (tcampo  ? "B " : "") + Dates.DateFormata("dd-MM-yyyy", Dates.StringtoDate(rs.getString("dtvencimento").toUpperCase(),"dd-MM-yyyy"));
@@ -253,7 +315,8 @@ public class jGeracao extends javax.swing.JInternalFrame {
                 }
 
                 if (tvencto != null) {
-                    TableControl.add(jLista, new String[][]{{trgprp, trgimv, tcontrato, tnome, tvencto},{"C","C","C","L","C"}}, true);
+                    TableControl.add(jLista, new String[][]{{trgprp, trgimv, tcontrato, tnome, tvencto, tcota},{"C","C","C","L","C","C"}}, true);
+                    if (tcota.equalsIgnoreCase("00/00")) zerados++;
                 }
                 int pgs = ((b++ * 100) / rcount) + 1;
 
@@ -263,6 +326,8 @@ public class jGeracao extends javax.swing.JInternalFrame {
         jProgress.setVisible(false);
         DbMain.FecharTabela(rs);
 
+        jSelectBloqGer.setEnabled(zerados > 0);
+        jSelectBloqGer.setForeground(zerados > 0 ? Color.RED : Color.BLACK );
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -274,6 +339,7 @@ public class jGeracao extends javax.swing.JInternalFrame {
     private javax.swing.JProgressBar jProgress;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton jSelectAll;
+    private javax.swing.JButton jSelectBloqGer;
     private javax.swing.ButtonGroup jTipoEmail;
     // End of variables declaration//GEN-END:variables
 

@@ -384,7 +384,7 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
                     Razao Bean1 = new Razao();
                     Bean1.set_dsLinha01("PROPRIETARIOS POSITIVOS");
                     float sdprcr = sdProdDiaCRE[0];
-                    float sdprdb = sdProdDiaDEB[0];
+                    float sdprdb = sdProdDiaDEB[1] * -1;
                     Bean1.set_crLinha01(LerValor.floatToCurrency(sdprcr, 2));
                     Bean1.set_dbLinha01(LerValor.floatToCurrency(sdprdb, 2));
                     Bean1.set_sdLinha01(LerValor.floatToCurrency(sdprcr - sdprdb, 2));
@@ -397,9 +397,9 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 
                     float sdc_cr =0; float sdc_db = 0;
                     Bean1 = new Razao();
-                    Bean1.set_dsLinha01("CONDOMINIOS");
+                    Bean1.set_dsLinha01("CONDOMINIOS POSITIVOS");
                     float sdcprcr = sdProdDiaCRE[2];
-                    float sdcprdb = sdProdDiaDEB[2];
+                    float sdcprdb = sdProdDiaDEB[3] * -1;
                     Bean1.set_crLinha01(LerValor.floatToCurrency(sdcprcr, 2));
                     Bean1.set_dbLinha01(LerValor.floatToCurrency(sdcprdb, 2));
                     Bean1.set_sdLinha01(LerValor.floatToCurrency(sdcprcr - sdcprdb, 2));
@@ -420,7 +420,7 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
                     lista.add(Bean1);
 
                     // acumula sfinal
-                    sfinal = pRECIBO[0] + pRECIBO[10] + pAVIDISP[0] - pRECIBO[9] - pAVIDISP[1] - pEXT + (sd_cr - sd_db);
+//                    sfinal = pRECIBO[0] + pRECIBO[10] + pAVIDISP[0] - pRECIBO[9] - pAVIDISP[1] - pEXT + (sd_cr - sd_db);
 
                     Bean1 = new Razao();
                     Bean1.set_dsLinha01("LOCATÁRIOS");
@@ -2094,16 +2094,16 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
     
     private float SaldoPropDiaCRE(String jRgprp, String data) {
         float fTotCred = 0; float fTotDeb = 0; float fTotAdi = 0; float fSaldoAnt = 0;
-        try {
-            String sdant = conn.LerCamposTabela(new String[] {"saldoant"}, "proprietarios", "rgprp = '" + jRgprp + "'")[0][3];
-            fSaldoAnt = Float.valueOf(sdant.trim());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        if (fSaldoAnt > 0) {
-            fTotCred += fSaldoAnt;
-        }
+//        try {
+//            String sdant = conn.LerCamposTabela(new String[] {"saldoant"}, "proprietarios", "rgprp = '" + jRgprp + "'")[0][3];
+//            fSaldoAnt = Float.valueOf(sdant.trim());
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        if (fSaldoAnt > 0) {
+//            fTotCred += fSaldoAnt;
+//        }
 
         String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
                      "FROM extrato WHERE rgprp = '&1.' AND (tag <> 'X' AND tag <> 'B') AND " + 
@@ -2218,7 +2218,7 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
         }
         DbMain.FecharTabela(hrs);
 
-        sql = FuncoesGlobais.Subst("SELECT campo FROM avisos WHERE registro = '&1.' AND rid = '0' AND (tag <> 'X' OR ISNULL(tag));", new String[] {jRgprp});
+        sql = FuncoesGlobais.Subst("SELECT campo FROM avisos WHERE registro = '&1.' AND rid = '0' AND (tag <> 'X' OR ISNULL(tag)) AND RetAvDataRid2(campo) = '&2.';", new String[] {jRgprp, data});
         hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
 
         try {
@@ -2247,9 +2247,14 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
             while (rst.next()) {                
                 jbarra2.setValue((100 * posit++)/ fim);
                 try {Thread.sleep(10);} catch (InterruptedException e) {}
-
+                
                 String rgprp = rst.getString("rgprp");
                 String nmprp = rst.getString("nome");
+                
+                if (rgprp.equalsIgnoreCase("93400")) {
+                    System.out.println("");
+                }
+                
                 float saldo =  SaldoPropDiaDEB(rgprp, data);
                 if (!nmprp.toUpperCase().startsWith("COND")) {
                     if (saldo > 0) {
@@ -2272,131 +2277,141 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
     
     private float SaldoPropDiaDEB(String jRgprp, String data) {
         float fTotCred = 0; float fTotDeb = 0; float fTotAdi = 0; float fSaldoAnt = 0;
-        try {
-            String sdant = conn.LerCamposTabela(new String[] {"saldoant"}, "proprietarios", "rgprp = '" + jRgprp + "'")[0][3];
-            fSaldoAnt = Float.valueOf(sdant.trim());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+//        try {
+//            String sdant = conn.LerCamposTabela(new String[] {"saldoant"}, "proprietarios", "rgprp = '" + jRgprp + "'")[0][3];
+//            fSaldoAnt = Float.valueOf(sdant.trim());
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        if (fSaldoAnt > 0) {
+//            fTotCred += fSaldoAnt;
+//        }
 
-        if (fSaldoAnt > 0) {
-            fTotCred += fSaldoAnt;
-        }
+          String sql = "SELECT RetAvValorRid2(campo) as valor FROM auxiliar WHERE conta = 'EXT' AND contrato = '&1.' AND DTRECEBIMENTO = '&2.';";
+          sql = FuncoesGlobais.Subst(sql, new String[] {jRgprp, data});
+          ResultSet hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
+          try {
+              while (hrs.next()) {
+                  fTotDeb += hrs.getDouble("valor");
+              }
+          } catch (SQLException e) {}
+          DbMain.FecharTabela(hrs);
+          
+//        String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
+//                     "FROM extrato WHERE rgprp = '&1.' AND (tag = 'X' AND tag <> 'B') AND " + 
+//                     "et_aut != 0 AND dtrecebimento = '" + data + "' ORDER BY dtvencimento;";
+//               sql = FuncoesGlobais.Subst(sql, new String[] {jRgprp});
+//
+//        ResultSet hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
+//        try {
+//            while (hrs.next()) {
+//                String tmpCampo = hrs.getString("campo");
+//                String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, true);
+//
+//                for (int j = 0; j<rCampos.length; j++) {
+//                    String tpCampo = new Pad(rCampos[j][rCampos[j].length - 1], 15).RPad();
+//                    if (VariaveisGlobais.bShowCotaParcelaExtrato) {
+//                        String spart1 = "", spart2 = "", scotaparc = "";
+//                        try {
+//                            if (!"".equals(rCampos[j][3].trim())) {
+//                                spart1 = rCampos[j][3].trim().substring(0, 2);
+//                                spart2 = rCampos[j][3].trim().substring(2);
+//                            } else {
+//                                spart1 = "00"; spart2 = "0000";
+//                            }
+//                            if (!"00".equals(spart1) && "0000".equals(spart2)) {
+//                                spart1 = "00";
+//                            } else if ("00".equals(spart1) && !"0000".equals(spart2)) {
+//                                spart2 = "0000";
+//                            }
+//                        } catch (Exception e) {spart1 = "00"; spart2 = "0000"; }
+//                        scotaparc = spart1 + spart2;
+//                        tpCampo += "  " + ("0000".equals(scotaparc) || "000000".equals(scotaparc) || "".equals(scotaparc) ? "       " : scotaparc.substring(0,2) + "/" + scotaparc.substring(2));
+//                    }
+//                    boolean bRetc = FuncoesGlobais.IndexOf(rCampos[j], "RT") > -1;
+//                    try {
+//                        if ("AL".equals(rCampos[j][4])) {
+//                            if (LerValor.isNumeric(rCampos[j][0])) {
+//                                fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                                if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//
+//                                int nPos = FuncoesGlobais.IndexOf(rCampos[j], "CM");
+//                                if (nPos > -1) {
+//                                    // "CM"
+//                                    fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                }
+//
+//                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "MU");
+//                                if (nPos > -1) {
+//                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+//                                        // "MU"
+//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                    }
+//                                }
+//
+//                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "JU");
+//                                if (nPos > -1) {
+//                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+//                                        // "JU"
+//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                    }
+//                                }
+//
+//                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
+//                                if (nPos > -1) {
+//                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(9),2)) > 0) {
+//                                        String wAD = rCampos[j][nPos].split("@")[1];
+//                                        fTotAdi += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
+//                                    }
+//                                }
+//                                
+//                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "CO");
+//                                if (nPos > -1) {
+//                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+//                                        // "CO"
+//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                    }
+//                                }
+//
+//                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "EP");
+//                                if (nPos > -1) {
+//                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+//                                        // "EP"
+//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                    }
+//                                }
+//                            } else {
+//                                if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                            }
+//                        } else if (FuncoesGlobais.IndexOf(rCampos[j], "AD") > -1) {
+//                            int nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
+//                            if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].split("@")[1],2)) > 0) {
+//                                String wAD = rCampos[j][nPos].split("@")[1];
+//                                fTotAdi += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
+//                            }                        
+//                        } else if ("DC".equals(rCampos[j][4])) {
+//                            fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                        } else if ("DF".equals(rCampos[j][4])) {
+//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                        } else if ("SG".equals(rCampos[j][4])) {
+//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                        } else {
+//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                        }
+//                    } catch (Exception e) {}
+//                }
+//            }
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//        }
+//        DbMain.FecharTabela(hrs);
 
-        String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
-                     "FROM extrato WHERE rgprp = '&1.' AND (tag = 'X' AND tag <> 'B') AND " + 
-                     "et_aut != 0 AND dtrecebimento = '" + data + "' ORDER BY dtvencimento;";
-               sql = FuncoesGlobais.Subst(sql, new String[] {jRgprp});
-
-        ResultSet hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
-        try {
-            while (hrs.next()) {
-                String tmpCampo = hrs.getString("campo");
-                String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, true);
-
-                for (int j = 0; j<rCampos.length; j++) {
-                    String tpCampo = new Pad(rCampos[j][rCampos[j].length - 1], 15).RPad();
-                    if (VariaveisGlobais.bShowCotaParcelaExtrato) {
-                        String spart1 = "", spart2 = "", scotaparc = "";
-                        try {
-                            if (!"".equals(rCampos[j][3].trim())) {
-                                spart1 = rCampos[j][3].trim().substring(0, 2);
-                                spart2 = rCampos[j][3].trim().substring(2);
-                            } else {
-                                spart1 = "00"; spart2 = "0000";
-                            }
-                            if (!"00".equals(spart1) && "0000".equals(spart2)) {
-                                spart1 = "00";
-                            } else if ("00".equals(spart1) && !"0000".equals(spart2)) {
-                                spart2 = "0000";
-                            }
-                        } catch (Exception e) {spart1 = "00"; spart2 = "0000"; }
-                        scotaparc = spart1 + spart2;
-                        tpCampo += "  " + ("0000".equals(scotaparc) || "000000".equals(scotaparc) || "".equals(scotaparc) ? "       " : scotaparc.substring(0,2) + "/" + scotaparc.substring(2));
-                    }
-                    boolean bRetc = FuncoesGlobais.IndexOf(rCampos[j], "RT") > -1;
-                    try {
-                        if ("AL".equals(rCampos[j][4])) {
-                            if (LerValor.isNumeric(rCampos[j][0])) {
-                                fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-                                if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
-
-                                int nPos = FuncoesGlobais.IndexOf(rCampos[j], "CM");
-                                if (nPos > -1) {
-                                    // "CM"
-                                    fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
-                                }
-
-                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "MU");
-                                if (nPos > -1) {
-                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
-                                        // "MU"
-                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
-                                    }
-                                }
-
-                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "JU");
-                                if (nPos > -1) {
-                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
-                                        // "JU"
-                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
-                                    }
-                                }
-
-                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
-                                if (nPos > -1) {
-                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(9),2)) > 0) {
-                                        String wAD = rCampos[j][nPos].split("@")[1];
-                                        fTotAdi += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
-                                    }
-                                }
-                                
-                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "CO");
-                                if (nPos > -1) {
-                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
-                                        // "CO"
-                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
-                                    }
-                                }
-
-                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "EP");
-                                if (nPos > -1) {
-                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
-                                        // "EP"
-                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
-                                    }
-                                }
-                            } else {
-                                if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
-                            }
-                        } else if (FuncoesGlobais.IndexOf(rCampos[j], "AD") > -1) {
-                            int nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
-                            if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].split("@")[1],2)) > 0) {
-                                String wAD = rCampos[j][nPos].split("@")[1];
-                                fTotAdi += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
-                            }                        
-                        } else if ("DC".equals(rCampos[j][4])) {
-                            fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
-                        } else if ("DF".equals(rCampos[j][4])) {
-                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
-                        } else if ("SG".equals(rCampos[j][4])) {
-                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
-                        } else {
-                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
-                        }
-                    } catch (Exception e) {}
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        DbMain.FecharTabela(hrs);
-
-        sql = FuncoesGlobais.Subst("SELECT campo FROM avisos WHERE registro = '&1.' AND rid = '0' AND (tag <> 'X' OR ISNULL(tag));", new String[] {jRgprp});
+        sql = FuncoesGlobais.Subst("SELECT campo FROM avisos WHERE registro = '&1.' AND rid = '0' AND (tag <> 'X' OR ISNULL(tag)) and RetAvDataRid2(campo) = '&2.';", new String[] {jRgprp, data});
         hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
 
         try {

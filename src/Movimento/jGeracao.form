@@ -34,17 +34,19 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="763" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jGerar" min="-2" pref="171" max="-2" attributes="1"/>
+                  <Component id="jScrollPane1" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jGerar" min="-2" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jProgress" min="-2" pref="83" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jBusca" pref="292" max="32767" attributes="0"/>
+                      <Component id="jBusca" min="-2" pref="239" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jSelectAll" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jSelectBloqGer" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -59,11 +61,12 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jGerar" pref="38" max="32767" attributes="1"/>
-                  <Component id="jProgress" pref="28" max="32767" attributes="1"/>
-                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                  <Component id="jProgress" pref="38" max="32767" attributes="1"/>
+                  <Component id="jSelectAll" alignment="1" max="32767" attributes="1"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jBusca" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jSelectAll" alignment="3" max="32767" attributes="1"/>
                       <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jSelectBloqGer" alignment="3" max="32767" attributes="1"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -75,7 +78,7 @@
     <Component class="javax.swing.JButton" name="jGerar">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Ubuntu" size="15" style="1"/>
+          <Font name="Ubuntu" size="12" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Gerar Vencimentos"/>
       </Properties>
@@ -85,7 +88,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jSelectAll">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Selecionar Todos"/>
+        <Property name="text" type="java.lang.String" value="Todos"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jSelectAllActionPerformed"/>
@@ -127,6 +130,14 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jBuscaActionPerformed"/>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jBuscaKeyReleased"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jSelectBloqGer">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Lista Bloq p.Gera&#xe7;&#xe3;o"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jSelectBloqGerActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

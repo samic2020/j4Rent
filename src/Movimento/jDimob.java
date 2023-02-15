@@ -77,6 +77,10 @@ public class jDimob extends javax.swing.JInternalFrame {
             while (rs.next()) {
                 String dcontrato = rs.getString("rgprp");
                 String dnome = rs.getString("nome");
+                int pos = dnome.indexOf(" - ");
+                if (pos > -1) {
+                    dnome = dnome.substring(0, pos);
+                }
                 Boolean dTag = false;
                 
                 Object[] dado = {dcontrato, dnome, dTag};
@@ -1241,6 +1245,14 @@ public class jDimob extends javax.swing.JInternalFrame {
                                             */
                                 }
 
+                                String nomeProp = dados_locador[1][3];                  
+                                int xpos = nomeProp.indexOf(" - ");
+                                if (xpos > -1) nomeProp = nomeProp.substring(0,xpos);
+                                
+                                String nomeLoca = dados_locatario[1][3];
+                                int lpos = nomeLoca.indexOf(" - ");
+                                if (lpos > -1) nomeLoca = nomeLoca.substring(0,lpos);
+                                
                                 file.Print(
                                 "R02" +
                                 // Dados de cabeçário
@@ -1250,11 +1262,12 @@ public class jDimob extends javax.swing.JInternalFrame {
 
                                 FuncaoX(dados_locador[0][3].replace(".", "").replace("-", "").replace("/", ""),14) +
 
-                                FuncaoX(dados_locador[1][3], 60) +
+                                        
+                                FuncaoX(nomeProp, 60) +
 
                                 FuncaoX(dados_locatario[0][3].replace(".", "").replace("-", "").replace("/", ""),14) +
 
-                                FuncaoX(dados_locatario[1][3], 60) +
+                                FuncaoX(nomeLoca, 60) +
                                 FuncaoX(dados_locatario[2][3], 6) +
                                 dtInicio +
 

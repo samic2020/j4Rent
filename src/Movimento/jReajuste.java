@@ -257,7 +257,7 @@ public class jReajuste extends javax.swing.JInternalFrame {
                 String _reaj = LerValor.floatToCurrency(valor * (1 + indice / 100),2);
                 String _cpo  = FuncoesGlobais.GravaValor(_reaj);
                 String _adito = ", dtadito = '" + dtadito + "'";
-                conn.ExecutarComando("UPDATE CARTEIRA SET CAMPO = CONCAT(MID(CAMPO,1,5),'" + _cpo + "',MID(CAMPO,16))" + (!dtadito.trim().equals("") ? _adito : "") + 
+                conn.ExecutarComando("UPDATE CARTEIRA SET CAMPO = CONCAT(MID(CAMPO,1,5),'" + _cpo + ":0112',MID(CAMPO,21))" + (!dtadito.trim().equals("") ? _adito : "") + 
                         ", DTSEGURO = '" + Dates.DateFormata("MM/yyyy", new Date()) + "' WHERE contrato = '" + contrato + "';");
                 conn.Auditor("REAJUSTE ALUGUEL","LOCATARIO: " + contrato + " VALOR: " + _reaj + " | ADITO: " + dtadito + " | SEGURO: " + Dates.DateFormata("MM/yyyy", new Date()));
             }

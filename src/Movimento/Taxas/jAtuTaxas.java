@@ -13,6 +13,7 @@ package Movimento.Taxas;
 import Funcoes.*;
 import java.awt.BorderLayout;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -307,25 +308,46 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
         if (jtxLeitor.getText().isEmpty()) return;
         
         String tmpLeitura = jtxLeitor.getText().trim();
-        String Leituratmp = "";
+        String Leituratmp = ""; String bBusca = "";
         if (tmpLeitura.length() == 44) {
             // Mesa
             Leituratmp = tmpLeitura;
+            bBusca = "";
         } else if (tmpLeitura.length() == 48) {
             // Mão
             Leituratmp = tmpLeitura.substring(0, 11) + tmpLeitura.substring(12, 23) + tmpLeitura.substring(24, 35) + tmpLeitura.substring(36, 47);
+            bBusca = "";
         } else if (tmpLeitura.length() <= 8) {
             Leituratmp = tmpLeitura;
+            bBusca = Leituratmp;
+            String[][] adados = null;
+            try {
+                adados = conn.LerCamposTabela(new String[] {"MATRICULAS"}, "imoveis", "MATRICULAS LIKE '%" + Leituratmp + "%'");
+            } catch (SQLException sqlEx) {}
+            if (adados != null) {
+                Leituratmp = adados[0][3].toString().split(":")[0];
+                tmpLeitura = Leituratmp;
+            } else {
+                JOptionPane.showConfirmDialog(this, "Matrícula inexistente ou com erro de digitação!");
+                jtxLeitor.setText("");
+                jtxLeitor.requestFocus();
+                return;
+            }                        
         }
         tmpLeitura = Leituratmp;
         //if (tmpLeitura.length() < 44 || tmpLeitura.length() > 48 || tmpLeitura.length() == 0) { return; }
         
         
         String[][] lCampos = null;
-        try {
-            lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("CODIGO = '&1.'",new String[] {jtxLeitor.getText().trim().substring(0,2)}));
-        } catch (Exception e) {}
-        
+        if (tmpLeitura.length() == 44 || tmpLeitura.length() == 48)  {
+            try {
+                lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("IDCONTA = '&1.'",new String[] {jtxLeitor.getText().trim().substring(0,3)}));
+            } catch (Exception e) {}
+        } else {
+            try {
+                lCampos = conn.LerCamposTabela(new String[] {"CODIGO", "IDCONTA", "MATRICULA", "VALOR", "VENCIMENTO", "VCTOFORMATO"}, "concessionarias", FuncoesGlobais.Subst("CODIGO = '&1.'",new String[] {Leituratmp}));
+            } catch (Exception e) {}
+        }
         if (lCampos == null) return;
         
         codigo_carteira = "";
@@ -394,7 +416,11 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
             // Verifica se espelho se encontra vencido
             Date wVecto = Dates.StringtoDate(tmpVecto, "dd-MM-yyyy");            
             if (Dates.DateDiff(Dates.DIA, new Date(), wVecto) >= 0) {
-                Lancar(tmpLeitura, lCampos);
+                if (tmpLeitura.length() == 44 || tmpLeitura.length() == 48)  {
+                    Lancar("", tmpLeitura, lCampos);
+                } else {
+                    Lancar(bBusca, jtxLeitor.getText().trim(), lCampos);
+                }
             } else {
                 jVectoLeitura.setEnabled(true);
                 jVectoLeitura.setEditable(true);
@@ -405,21 +431,32 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jtxLeitorFocusLost
 
-    private void Lancar(String tmpLeitura, String[][] lCampos) {
+    private void Lancar(String bBusca, String tmpLeitura, String[][] lCampos) {
         int tmp1, tmp2 = 0;
         tmp1 = Integer.valueOf(lCampos[2][3].substring(0,2));
         tmp2 = Integer.valueOf(lCampos[2][3].substring(2,4));
         String tmpMat = tmpLeitura.substring(2); //.substring(tmp1 - 1, tmp1 - 1 + tmp2);
-        String tmpTaxa = tmpLeitura.substring(0, 2);
+        String tmpTaxa = tmpLeitura.substring(0, 3);
+        
+        if (tmpLeitura.length() == 44 || tmpLeitura.length() == 48)  {
+            // NADA
+        } else {
+            tmpMat = tmpLeitura;
+        }
         
         // Aqui começa
-        String _Busca = lCampos[0][3].trim() + ":" + tmpMat.trim();
+        String _Busca = null;
+        //if (tmpLeitura.length() == 44 || tmpLeitura.length() == 48)  {
+            _Busca = lCampos[0][3].trim() + ":" + tmpMat.trim();
+        //} else {
+        //    _Busca = tmpLeitura;
+        //}
         String[][] _Campos = null;
         try {
             _Campos = conn.LerCamposTabela(new String[] {"rgprp","rgimv","situacao","reter"}, "imoveis", " InStr(matriculas,'" + _Busca + "')");
         } catch (Exception e) {}
         if (_Campos != null) {
-            ProcessoA(_Busca, _Campos[0][3], _Campos[1][3]);
+            ProcessoA(_Busca, _Campos[0][3], _Campos[1][3],"");
         } else {
             jAtuTaxasImvs imv = new jAtuTaxasImvs(null, true);
             imv.setTaxa(_Busca);
@@ -430,13 +467,13 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
                 _Campos = conn.LerCamposTabela(new String[] {"rgprp","rgimv","situacao","reter"}, "imoveis", " InStr(matriculas,'" + _Busca + "')");
             } catch (Exception e) {}
             if (_Campos != null) {
-                ProcessoA(_Busca, _Campos[0][3], _Campos[1][3]);
+                ProcessoA(bBusca, _Campos[0][3], _Campos[1][3], bBusca);
             }
         }
         
     }
     
-    private void ProcessoA(String _Busca, String rgprp, String rgimv) {
+    private void ProcessoA(String _Busca, String rgprp, String rgimv, String bBusca) {
         if (_Busca.isEmpty()) return;
         
         j4rent.Partida.Collections gVar = VariaveisGlobais.dCliente;
@@ -457,7 +494,10 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
                     String contrato = _Carteira[0][3];
                     String[][] _campos = FuncoesGlobais.treeArray(campo, false);
                     Boolean eAT = false;
-                    int pos = FuncoesGlobais.FindinArrays(_campos, 0, _Busca.substring(0,2));
+                    int pos = -1;
+                    
+                    pos = FuncoesGlobais.FindinArrays(_campos, 0, _Busca.substring(0,2));
+                    
                     if (pos > -1) {
                         _campos[pos][2] = FuncoesGlobais.GravaValor(LerValor.FloatToString(valor/rows));
                         if (_campos[pos][_campos[pos].length - 1].equalsIgnoreCase("AT")) {
@@ -747,7 +787,7 @@ public class jAtuTaxas extends javax.swing.JInternalFrame {
 
                 codigo_carteira = "";
                 if (lCampos.length > 0) {
-                    Lancar(tmpLeitura, lCampos);
+                    Lancar("", tmpLeitura, lCampos);
                 }
 
                 LimpaCampos();
