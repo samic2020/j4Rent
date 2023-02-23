@@ -2105,9 +2105,18 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //            fTotCred += fSaldoAnt;
 //        }
 
+        //String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
+        //             "FROM extrato WHERE rgprp = '&1.' AND (tag <> 'X' AND tag <> 'B') AND " + 
+        //             "et_aut = 0 AND dtrecebimento = '" + data + "' ORDER BY dtvencimento;";
+
+
+        if (jRgprp.equalsIgnoreCase("7400")) {
+            System.out.println("aqui");
+        }
+        
         String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
-                     "FROM extrato WHERE rgprp = '&1.' AND (tag <> 'X' AND tag <> 'B') AND " + 
-                     "et_aut = 0 AND dtrecebimento = '" + data + "' ORDER BY dtvencimento;";
+                     "FROM extrato WHERE rgprp = '&1.' AND (tag <> 'B') AND " + 
+                     "dtrecebimento = '" + data + "' ORDER BY dtvencimento;";
                sql = FuncoesGlobais.Subst(sql, new String[] {jRgprp});
 
         ResultSet hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
@@ -2288,22 +2297,26 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //            fTotCred += fSaldoAnt;
 //        }
 
+          if (jRgprp.equalsIgnoreCase("7400")) {
+              System.out.println("aqui");
+          }
+//          23-02-2023
           String sql = "SELECT RetAvValorRid2(campo) as valor FROM auxiliar WHERE conta = 'EXT' AND contrato = '&1.' AND DTRECEBIMENTO = '&2.';";
           sql = FuncoesGlobais.Subst(sql, new String[] {jRgprp, data});
           ResultSet hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
           try {
               while (hrs.next()) {
-                  fTotDeb += hrs.getDouble("valor");
+                  fTotDeb += hrs.getFloat("valor");
               }
           } catch (SQLException e) {}
           DbMain.FecharTabela(hrs);
           
-//        String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
-//                     "FROM extrato WHERE rgprp = '&1.' AND (tag = 'X' AND tag <> 'B') AND " + 
+//        sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento " + 
+//                     "FROM extrato WHERE rgprp = '&1.' AND (tag = 'X') AND " + 
 //                     "et_aut != 0 AND dtrecebimento = '" + data + "' ORDER BY dtvencimento;";
 //               sql = FuncoesGlobais.Subst(sql, new String[] {jRgprp});
 //
-//        ResultSet hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
+//        hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
 //        try {
 //            while (hrs.next()) {
 //                String tmpCampo = hrs.getString("campo");
@@ -2333,20 +2346,20 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //                    try {
 //                        if ("AL".equals(rCampos[j][4])) {
 //                            if (LerValor.isNumeric(rCampos[j][0])) {
-//                                fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-//                                if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                                fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                                if (bRetc) {fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
 //
 //                                int nPos = FuncoesGlobais.IndexOf(rCampos[j], "CM");
 //                                if (nPos > -1) {
 //                                    // "CM"
-//                                    fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
 //                                }
 //
 //                                nPos = FuncoesGlobais.IndexOf(rCampos[j], "MU");
 //                                if (nPos > -1) {
 //                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
 //                                        // "MU"
-//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                        fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
 //                                    }
 //                                }
 //
@@ -2354,7 +2367,7 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //                                if (nPos > -1) {
 //                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
 //                                        // "JU"
-//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                        fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
 //                                    }
 //                                }
 //
@@ -2370,7 +2383,7 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //                                if (nPos > -1) {
 //                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
 //                                        // "CO"
-//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                        fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
 //                                    }
 //                                }
 //
@@ -2378,11 +2391,11 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //                                if (nPos > -1) {
 //                                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
 //                                        // "EP"
-//                                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+//                                        fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
 //                                    }
 //                                }
 //                            } else {
-//                                if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                                if (bRetc) {fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
 //                            }
 //                        } else if (FuncoesGlobais.IndexOf(rCampos[j], "AD") > -1) {
 //                            int nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
@@ -2391,17 +2404,17 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //                                fTotAdi += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
 //                            }                        
 //                        } else if ("DC".equals(rCampos[j][4])) {
-//                            fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-//                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
 //                        } else if ("DF".equals(rCampos[j][4])) {
-//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                            fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
 //                        } else if ("SG".equals(rCampos[j][4])) {
-//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                            fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
 //                        } else {
-//                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
-//                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+//                            fTotDeb -= LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+//                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
 //                        }
 //                    } catch (Exception e) {}
 //                }
@@ -2411,21 +2424,21 @@ public class jRazaoAcumulado extends javax.swing.JInternalFrame {
 //        }
 //        DbMain.FecharTabela(hrs);
 
-        sql = FuncoesGlobais.Subst("SELECT campo FROM avisos WHERE registro = '&1.' AND rid = '0' AND (tag <> 'X' OR ISNULL(tag)) and RetAvDataRid2(campo) = '&2.';", new String[] {jRgprp, data});
-        hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
-
-        try {
-            while (hrs.next()) {
-                String tmpCampo = "" + hrs.getString("campo");
-                String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, false);
-                if ("CRE".equals(rCampos[0][8])) {
-                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[0][2],2));
-                } else {
-                    fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[0][2],2));
-                }
-            }
-        } catch (SQLException ex) {}
-        DbMain.FecharTabela(hrs);
+//        sql = FuncoesGlobais.Subst("SELECT campo FROM avisos WHERE registro = '&1.' AND rid = '0' AND (tag <> 'X' OR ISNULL(tag)) and RetAvDataRid2(campo) = '&2.';", new String[] {jRgprp, data});
+//        hrs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
+//
+//        try {
+//            while (hrs.next()) {
+//                String tmpCampo = "" + hrs.getString("campo");
+//                String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, false);
+//                if ("CRE".equals(rCampos[0][8])) {
+//                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[0][2],2));
+//                } else {
+//                    fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[0][2],2));
+//                }
+//            }
+//        } catch (SQLException ex) {}
+//        DbMain.FecharTabela(hrs);
 
         return fTotCred - fTotDeb - fTotAdi;
     }
