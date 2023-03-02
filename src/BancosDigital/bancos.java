@@ -38,12 +38,15 @@ public class bancos {
 
     private static String banco_nnumero;
     
+    private static String banco_client_id;
+    private static String banco_client_secret;
+    
     public bancos(String banco) {
         // Ler dados do banco banco
         String dadosBco[][] = null;
             try {
                 dadosBco = conn.LerCamposTabela(
-                        new String[] {"id","nbanco","nbancodv","agencia","agenciadv","ccorrente","operador","crtfile","keyfile","path","nnumero","carteira","beneficiario"}, 
+                        new String[] {"id","nbanco","nbancodv","agencia","agenciadv","ccorrente","operador","crtfile","keyfile","path","nnumero","carteira","beneficiario","clientid","clientsecret"}, 
                         "bancos_digital", 
                         "Trim(nbanco) = '" + banco + "'"
                         );
@@ -65,6 +68,8 @@ public class bancos {
                 setBanco_KeyFile(dadosBco[8][3].toString());
                 setBanco_CertPath(dadosBco[9][3].toString());
                 setBanco_Nnumero(dadosBco[10][3].toString());
+                setBanco_ClientId(dadosBco[13][3].toString());
+                setBanco_ClientSecret(dadosBco[14][3].toString());
             } else {
                 setBanco_id(null);
                 setBanco_NBANCO(null);
@@ -79,6 +84,8 @@ public class bancos {
                 setBanco_KeyFile(null);
                 setBanco_CertPath(null);
                 setBanco_Nnumero(null);
+                setBanco_ClientId(null);
+                setBanco_ClientSecret(null);
             }
     }
 
@@ -121,6 +128,12 @@ public class bancos {
     public  String getBanco_Nnumero() { return banco_nnumero; }
     public  void setBanco_Nnumero(String banco_nnumero) { bancos.banco_nnumero = banco_nnumero; }
 
+    public String getBanco_ClientId() { return banco_client_id; }
+    public void setBanco_ClientId(String client_id) { bancos.banco_client_id = client_id; }
+
+    public String getBanco_ClientSecret() { return banco_client_secret; }
+    public void setBanco_ClientSecret(String client_secret) { bancos.banco_client_secret = client_secret; }    
+    
     public String getBanco_logo() { return "resources/logoBancos/" + bancos.banco_NBANCO + ".jpg"; }           
     
      public static String fmtNumero(String value, int size) {

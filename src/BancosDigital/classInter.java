@@ -106,11 +106,11 @@ public class classInter {
     private String mora_taxa;
     
     private String cnpjCPFBeneficiario;
-    private String numDiasAgenda;
+    private int numDiasAgenda;
 
     public classInter() {}
     
-    public classInter(String tipopessoa, String cnpjCpf, String nome, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, String dataEmissao, String seuNumero, String dataLimite, String dataVencimento, String mensagem_linha1, String mensagem_linha2, String mensagem_linha3, String mensagem_linha4, String mensagem_linha5, String desconto1_codigoDesconto, String desconto1_taxa, String desconto1_valor, String desconto1_data, String desconto2_codigoDesconto, String desconto2_taxa, String desconto2_valor, String desconto2_data, String desconto3_codigoDesconto, String desconto3_taxa, String desconto3_valor, String desconto3_data, String valorNominal, String valorAbatimento, String multa_data, String multa_codigoMulta, String multa_valor, String multa_taxa, String mora_data, String mora_codigoMora, String mora_valor, String mora_taxa, String cnpjCPFBeneficiario, String numDiasAgenda) {
+    public classInter(String tipopessoa, String cnpjCpf, String nome, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, String dataEmissao, String seuNumero, String dataLimite, String dataVencimento, String mensagem_linha1, String mensagem_linha2, String mensagem_linha3, String mensagem_linha4, String mensagem_linha5, String desconto1_codigoDesconto, String desconto1_taxa, String desconto1_valor, String desconto1_data, String desconto2_codigoDesconto, String desconto2_taxa, String desconto2_valor, String desconto2_data, String desconto3_codigoDesconto, String desconto3_taxa, String desconto3_valor, String desconto3_data, String valorNominal, String valorAbatimento, String multa_data, String multa_codigoMulta, String multa_valor, String multa_taxa, String mora_data, String mora_codigoMora, String mora_valor, String mora_taxa, String cnpjCPFBeneficiario, int numDiasAgenda) {
         this.tipopessoa = tipopessoa;
         this.cnpjCpf = cnpjCpf;
         this.nome = nome;
@@ -496,12 +496,12 @@ public class classInter {
         this.cnpjCPFBeneficiario = fmtNumero(tVar, tSize);
     }
 
-    public String getNumDiasAgenda() {
+    public int getNumDiasAgenda() {
         return numDiasAgenda;
     }
 
-    public void setNumDiasAgenda(String numDiasAgenda) {
-        this.numDiasAgenda = fmtCaracteres(numDiasAgenda, "SESSENTA".length());
+    public void setNumDiasAgenda(int numDiasAgenda) {
+        this.numDiasAgenda = numDiasAgenda; //fmtCaracteres(numDiasAgenda, "SESSENTA".length());
     }
         
     public String getJSONBoleto() {
@@ -509,7 +509,7 @@ public class classInter {
             .append("{")
             .append("\"pagador\":{")
             .append("\"tipoPessoa\":\"" + getTipopessoa() + "\",")
-            .append("\"cnpjCpf\":\"" + getCnpjCpf() + "\",")
+            .append("\"cpfCnpj\":\"" + getCnpjCpf() + "\",")
             .append("\"nome\":\"" + getNome() + "\",")
             .append("\"endereco\":\"" + getEndereco() + "\",")
             .append("\"numero\":\"" + getNumero() + "\",")

@@ -611,4 +611,20 @@ public class Calculos {
         }
         return fComissao;
     }    
+    
+    public float[] percComissao2(String rgprp, String rgimv) throws SQLException {
+        String[][] regFields;
+        
+        fComissao = Float.valueOf(LerValor.FormatNumber(conn.LerParametros("comissao"), 3).replace(",", "."));
+        
+        if (conn.LerCamposTabela(new String[] {"RGIMV"}, "MULTA", "RGIMV = '" + rgimv + "'") != null) {
+            regFields = conn.LerCamposTabela(new String[] {"comissao", "comisvr"}, "MULTA", "RGIMV = '" + rgimv + "'");
+                fComissao = Float.valueOf(LerValor.FormatNumber(regFields[0][3], 3).replace(",", "."));
+        } else {
+            if (conn.LerCamposTabela(new String[] {"RGPRP"}, "MULTA", "RGPRP = '" + rgprp + "' AND IsNull(RGIMV)") != null) {
+                regFields = conn.LerCamposTabela(new String[] {"comissao", "comisvr"}, "MULTA", "RGPRP = '" + rgprp + "' AND IsNull(RGIMV)");
+            }
+        }
+        return new float[]{fComissao};
+    }    
 }

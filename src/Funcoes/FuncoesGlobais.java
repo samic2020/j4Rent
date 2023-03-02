@@ -295,7 +295,7 @@ public class FuncoesGlobais {
         }
         return sRet.substring(0, sRet.length() - delimiter.length());
     }
-
+    
     public static String GravaValor(String valor) {
         String tmpValor = valor.replace(".", "");
         tmpValor = tmpValor.replace(" ", "");
