@@ -1,15 +1,20 @@
 package Movimento;
 
+import Funcoes.Autenticacao;
 import Funcoes.Dates;
 import Funcoes.Db;
+import Funcoes.DbMain;
 import Funcoes.FuncoesGlobais;
 import Funcoes.LerValor;
 import Funcoes.Pad;
 import Funcoes.StringManager;
+import Funcoes.StringUtils;
 import Funcoes.VariaveisGlobais;
+import Funcoes.WordWrap;
 import Funcoes.gmail.GmailAPI;
 import static Funcoes.gmail.GmailOperations.createEmailWithAttachment;
 import static Funcoes.gmail.GmailOperations.createMessageWithEmail;
+import Funcoes.jDirectory;
 import Funcoes.jPDF;
 import Funcoes.jTableControl;
 import Funcoes.tempFile;
@@ -30,21 +35,31 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.lowagie.text.Element;
+import extrato.Extrato;
 import j4rent.Partida.Collections;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
@@ -57,6 +72,14 @@ import javax.swing.RowFilter;
 import javax.swing.UIDefaults;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.swing.JRViewer;
 
 public class jViewerDoc extends javax.swing.JInternalFrame {
     private JEditorPane _htmlPane = new JEditorPane();
@@ -477,12 +500,13 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
         String docName = "";
         if (tipo.getSelectedIndex() == 0) {
             // Recibos
-            docName = ImprimeReciboPDF(modelRow, true);
+            docName = ImprimeReciboPDF(selRow, true);
         } else if (tipo.getSelectedIndex() == 1) {
             // Boletas
-            docName = ImprimeReciboPDF(modelRow, false);
+            docName = ImprimeReciboPDF(selRow, false);
         } else if (tipo.getSelectedIndex() == 2) {
             // Extratos
+            docName = ImprimeExtratoPDF(selRow);
         } else if (tipo.getSelectedIndex() == 3) {
             // Avisos
         }
@@ -1071,12 +1095,6 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
             for (int i=1;i<=cxDados.size();i++) {
                 Map<String, Object> cxa = (Map<String, Object>)cxDados.get(i);
                 String bLinha = cxa.get("chrel").toString();
-//                if (!"".equals(Valores[i][1].trim())) {
-//                    bLinha = "BCO:" + new Pad(Valores[i][1],3).RPad() + " AG:" + new Pad(Valores[i][2],4).RPad() + " CH:" + new Pad(Valores[i][3],8).RPad() + " DT: " + new Pad(Valores[i][0],10).CPad() + " VR:" + new Pad(Valores[i][4],10).LPad();
-//                } else {
-//                    bLinha = (Valores[i][5].trim().toUpperCase().equalsIgnoreCase("CT") ? "BC" : Valores[i][5].trim().toUpperCase()) +  ":" + new Pad(Valores[i][4],10).LPad();
-//                }
-
                 p = pdf.print(bLinha, pdf.HELVETICA, 6, pdf.NORMAL, pdf.RIGHT, pdf.BLACK);
                 pdf.doc_add(p);
             }
@@ -1167,5 +1185,466 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
             aCampos[1]
         };
     }
-    
+
+    private String ImprimeExtratoPDF(int selRow) {
+        String rgprp = tFiles.getValueAt(selRow, 0).toString();
+        int nAut = Integer.parseInt(tFiles.getValueAt(selRow, 4).toString());
+
+        String selectCaixa = "SELECT cb.CX_DATA, cb.CX_HORA, cb.CX_LOGADO, " +
+        "cb.CX_CONTRATO, cb.CX_RGPRP, cb.CX_RGIMV, cb.CX_OPER, cb.CX_VRDN, " +
+        "cb.CX_VRCH, cb.CX_CHREL, cb.CX_TIPOPG, cb.CX_DOC, cb.CX_NDOCS " + 
+        "FROM caixabck cb WHERE cb.CX_DOC = 'ET' AND cb.CX_AUT = :aut " + 
+        "UNION SELECT cx.CX_DATA, cx.CX_HORA, cx.CX_LOGADO, cx.CX_CONTRATO, " +
+        "cx.CX_RGPRP, cx.CX_RGIMV, cx.CX_OPER, cx.CX_VRDN, cx.CX_VRCH, " +
+        "cx.CX_CHREL, cx.CX_TIPOPG, cx.CX_DOC, cx.CX_NDOCS " + 
+        "FROM caixa cx WHERE cx.CX_DOC = 'ET' AND cx.CX_AUT = :reg ;";
+        ResultSet rs = db.OpenTable(selectCaixa, new Object[][] {
+            {"int", "aut", nAut}, 
+            {"int", "reg", nAut}
+        });
+        
+        int pos = 1; BigDecimal _total = new BigDecimal("0");
+        Map<Integer, Object> cxDados = new HashMap<Integer, Object>();
+        try {
+            while (rs.next()) {
+                Date CX_DATA = null; try { CX_DATA = rs.getDate("CX_DATA"); } catch (SQLException e) {}
+                String CX_HORA = null; try { CX_HORA = rs.getString("CX_HORA"); } catch (SQLException e) {}
+                String CX_LOGADO = null; try { CX_LOGADO = rs.getString("CX_LOGADO"); } catch (SQLException e) {}
+                String CX_CONTRATO = null; try { CX_CONTRATO = rs.getString("CX_CONTRATO"); } catch (SQLException e) {}
+                String CX_RGPRP = null; try { CX_RGPRP = rs.getString("CX_RGPRP"); } catch (SQLException e) {}
+                String CX_RGIMV = null; try { CX_RGIMV = rs.getString("CX_RGIMV"); } catch (SQLException e) {}
+                String CX_OPER = null; try { CX_OPER = rs.getString("CX_OPER"); } catch (SQLException e) {}
+                BigDecimal CX_VRDN = null; try { CX_VRDN = rs.getBigDecimal("CX_VRDN"); } catch (SQLException e) {}
+                BigDecimal CX_VRCH = null; try { CX_VRCH = rs.getBigDecimal("CX_VRCH"); } catch (SQLException e) {}
+                String CX_CHREL = null; try { CX_CHREL = rs.getString("CX_CHREL"); } catch (SQLException e) {}
+                String CX_TIPOPG = null; try { CX_TIPOPG = rs.getString("CX_TIPOPG"); } catch (SQLException e) {}
+                String CX_DOC = null; try { CX_DOC = rs.getString("CX_DOC"); } catch (SQLException e) {}
+                int CX_NDOCS = -1; try { CX_NDOCS = rs.getInt("CX_NDOCS"); } catch (SQLException e) {}
+                
+                Map<String, Object> caixa = new HashMap<String, Object>();
+                caixa.put("data", CX_DATA);
+                caixa.put("hora", CX_HORA);
+                caixa.put("logado", CX_LOGADO);
+                caixa.put("contrato", CX_CONTRATO);
+                caixa.put("rgprp", CX_RGPRP);
+                caixa.put("rgimv", CX_RGIMV);
+                caixa.put("oper", CX_OPER);
+                caixa.put("vrdn", CX_VRDN);
+                caixa.put("vrch", CX_VRCH);
+                caixa.put("chrel", CX_CHREL);
+                caixa.put("tipopg", CX_TIPOPG);
+                caixa.put("doc", CX_DOC);
+                caixa.put("ndocs", CX_NDOCS);
+                
+                cxDados.put(pos++, caixa);
+                _total = _total.add(CX_VRDN).add(CX_VRCH);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        if (cxDados.size() == 0) {
+            JOptionPane.showMessageDialog(this, "Este extrato não existe dento do caixa para ser re-impresso!");
+            return null;
+        }
+        Map<String, Object> caixa = ((Map<String, Object>)cxDados.get(1));
+        String ValorExtrato = LerValor.floatToCurrency(_total.floatValue(),2);
+        String jVrExtrato = ValorExtrato;
+                
+        String _data = caixa.get("data").toString().substring(0,10);
+        String _hora = caixa.get("hora").toString();        
+        Date dataExtrato = Dates.StringtoDate(_data + " " + _hora, "yyyy-MM-dd HH:mm:ss");
+        
+        Collections gVar = VariaveisGlobais.dCliente;
+        List<Extrato> lista = new ArrayList<Extrato>();
+        String[][] sCampos = {};
+        float tpagar = LerValor.StringToFloat(jVrExtrato);
+        Object dados_prop[][] = null;
+                
+        String nomeProp = "";
+        float fTotCred = 0; float fTotDeb = 0; float fSaldoAnt = 0;                
+        try {
+            dados_prop = db.ReadFieldsTable(new String[] {"banco", "agencia", "conta", "favorecido","cpfcnpj","saldoant","nome"}, "proprietarios", "rgprp = '" + rgprp + "'");
+            nomeProp = dados_prop[6][3].toString();
+        } catch (SQLException ex) {
+            Logger.getLogger(jExtrato.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Pega saldo anterior no extrato
+        Object[][] aExtrato = null;
+        try {
+            aExtrato = db.ReadFieldsTable(new String[] {"pr_sdant"}, "extrato", "rgprp = :rgprp AND et_aut = :aut AND rgimv = '' AND contrato = ''", new Object[][] {
+                {"string", "rgprp", rgprp},
+                {"int", "aut", nAut}
+            });
+            if (aExtrato != null) {
+                String sdant = aExtrato[0][3].toString();
+                fSaldoAnt = Float.valueOf(sdant.trim());
+            } else {
+                String sdant = "0.0";
+                fSaldoAnt = Float.valueOf(sdant.trim());
+            }
+        } catch (SQLException ex) {}
+        
+        if (fSaldoAnt > 0) {
+            fTotCred += fSaldoAnt;
+            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Saldo Anterior","0;;black",LerValor.floatToCurrency(fSaldoAnt, 2) + " ",""});
+            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"","0;;black","",""});
+        }
+
+        String bloqAD = "";
+        if (VariaveisGlobais.bloqAdianta) bloqAD = " AND InStr(campo, '@') = 0 ";
+        String sql = "SELECT contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento, rc_aut FROM extrato WHERE et_aut = :aut ORDER BY " + (VariaveisGlobais.ExtOrdAut ? "rc_aut;" : "rgimv, dtrecebimento;");
+
+        ResultSet hrs = db.OpenTable(sql, new Object[][] {{"int", "aut", nAut}});
+        try {
+            while (hrs.next()) {
+                String tmpCampo = hrs.getString("campo");
+                String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, true);
+
+                for (int j = 0; j<rCampos.length; j++) {
+                    //String tpCampo = new Pad(rCampos[j][rCampos[j].length - 1], 25).RPad();
+                    String tpCampo = rCampos[j][rCampos[j].length - 1];
+                    if (VariaveisGlobais.bShowCotaParcelaExtrato) {
+                        String spart1 = "", spart2 = "", scotaparc = "";
+                        if (!"".equals(rCampos[j][3].trim())) {
+                            spart1 = rCampos[j][3].trim().substring(0, 2);
+                            spart2 = rCampos[j][3].trim().substring(2);
+                        } else {
+                            spart1 = "00"; spart2 = "0000";
+                        }
+                        if (!"00".equals(spart1) && "0000".equals(spart2)) {
+                            spart1 = "00";
+                        } else if ("00".equals(spart1) && !"0000".equals(spart2)) {
+                            spart2 = "0000";
+                        }
+                        scotaparc = spart1 + spart2;
+                        tpCampo += "  " + ("0000".equals(scotaparc) || "000000".equals(scotaparc) || "".equals(scotaparc) ? "       " : scotaparc.substring(0,2) + "/" + scotaparc.substring(2));
+                    }
+                    boolean bRetc = (FuncoesGlobais.IndexOf(rCampos[j], "RT") > -1) || (FuncoesGlobais.IndexOf(rCampos[j], "AT") > -1);
+                    if ("AL".equals(rCampos[j][4]) && LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2)) != 0) {
+                        if (LerValor.isNumeric(rCampos[j][0])) {
+                            Object[][] hBusca = db.ReadFieldsTable(new String[] {"end", "num", "compl"}, "imoveis", "rgimv = '" + hrs.getString("rgimv") + "'");
+
+                            java.awt.Font ft = new java.awt.Font("Arial",com.lowagie.text.Font.NORMAL,8);
+                            String imv = hrs.getString("rgimv").trim() + " - " + hBusca[0][3].toString().trim() + ", " + hBusca[1][3].toString().trim() + " " + hBusca[2][3].toString().trim();
+                            List aLinhas = StringUtils.wrap(imv, getFontMetrics(ft), 257);
+                            for (Iterator linha = aLinhas.iterator(); linha.hasNext();) { sCampos = FuncoesGlobais.ArraysAdd(sCampos,new String[] {StringManager.ConvStr((String) linha.next()).replace("ò", " "),"0;b;black","",""}); }
+
+                            String loc = db.ReadFieldsTable(new String[] {"nomerazao"}, "locatarios", "contrato = '" + hrs.getString("contrato") + "'")[0][3].toString();
+                            aLinhas = null;
+                            aLinhas = StringUtils.wrap(loc, getFontMetrics(ft), 257);
+                            for (Iterator linha = aLinhas.iterator(); linha.hasNext();) { sCampos = FuncoesGlobais.ArraysAdd(sCampos,new String[] {StringManager.ConvStr((String) linha.next()).replace("ò", " "),"0;;black","",""}); }
+                            
+                            //String inq = "[" + Dates.DateFormata("dd/MM/yyyy", hrs.getDate("dtvencimento")) + (VariaveisGlobais.ShowRecebimentoExtrato ? " - " + Dates.DateFormata("dd/MM/yyyy", hrs.getDate("dtrecebimento")) : "          ") + "] - " + hrs.getString("rc_aut");
+                            String inq = (VariaveisGlobais.ShowDatasExtrato ? "[" + Dates.DateFormata("dd/MM/yyyy", hrs.getDate("dtvencimento")) + (VariaveisGlobais.ShowRecebimentoExtrato ? " - " + 
+                                          Dates.DateFormata(VariaveisGlobais.marca.trim().equalsIgnoreCase("artvida") ? "MM/yyyy" : "dd/MM/yyyy", hrs.getDate("dtrecebimento")) : "          ") + "] - " + 
+                                          hrs.getString("rc_aut") : "[" + Dates.DateFormata("MM/yyyy", hrs.getDate("dtvencimento")) + "] - " + hrs.getString("rc_aut"));
+                            aLinhas = null;
+                            aLinhas = StringUtils.wrap(inq, getFontMetrics(ft), 257);
+                            for (Iterator linha = aLinhas.iterator(); linha.hasNext();) { sCampos = FuncoesGlobais.ArraysAdd(sCampos,new String[] {StringManager.ConvStr((String) linha.next()).replace("ò", " "),"0;;black","",""}); }
+
+                            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {tpCampo,"0;;black",LerValor.FormatNumber(rCampos[j][2],2) + " ",(bRetc ? LerValor.FormatNumber(rCampos[j][2],2) + " " : "")});
+
+                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+
+                            int nPos = FuncoesGlobais.IndexOf(rCampos[j], "CM");
+                            if (nPos > -1) {
+                                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {gVar.get("CM"),"0;;black","",LerValor.FormatNumber(rCampos[j][nPos].substring(2),2) + " "});
+                                fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+                            }
+
+                            nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
+                            if (nPos > -1) {
+                                if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(9),2)) > 0) {
+                                    String wAD = rCampos[j][nPos].split("@")[1];
+                                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Adiantamento","0;;black","", LerValor.FormatNumber(wAD,2) + " "});
+                                    fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
+                                }
+                            }
+                            
+                            nPos = FuncoesGlobais.IndexOf(rCampos[j], "MU");
+                            if (nPos > -1) {
+                                if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+                                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {gVar.get("MU"),"0;;black",LerValor.FormatNumber(rCampos[j][nPos].substring(2),2) + " ",""});
+                                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+                                }
+                            }
+
+                            nPos = FuncoesGlobais.IndexOf(rCampos[j], "JU");
+                            if (nPos > -1) {
+                                if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+                                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {gVar.get("JU"),"0;;black",LerValor.FormatNumber(rCampos[j][nPos].substring(2),2) + " ",""});
+                                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+                                }
+                            }
+
+                            nPos = FuncoesGlobais.IndexOf(rCampos[j], "CO");
+                            if (nPos > -1) {
+                                if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+                                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {gVar.get("CO"),"0;;black",LerValor.FormatNumber(rCampos[j][nPos].substring(2),2) + " ",""});
+                                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+                                }
+                            }
+
+                            nPos = FuncoesGlobais.IndexOf(rCampos[j], "EP");
+                            if (nPos > -1) {
+                                if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2)) > 0) {
+                                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {gVar.get("EP"),"0;;black",LerValor.FormatNumber(rCampos[j][nPos].substring(2),2) + " ",""});
+                                    fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].substring(2),2));
+                                }
+                            }
+                        } else {
+                            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {tpCampo,"0;;black",LerValor.FormatNumber(rCampos[j][2],2) + " ",(bRetc ? LerValor.FormatNumber(rCampos[j][2],2) + " " : "")});
+                            if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+                        }
+                    } else if (FuncoesGlobais.IndexOf(rCampos[j], "AD") > -1) {
+                        int nPos = FuncoesGlobais.IndexOf(rCampos[j], "AD");
+                        if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][nPos].split("@")[1],2)) > 0) {
+                            String wAD = rCampos[j][nPos].split("@")[1];
+                            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Adiantamento - " + rCampos[j][nPos].split("@")[0].substring(2),"0;;black","", LerValor.FormatNumber(wAD,2) + " "});
+                            fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(wAD,2));
+                        }                        
+                    } else if ("DC".equals(rCampos[j][4])) {
+                        sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {tpCampo,"0;;black",(bRetc ? LerValor.FormatNumber(rCampos[j][2],2) + " " : ""),LerValor.FormatNumber(rCampos[j][2],2) + " "});
+                        fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+                        if (bRetc) {fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+                    } else if ("DF".equals(rCampos[j][4])) {
+                        sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {tpCampo,"0;;black",LerValor.FormatNumber(rCampos[j][2],2) + " ",(bRetc ? LerValor.FormatNumber(rCampos[j][2],2) + " " : "")});
+                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+                        if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+                    } else if ("SG".equals(rCampos[j][4])) {
+                        sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {tpCampo,"0;;black",LerValor.FormatNumber(rCampos[j][2],2) + " ",(bRetc ? LerValor.FormatNumber(rCampos[j][2],2) + " " : "")});
+                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+                        if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}
+                    } else {
+                        if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2)) != 0) {
+                            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {tpCampo,"0;;black",LerValor.FormatNumber(rCampos[j][2],2) + " ",(bRetc ? LerValor.FormatNumber(rCampos[j][2],2) + " " : "")});
+                            fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));
+                            if (bRetc) {fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2));}                        
+                        }
+                    }
+                }
+                if (!tmpCampo.equalsIgnoreCase("01:1:0000000000:0000:AL")) sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"","0;;black","",""});
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        DbMain.FecharTabela(hrs);
+
+        sql = "SELECT campo, autenticacao FROM avisos WHERE et_aut = :aut ORDER BY autenticacao;";
+        hrs = db.OpenTable(sql, new Object[][] {{"int", "aut", nAut}});
+
+        try {
+            while (hrs.next()) {
+                String tmpCampo = "" + hrs.getString("campo");
+                String tmpAuten = "" + hrs.getString("autenticacao");
+                String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, false);
+                String sinq = FuncoesGlobais.DecriptaNome(rCampos[0][10]) + " - " + rCampos[0][7].substring(0, 2) + "/" + rCampos[0][7].substring(2,4) + "/" + rCampos[0][7].substring(4) + " - " + tmpAuten;
+                if (!"".equals(sinq.trim())) {
+                    java.awt.Font ft = new java.awt.Font("Arial",com.lowagie.text.Font.NORMAL,9);
+                    List aLinhas = StringUtils.wrap(sinq, getFontMetrics(ft), 220); // 257);
+                    for (Iterator linha = aLinhas.iterator(); linha.hasNext();) { sCampos = FuncoesGlobais.ArraysAdd(sCampos,new String[] {((String) linha.next()).replace("ò", " "),"0;;black","",""}); }
+                    //String aLinhas[] = WordWrap.wrap(sinq, 237, getFontMetrics(new java.awt.Font("SansSerif",Font.NORMAL,8))).split("\n");
+                    //for (int k=0;k<aLinhas.length;k++) { sCampos = FuncoesGlobais.ArraysAdd(sCampos,new String[] {StringManager.ConvStr(aLinhas[k]).replace("ò", " "),"0;;black","",""}); }
+                    if ("CRE".equals(rCampos[0][8])) {
+                        sCampos[sCampos.length - 1][2] = LerValor.FormatNumber(rCampos[0][2],2) + " ";
+                        sCampos[sCampos.length - 1][3] = "";
+
+                        fTotCred += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[0][2],2));
+                    } else {
+                        sCampos[sCampos.length - 1][2] = "";
+                        sCampos[sCampos.length - 1][3] = LerValor.FormatNumber(rCampos[0][2],2) + " ";
+                        fTotDeb += LerValor.StringToFloat(LerValor.FormatNumber(rCampos[0][2],2));
+                    }
+                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"","0;;black","",""});
+                }
+            }
+        } catch (SQLException ex) {}
+        DbMain.FecharTabela(hrs);
+
+        if (VariaveisGlobais.marca.trim().equalsIgnoreCase("artvida")) {
+            // Colocado aqui para satisfazer o cliente em 04-08-2014
+            // Creditos
+            if (fTotCred >= 0) {
+                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Total de Creditos","0;b;black",LerValor.floatToCurrency(fTotCred, 2),""});
+            } else {
+                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Total de Creditos","0;b;black","",LerValor.floatToCurrency(fTotCred, 2)});
+            }
+            
+            // Debitos
+            if (fTotDeb >= 0) {
+                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Total de Débitos","0;b;black","",LerValor.floatToCurrency(fTotDeb, 2)});
+            } else {
+                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Total de Débitos","0;b;black",LerValor.floatToCurrency(fTotDeb, 2),""});
+            }
+            
+            // Total
+            String saldoext = LerValor.floatToCurrency(fTotCred - fTotDeb, 2);
+            if (saldoext.trim().equalsIgnoreCase("-0,00")) saldoext = "0,00";
+            if (fTotCred - fTotDeb >= 0) {
+                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Liquido a Receber","0;b;black",saldoext,""});
+            } else {
+                sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Liquido a Receber","0;b;black","",saldoext});
+            }
+        } else {       
+            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {new Pad("Total de Créditos .... " + LerValor.floatToCurrency(fTotCred, 2),45).RPad() ,"0;b;black","",""});
+            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {new Pad("Total de Débitos........" + LerValor.floatToCurrency(fTotDeb, 2),45).RPad(),"0;b;black","",""});
+            String saldoext = LerValor.floatToCurrency(fTotCred - fTotDeb, 2);
+            if (saldoext.trim().equalsIgnoreCase("-0,00")) saldoext = "0,00";
+            sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {new Pad("Liquido a Receber..........." + saldoext,45).RPad(),(fTotCred - fTotDeb < 0 ? "0;b;red" : "0;b;black"),"",""});
+        }
+        
+        // 09/05/2012 Implementação dos dados do depósito
+        if (dados_prop != null) {
+            try {
+                if (!dados_prop[0][3].toString().trim().equals("")) {
+                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"","0;;black","",""});
+                    if (dados_prop[3][3].toString().trim().equals("")) sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Cpf/Cnpj: " + dados_prop[4][3],"0;b;red","",""});
+                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Banco: " + dados_prop[0][3],"0;b;red","",""});
+                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Agencia: " + dados_prop[1][3],"0;b;red","",""});
+                    sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Conta: " + dados_prop[2][3],"0;b;red","",""});
+                    if (!dados_prop[3][3].toString().trim().equals("")) {
+                        String aLinhas[] = WordWrap.wrap("Favorecido: " + dados_prop[3][3], 210, getFontMetrics(new java.awt.Font("SansSerif",com.lowagie.text.Font.NORMAL,8))).split("\n");
+                        for (int k=0;k<aLinhas.length;k++) { sCampos = FuncoesGlobais.ArraysAdd(sCampos,new String[] {aLinhas[k],"0;b;red","",""}); }                        
+                        //sCampos = FuncoesGlobais.ArraysAdd(sCampos, new String[] {"Favorecido: " + dados_prop[3][3],"0;b;red","",""});
+                    }
+                }
+            } catch (Exception e) {}
+        }
+        
+        // 02-03-2023 - Aqui
+        String sAut = FuncoesGlobais.StrZero(String.valueOf(nAut).replace(".0", ""),6);
+
+        Extrato bean1 = new Extrato();
+        int n = 0;
+        // Impressao do header
+        // Logo da Imobiliaria
+        bean1 = HeaderExtrato(bean1, sAut, rgprp, nomeProp, dataExtrato);
+
+        // limpa linhas
+        for (int i=1;i<=40;i++) {bean1.sethist_linhan(i, ""); bean1.sethist_linhan_cor(i,"0;;black");}
+
+        for (int i=0;i<sCampos.length;i++) {
+            if (n == 39) {
+                lista.add(bean1);
+                bean1 = new Extrato();
+                bean1 = HeaderExtrato(bean1, sAut, rgprp, nomeProp, dataExtrato);
+                n = 0;
+            }
+            bean1.sethist_linhan(n + 1, sCampos[i][0]);
+            bean1.sethist_linhan_cor(n + 1, sCampos[i][1]);
+            bean1.sethist_credn(n + 1, sCampos[i][2]);
+            bean1.sethist_debn(n + 1, sCampos[i][3]);
+            n++;
+        }
+
+        if (n == 39) {
+            lista.add(bean1);
+            bean1 = new Extrato();
+            bean1 = HeaderExtrato(bean1, sAut, rgprp, nomeProp, dataExtrato);
+            n = 0;
+        }
+        bean1.sethist_linhan(n + 1,"");
+        bean1.sethist_linhan_cor(n + 1, "0;;black");
+        n++;
+
+        if (n == 39) {
+            lista.add(bean1);
+            bean1 = new Extrato();
+            bean1 = HeaderExtrato(bean1, sAut, rgprp, nomeProp, dataExtrato);
+            n = 0;
+        }
+        bean1.sethist_linhan(n + 1,"VALOR(ES) LANCADOS");
+        bean1.sethist_linhan_cor(n + 1, "0;;blue");
+        n++;
+
+        if (n == 39) {
+            lista.add(bean1);
+            bean1 = new Extrato();
+            bean1 = HeaderExtrato(bean1, sAut, rgprp, nomeProp, dataExtrato);
+            n = 0;
+        }
+        bean1.sethist_linhan(n + 1,"--------------------------------------------------------");
+        bean1.sethist_linhan_cor(n + 1, "0;;blue");
+        n++;
+
+        for (int i=1;i<=cxDados.size();i++) {
+            Map<String, Object> cxa = (Map<String, Object>)cxDados.get(i);
+            String bLinha = cxa.get("chrel").toString();
+        
+           if (n == 39) {
+               lista.add(bean1);
+               bean1 = new Extrato();
+               bean1 = HeaderExtrato(bean1, sAut, rgprp, nomeProp, dataExtrato);
+               n = 0;
+           }
+
+            bean1.sethist_linhan(n + 1,bLinha);
+            bean1.sethist_linhan_cor(n + 1, "0;;red");
+            n++;
+        }
+
+        bean1.setautentica( VariaveisGlobais.dCliente.get("marca").trim() + "ET" + FuncoesGlobais.StrZero(String.valueOf((int)nAut), 7) + "-1" + Dates.DateFormata("ddMMyyyyHHmmss", dataExtrato) + FuncoesGlobais.GravaValores(LerValor.FloatToString(tpagar), 2) + caixa.get("logado").toString().toLowerCase().trim());
+
+        lista.add(bean1);
+
+        // 25-06-2013 - By wellspinto@gmail.com
+        JRBeanCollectionDataSource jrds = new JRBeanCollectionDataSource(lista);
+
+        String sFileName = new tempFile("pdf").getsPathNameExt();
+        String docName = new tempFile().getTempFileName(sFileName);
+        String pathName = new tempFile().getTempPath();
+        String FileNamePdf = pathName + docName;
+
+        try {
+            Map parametros = new HashMap();
+            parametros.put("parameter1", VariaveisGlobais.ExtratoTotal);
+
+            String fileName = "reports/" + VariaveisGlobais.extPrint;
+            JasperPrint print = JasperFillManager.fillReport(fileName, parametros, jrds);
+
+            // Create a PDF exporter
+            JRExporter exporter = new JRPdfExporter();
+
+            // Configure the exporter (set output file name and print object)
+            String outFileName = FileNamePdf;
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+
+            // Export the PDF file
+            exporter.exportReport();
+        } catch (JRException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return FileNamePdf;
+    }
+
+    private Extrato HeaderExtrato(Extrato bean1, String barras, String rgprp, String nomeProp, Date dataExtrao) {
+        Collections gVar = VariaveisGlobais.dCliente;
+
+        // Impressao do header
+        // Logo da Imobiliaria
+        bean1.setlogoLocation("resources/logos/extrato/" + VariaveisGlobais.icoExtrato);
+        bean1.setnomeProp(rgprp.trim() + " - " + nomeProp.trim());
+        bean1.setbarras(barras);
+
+        try {
+            if ("TRUE".equals(db.ReadParameters("ANIVERSARIO").toUpperCase())) {
+                String msgNiver = db.ReadParameters("MSGANIVERSARIO");
+                String DtNascProp = db.ReadFieldsTable(new String[] {"dtnasc"}, "proprietarios", "rgprp = '" + rgprp + "'")[0][3].toString();
+                if (DtNascProp != null) {
+                    DtNascProp = DtNascProp.substring(0, 10);
+                    if (Dates.iMonth(dataExtrao) == Dates.iMonth(Dates.StringtoDate(DtNascProp, "yyyy-MM-dd"))) bean1.setmensagem(msgNiver);
+                }
+            }
+        } catch (SQLException ex) {}
+
+        return bean1;
+    }
+        
 }

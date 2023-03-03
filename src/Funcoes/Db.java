@@ -235,6 +235,10 @@ public class Db {
                             break;
                         case "time":
                             vRetorno[i][3] = tmpResult.getTime(variavel);
+                            break;
+                        case "float":
+                            vRetorno[i][3] = tmpResult.getFloat(variavel);
+                            break;
                         default:
                             throw new AssertionError();
                     }                    

@@ -242,7 +242,11 @@ public class jExtorno extends javax.swing.JInternalFrame {
                 sql = FuncoesGlobais.Subst("UPDATE proprietarios SET saldoant = '&1.' WHERE rgprp = '&2.';", new String[] {sdant, mRGPRP});
                 conn.ExecutarComando(sql);
             }
-            sql = FuncoesGlobais.Subst("UPDATE extrato SET pr_sdant = '0', et_aut = '0', tag = ' ' WHERE et_aut = '&1.';", new String[] {nrAut});
+            
+            sql = FuncoesGlobais.Subst("DELETE FROM extrato WHERE et_aut = '&1.' AND rgimv = '' AND contrato = '';", new String[] {nrAut});
+            conn.ExecutarComando(sql);
+            
+            sql = FuncoesGlobais.Subst("UPDATE extrato SET pr_sdant = '0', et_aut = '0', tag = ' ' WHERE et_aut = '&1.' AND rgimv != '' AND contrato != '';", new String[] {nrAut});
             conn.ExecutarComando(sql);
 
             sql = FuncoesGlobais.Subst("UPDATE avisos SET tag = ' ', et_aut = '0' WHERE et_aut = '&1.';", new String[] {nrAut});

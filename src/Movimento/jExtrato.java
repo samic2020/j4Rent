@@ -745,6 +745,18 @@ public class jExtrato extends javax.swing.JInternalFrame {
                 String.valueOf(fSaldoAnt), 
                 rgprp});
             conn.ExecutarComando(extVar);
+
+            if (fSaldoAnt != 0) {
+                String extSaldo = "INSERT INTO extrato (RGPRP,RGIMV,CONTRATO,CAMPO,DTVENCIMENTO,DTRECEBIMENTO," +
+                        "TAG,RC_AUT,ET_AUT,PR_SDANT) VALUES ('" + rgprp + "','" + rgimv + "','" + contrato + "'," +
+                        "'01:1:0000000000:0000:AL','" + Dates.DateFormata("yyyy-MM-dd", new Date()) + 
+                        "','" + Dates.DateFormata("yyyy-MM-dd", new Date()) + "','X','0','" +
+                        FuncoesGlobais.StrZero(String.valueOf(nAut).replace(".0", ""), 6) + "','" +
+                        String.valueOf(fSaldoAnt) + "');";
+                // String.valueOf(LerValor.StringToFloat(LerValor.floatToCurrency(tPag.vrAREC - tpagar, 2)))
+                conn.ExecutarComando(extSaldo);
+            }
+            
             // reforço de gravação
             String tmpVar = "UPDATE extrato SET TAG = 'X' WHERE ET_AUT = '" + FuncoesGlobais.StrZero(LerValor.FloatToString((int)nAut).replace(",0", ""), 6) + "';";
             try {
