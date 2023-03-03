@@ -509,6 +509,7 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
             docName = ImprimeExtratoPDF(selRow);
         } else if (tipo.getSelectedIndex() == 3) {
             // Avisos
+            docName = ImprimeAvisoPDF(selRow);
         }
         new toPreview(docName);
     }//GEN-LAST:event_btPreviewActionPerformed
@@ -1646,5 +1647,263 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
 
         return bean1;
     }
+
+   public String ImprimeAvisoPDF(int selRow) {
+        String registro = tFiles.getValueAt(selRow, 0).toString();
+        String tipo = tFiles.getValueAt(selRow, 1).toString();
+        String nome = tFiles.getValueAt(selRow, 2).toString();
+        Date data = (Date)tFiles.getValueAt(selRow, 3);
+        int nAut = Integer.parseInt(tFiles.getValueAt(selRow, 4).toString());        
+
+        String selectCaixa = "SELECT cb.CX_DATA, cb.CX_HORA, cb.CX_LOGADO, " +
+        "cb.CX_CONTRATO, cb.CX_RGPRP, cb.CX_RGIMV, cb.CX_OPER, cb.CX_VRDN, " +
+        "cb.CX_VRCH, cb.CX_CHREL, cb.CX_TIPOPG, cb.CX_DOC, cb.CX_NDOCS " + 
+        "FROM caixabck cb WHERE cb.CX_DOC = 'AV' AND cb.CX_AUT = :aut " + 
+        "UNION SELECT cx.CX_DATA, cx.CX_HORA, cx.CX_LOGADO, cx.CX_CONTRATO, " +
+        "cx.CX_RGPRP, cx.CX_RGIMV, cx.CX_OPER, cx.CX_VRDN, cx.CX_VRCH, " +
+        "cx.CX_CHREL, cx.CX_TIPOPG, cx.CX_DOC, cx.CX_NDOCS " + 
+        "FROM caixa cx WHERE cx.CX_DOC = 'AV' AND cx.CX_AUT = :reg ;";
+        ResultSet rs = db.OpenTable(selectCaixa, new Object[][] {
+            {"int", "aut", nAut}, 
+            {"int", "reg", nAut}
+        });
         
+        int pos = 1; BigDecimal _total = new BigDecimal("0");
+        Map<Integer, Object> cxDados = new HashMap<Integer, Object>();
+        try {
+            while (rs.next()) {
+                Date CX_DATA = null; try { CX_DATA = rs.getDate("CX_DATA"); } catch (SQLException e) {}
+                String CX_HORA = null; try { CX_HORA = rs.getString("CX_HORA"); } catch (SQLException e) {}
+                String CX_LOGADO = null; try { CX_LOGADO = rs.getString("CX_LOGADO"); } catch (SQLException e) {}
+                String CX_CONTRATO = null; try { CX_CONTRATO = rs.getString("CX_CONTRATO"); } catch (SQLException e) {}
+                String CX_RGPRP = null; try { CX_RGPRP = rs.getString("CX_RGPRP"); } catch (SQLException e) {}
+                String CX_RGIMV = null; try { CX_RGIMV = rs.getString("CX_RGIMV"); } catch (SQLException e) {}
+                String CX_OPER = null; try { CX_OPER = rs.getString("CX_OPER"); } catch (SQLException e) {}
+                BigDecimal CX_VRDN = null; try { CX_VRDN = rs.getBigDecimal("CX_VRDN"); } catch (SQLException e) {}
+                BigDecimal CX_VRCH = null; try { CX_VRCH = rs.getBigDecimal("CX_VRCH"); } catch (SQLException e) {}
+                String CX_CHREL = null; try { CX_CHREL = rs.getString("CX_CHREL"); } catch (SQLException e) {}
+                String CX_TIPOPG = null; try { CX_TIPOPG = rs.getString("CX_TIPOPG"); } catch (SQLException e) {}
+                String CX_DOC = null; try { CX_DOC = rs.getString("CX_DOC"); } catch (SQLException e) {}
+                int CX_NDOCS = -1; try { CX_NDOCS = rs.getInt("CX_NDOCS"); } catch (SQLException e) {}
+                
+                Map<String, Object> caixa = new HashMap<String, Object>();
+                caixa.put("data", CX_DATA);
+                caixa.put("hora", CX_HORA);
+                caixa.put("logado", CX_LOGADO);
+                caixa.put("contrato", CX_CONTRATO);
+                caixa.put("rgprp", CX_RGPRP);
+                caixa.put("rgimv", CX_RGIMV);
+                caixa.put("oper", CX_OPER);
+                caixa.put("vrdn", CX_VRDN);
+                caixa.put("vrch", CX_VRCH);
+                caixa.put("chrel", CX_CHREL);
+                caixa.put("tipopg", CX_TIPOPG);
+                caixa.put("doc", CX_DOC);
+                caixa.put("ndocs", CX_NDOCS);
+                
+                cxDados.put(pos++, caixa);
+                _total = _total.add(CX_VRDN).add(CX_VRCH);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        if (cxDados.size() == 0) {
+            JOptionPane.showMessageDialog(this, "Este extrato não existe dento do caixa para ser re-impresso!");
+            return null;
+        }
+        Map<String, Object> caixa = ((Map<String, Object>)cxDados.get(1));
+        String ValorAviso = LerValor.floatToCurrency(_total.floatValue(),2);
+        String ValorRec = ValorAviso;
+                
+        String _data = caixa.get("data").toString().substring(0,10);
+        String _hora = caixa.get("hora").toString();        
+        Date dataAviso = Dates.StringtoDate(_data + " " + _hora, "yyyy-MM-dd HH:mm:ss");
+        
+        // Pega dados do Aviso
+        Object[][] aAviso = null;
+        try {aAviso = db.ReadFieldsTable(new String[] {"DecriptaNome(RetAvDescRid2(campo)) as texto", "RetAvTipoRid2(campo) as crdb"}, "avisos", "autenticacao = :aut", new Object[][] {{"int", "aut", nAut}}); } catch (SQLException e) {}
+        String texto = StringManager.ConvStr(aAviso[0][3].toString()).toLowerCase();
+        try {texto = texto.substring(0,1).toUpperCase() + texto.substring(1);} catch (Exception e) {}
+        String crdb = StringManager.ConvStr(aAviso[1][3].toString());
+                
+        // Dados do Aviso
+        String idNome = registro + " - " + nome;
+        String idAviso = "AVISO " + tipo + " - " + (crdb.trim().toLowerCase().equalsIgnoreCase("cre") ? "CREDITO" : "DEBITO");
+        
+        float[] columnWidths = {};
+        Collections gVar = VariaveisGlobais.dCliente;
+        jPDF pdf = new jPDF();
+
+        String sFileName = new tempFile("pdf").getsPathNameExt();
+        pdf.setPathName(new tempFile().getTempPath());
+        String docName = new tempFile().getTempFileName(sFileName);
+        pdf.setDocName(docName);
+       
+        BaseFont bf = null;
+        try {
+            bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        com.itextpdf.text.Font font = new com.itextpdf.text.Font(bf, 9, Font.PLAIN);
+
+        pdf.open();
+        
+        // Logo
+        com.itextpdf.text.Image img;
+        try {
+            img = com.itextpdf.text.Image.getInstance("resources/logos/boleta/" + VariaveisGlobais.dCliente.get("marca").trim() + ".gif");
+            img.setAlignment(Element.ALIGN_LEFT);        
+            pdf.doc_add(img);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        Paragraph p;
+        
+        p = pdf.print(gVar.get("empresa"), pdf.HELVETICA, 9, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+        pdf.doc_add(p);
+        if (!gVar.get("cnpj").trim().equals("") || gVar.get("cnpj") != null) {
+            p = pdf.print(gVar.get("tipodoc"), pdf.HELVETICA, 9, pdf.NORMAL, pdf.LEFT,pdf.BLACK);
+            pdf.doc_add(p);
+        }
+        p = pdf.print(gVar.get("endereco") + ", " + gVar.get("numero") + " " + gVar.get("complemento"), pdf.HELVETICA, 9, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+        pdf.doc_add(p);
+        p = pdf.print(gVar.get("bairro") + " - " + gVar.get("cidade") + " - " + gVar.get("estado") + " - " + gVar.get("cep"), pdf.HELVETICA, 9, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+        pdf.doc_add(p);
+        p = pdf.print("Tel/Fax:" + gVar.get("telefone"), pdf.HELVETICA, 9, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+        pdf.doc_add(p);
+        p = pdf.print("\n", pdf.HELVETICA, 9, pdf.NORMAL, pdf.CENTER, pdf.BLACK);
+        pdf.doc_add(p);
+        p = pdf.print(idAviso, pdf.HELVETICA, 12, pdf.BOLD, pdf.CENTER, pdf.BLUE);
+        pdf.doc_add(p);
+        p = pdf.print("\n", pdf.HELVETICA, 9, pdf.NORMAL, pdf.CENTER, pdf.BLACK);
+        pdf.doc_add(p);
+        
+        p = pdf.print(idNome, pdf.HELVETICA, 9, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+        pdf.doc_add(p);
+        
+        columnWidths = new float[] {37, 63 };
+        PdfPTable table = new PdfPTable(columnWidths);
+        table.setHeaderRows(0);
+        table.setWidthPercentage(100);
+        font = new com.itextpdf.text.Font(bf, 9, Font.PLAIN);
+        font.setColor(BaseColor.BLACK);
+        
+        PdfPCell cell1 = new PdfPCell(new Phrase("CAIXA: " + VariaveisGlobais.usuario,font));
+        cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell1);
+        PdfPCell cell2 = new PdfPCell(new Phrase("Data/Hora: " + Dates.DateFormata("dd/MM/yyyy HH:mm", dataAviso),font));
+        cell2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell2.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell2);
+        table.completeRow();
+        pdf.doc_add(table);
+
+        p = pdf.print("", pdf.HELVETICA, 9, pdf.NORMAL, pdf.CENTER, pdf.BLACK);
+        LineSeparator l = new LineSeparator();
+        l.setPercentage(100f);
+        p.add(new Chunk(l));
+        pdf.doc_add(p);
+
+        columnWidths = new float[] {100};
+        table = new PdfPTable(columnWidths);
+        table.setHeaderRows(0);
+        table.setWidthPercentage(100);
+        // Dados do aviso
+        font.setColor(BaseColor.BLACK);
+        cell1 = new PdfPCell(new Phrase(texto,font));
+        cell1.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell1.setBackgroundColor(BaseColor.WHITE);
+        table.addCell(cell1);
+        table.completeRow();
+        pdf.doc_add(table);
+        
+        columnWidths = new float[] {70, 30};
+        table = new PdfPTable(columnWidths);
+        table.setHeaderRows(0);
+        table.setWidthPercentage(100);
+        font.setColor(BaseColor.BLACK);
+        cell1 = new PdfPCell(new Phrase("",font));
+        cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell1.setBackgroundColor(BaseColor.WHITE);
+        table.addCell(cell1);
+        cell2 = new PdfPCell(new Phrase("==========", font));
+        cell2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell2.setBackgroundColor(BaseColor.WHITE);
+        table.addCell(cell2);
+
+        font.setColor(BaseColor.BLACK);
+        cell1 = new PdfPCell(new Phrase("Total do Recibo",font));
+        cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell1.setBackgroundColor(BaseColor.WHITE);
+        table.addCell(cell1);
+        cell2 = new PdfPCell(new Phrase(ValorRec, font));
+        cell2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell2.setBackgroundColor(BaseColor.WHITE);
+        table.addCell(cell2);
+        table.completeRow();
+        pdf.doc_add(table);
+
+        p = pdf.print("\n", pdf.HELVETICA, 9, pdf.NORMAL, pdf.CENTER, pdf.BLACK);
+        pdf.doc_add(p);
+
+        font = new com.itextpdf.text.Font(bf, 8, Font.PLAIN);
+        if (nAut > 0) {
+            p = pdf.print("__________ VALOR(ES) LANCADOS __________", pdf.HELVETICA, 7, pdf.NORMAL, pdf.CENTER, pdf.BLACK);
+            pdf.doc_add(p);
+
+            for (int i=1;i<=cxDados.size();i++) {
+                Map<String, Object> cxa = (Map<String, Object>)cxDados.get(i);
+                String bLinha = cxa.get("chrel").toString();
+                p = pdf.print(bLinha, pdf.HELVETICA, 6, pdf.NORMAL, pdf.RIGHT, pdf.BLACK);
+                pdf.doc_add(p);
+            }
+            
+            p = pdf.print("\n", pdf.HELVETICA, 6, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+            pdf.doc_add(p);
+
+            l = new LineSeparator();
+            l.setPercentage(100f);
+            p = pdf.print("", pdf.HELVETICA, 7, pdf.BOLDITALIC, pdf.LEFT, pdf.BLACK);
+            p.add(new Chunk(l));
+            pdf.doc_add(p);
+
+            // Imprimir Autenticação
+            p = pdf.print(VariaveisGlobais.dCliente.get("marca").trim() + "AV" +
+                    FuncoesGlobais.StrZero(String.valueOf((int)nAut).replace(".0", ""), 7) + "-1" + 
+                    Dates.DateFormata("ddMMyyyyHHmmss", dataAviso) + 
+                    FuncoesGlobais.GravaValores(ValorRec, 2) + 
+                    VariaveisGlobais.usuario, pdf.HELVETICA, 7, pdf.NORMAL, pdf.CENTER, pdf.BLACK);
+            pdf.doc_add(p);
+            
+            PdfContentByte cb = pdf.writer().getDirectContent();
+            BarcodeInter25 code25 = new BarcodeInter25();
+            String barra = FuncoesGlobais.StrZero(String.valueOf((int)nAut).replace(".0", ""),16);
+            code25.setCode(barra);
+            code25.setChecksumText(true);
+            code25.setFont(null);
+            com.itextpdf.text.Image cdbar = code25.createImageWithBarcode(cb, null, null);
+            cdbar.setAlignment(Element.ALIGN_CENTER);
+            pdf.doc_add(cdbar);            
+        }
+
+        // Pula linhas (6) / corta papel
+        for (int k=1;k<=6;k++) { 
+            p = pdf.print("\n", pdf.HELVETICA, 6, pdf.NORMAL, pdf.LEFT, pdf.BLACK);
+            pdf.doc_add(p);
+        }
+        
+        pdf.close();
+        
+        String rPathName = pdf.getPathName();       
+        pdf.setPathName("");
+        pdf.setDocName("");
+        return rPathName + docName;       
+   }   
 }
