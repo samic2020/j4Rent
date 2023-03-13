@@ -1,6 +1,5 @@
 package Movimento;
 
-import Funcoes.Autenticacao;
 import Funcoes.Dates;
 import Funcoes.Db;
 import Funcoes.DbMain;
@@ -14,12 +13,10 @@ import Funcoes.WordWrap;
 import Funcoes.gmail.GmailAPI;
 import static Funcoes.gmail.GmailOperations.createEmailWithAttachment;
 import static Funcoes.gmail.GmailOperations.createMessageWithEmail;
-import Funcoes.jDirectory;
 import Funcoes.jPDF;
 import Funcoes.jTableControl;
 import Funcoes.tempFile;
 import Funcoes.toPreview;
-import Funcoes.toPrint;
 import Protocolo.DepuraCampos;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
@@ -37,17 +34,12 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.lowagie.text.Element;
 import extrato.Extrato;
 import j4rent.Partida.Collections;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.GeneralSecurityException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -59,17 +51,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.RowFilter;
-import javax.swing.UIDefaults;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import net.sf.jasperreports.engine.JRException;
@@ -79,7 +65,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.swing.JRViewer;
 
 public class jViewerDoc extends javax.swing.JInternalFrame {
     private JEditorPane _htmlPane = new JEditorPane();
@@ -212,6 +197,7 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
         jLabel6.setText("MENSAGEM:");
         jLabel6.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
+        jbtSend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Figuras/cartaEmail.png"))); // NOI18N
         jbtSend.setText("Enviar");
         jbtSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -221,6 +207,7 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
 
         jPara.setToolTipText("");
 
+        jBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Figuras/find.png"))); // NOI18N
         jBuscar.setText("Buscar");
         jBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -243,18 +230,18 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPara, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
+                        .addComponent(jBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jbtSend, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jSubject)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jbtSend, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -403,47 +390,63 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtSendActionPerformed
-//        if (jSubject.getText().trim().equalsIgnoreCase("") || jMensagem.getText().trim().equalsIgnoreCase("")) {
-//            JOptionPane.showMessageDialog(null, "Campos assunto e mensagem não podem estar em branco!!!", "Atenção", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        int selRow = tFiles.getSelectedRow();
+        if (jSubject.getText().trim().equalsIgnoreCase("") || jMensagem.getText().trim().equalsIgnoreCase("")) {
+            JOptionPane.showMessageDialog(null, "Campos assunto e mensagem não podem estar em branco!!!", "Atenção", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int selRow = tFiles.getSelectedRow();
 //        int modelRow = tFiles.convertRowIndexToModel(selRow);
 //        String rdoc = (String) tFiles.getModel().getValueAt(modelRow, 0);
 //
-//        //Outlook email = new Outlook(true);
-//        try {
-//            String To = jPara.getText().trim().toLowerCase();
-//            String Subject = jSubject.getText().trim();
-//            String Body = jMensagem.getDocument().getText(0, jMensagem.getDocument().getLength());
-//            //String[] Attachments = new String[] {System.getProperty("user.dir") + "/" + pasta + rdoc};
-//
-//            Gmail service = GmailAPI.getGmailService();
-//            MimeMessage Mimemessage = createEmailWithAttachment(To,"me",Subject,Body,new File(System.getProperty("user.dir") + "/" + pasta + rdoc));
-//            System.out.println("Arquivo: " + System.getProperty("user.dir") + "/" + pasta + rdoc);
-//
-//            Message message = createMessageWithEmail(Mimemessage);
-//
-//            message = service.users().messages().send("me", message).execute();
-//
-//            System.out.println("Message id: " + message.getId());
-//            System.out.println(message.toPrettyString());
-//            if (message.getId() != null) {
-//                JOptionPane.showMessageDialog(null, "Enviado com sucesso!!!", "Atenção", JOptionPane.INFORMATION_MESSAGE);
-//            } else {
-//                JOptionPane.showMessageDialog(null, "Erro ao enviar!!!\n\nTente novamente...", "Atenção", JOptionPane.ERROR_MESSAGE);
-//            }
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
+        String docName = "";
+        if (tipo.getSelectedIndex() == 0) {
+            // Recibos
+            docName = ImprimeReciboPDF(selRow, true);
+        } else if (tipo.getSelectedIndex() == 1) {
+            // Boletas
+            docName = ImprimeReciboPDF(selRow, false);
+        } else if (tipo.getSelectedIndex() == 2) {
+            // Extratos
+            docName = ImprimeExtratoPDF(selRow);
+        } else if (tipo.getSelectedIndex() == 3) {
+            // Avisos
+            docName = ImprimeAvisoPDF(selRow);
+        }
+        try { new Thread().sleep(1000); } catch (InterruptedException iEx) {}
+        
+        //Outlook email = new Outlook(true);
+        try {
+            String To = jPara.getText().trim().toLowerCase();
+            String Subject = jSubject.getText().trim();
+            String Body = jMensagem.getDocument().getText(0, jMensagem.getDocument().getLength());
+            //String[] Attachments = new String[] {System.getProperty("user.dir") + "/" + pasta + rdoc};
+
+            Gmail service = GmailAPI.getGmailService();
+            MimeMessage Mimemessage = createEmailWithAttachment(To,"me",Subject,Body,new File(docName));
+            System.out.println("Arquivo: " + docName);
+
+            Message message = createMessageWithEmail(Mimemessage);
+
+            message = service.users().messages().send("me", message).execute();
+
+            System.out.println("Message id: " + message.getId());
+            System.out.println(message.toPrettyString());
+            if (message.getId() != null) {
+                JOptionPane.showMessageDialog(null, "Enviado com sucesso!!!", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao enviar!!!\n\nTente novamente...", "Atenção", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_jbtSendActionPerformed
 
     private void jBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBuscarActionPerformed

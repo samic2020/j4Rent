@@ -6,6 +6,8 @@
 package Movimento.BoletasCentral;
 
 import Bancos.*;
+import BancosDigital.classBaixar;
+import BancosDigital.classInterConsulta;
 import Funcoes.CentralizaTela;
 import Funcoes.Dates;
 import Funcoes.DbMain;
@@ -19,6 +21,8 @@ import Funcoes.gmail.GmailAPI;
 import static Funcoes.gmail.GmailOperations.createEmailWithAttachment;
 import static Funcoes.gmail.GmailOperations.createMessageWithEmail;
 import Funcoes.jDirectory;
+import Funcoes.jTableControl;
+import Funcoes.toPreview;
 import Protocolo.Calculos;
 import Protocolo.DepuraCampos;
 import j4rent.Partida.Collections;
@@ -40,7 +44,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
@@ -76,12 +82,21 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     String[] month;
     int[] dmonth;
     
+    jTableControl tabela = new jTableControl(true);    
+
+    
     /**
      * Creates new form CentralBoletas
      */
     public CentralBoletas() {
         initComponents();
 
+        {
+            FillBancos();
+            conDataInicial.setDate(Dates.primeiraDataMes(new Date()));
+            conDataFinal.setDate(Dates.ultimoDataMes(new Date()));
+        }
+        
         jSemEnvio.setVisible(VariaveisGlobais.funcao.equalsIgnoreCase("sys"));
         
         lbl_Status.setText("");
@@ -165,11 +180,71 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         jMensagem = new javax.swing.JEditorPane();
         jLabel9 = new javax.swing.JLabel();
+        jPanel12 = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        jcbConsultaBancos = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
+        jTipoListagem = new javax.swing.JComboBox<>();
+        jLabel11 = new javax.swing.JLabel();
+        conDataInicial = new com.toedter.calendar.JDateChooser("dd/MM/yyyy", "##/##/#####", '_');
+        jLabel12 = new javax.swing.JLabel();
+        conDataFinal = new com.toedter.calendar.JDateChooser("dd/MM/yyyy", "##/##/#####", '_');
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        conBtnListar = new javax.swing.JButton();
+        jPanel16 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        conLista = new javax.swing.JTable();
+        jProgressListaBoletasConsulta = new javax.swing.JProgressBar();
+        jProgressListaBoletasConsulta1 = new javax.swing.JProgressBar();
+        jBtnBaixar = new javax.swing.JButton();
+        jPanel17 = new javax.swing.JPanel();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel18 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        baiQuantidade = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        baiValor = new javax.swing.JTextField();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel19 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        recQuantidade = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        recValor = new javax.swing.JTextField();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel20 = new javax.swing.JPanel();
+        jLabel20 = new javax.swing.JLabel();
+        expQuantidade = new javax.swing.JTextField();
+        jLabel21 = new javax.swing.JLabel();
+        expValor = new javax.swing.JTextField();
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel21 = new javax.swing.JPanel();
+        jLabel22 = new javax.swing.JLabel();
+        preQuantidade = new javax.swing.JTextField();
+        jLabel23 = new javax.swing.JLabel();
+        preValor = new javax.swing.JTextField();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
 
         jToggleButton2.setText("jToggleButton2");
 
         setClosable(true);
         setTitle(".:: Central de Boletas");
+        setMaximumSize(new java.awt.Dimension(871, 599));
+        setMinimumSize(new java.awt.Dimension(871, 599));
+        setPreferredSize(new java.awt.Dimension(871, 599));
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+        });
+
+        jTabbedPaneBoletas.setMaximumSize(new java.awt.Dimension(836, 586));
+        jTabbedPaneBoletas.setMinimumSize(new java.awt.Dimension(836, 586));
+        jTabbedPaneBoletas.setPreferredSize(new java.awt.Dimension(836, 586));
+
+        jPanel1.setMaximumSize(new java.awt.Dimension(855, 508));
+        jPanel1.setMinimumSize(new java.awt.Dimension(855, 508));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -236,7 +311,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(jPanel15Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(jLabel8)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(45, Short.MAX_VALUE))
             .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel15Layout.createSequentialGroup()
                     .addGap(33, 33, 33)
@@ -471,23 +546,22 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(5, 5, 5)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
-                        .addComponent(ListaBancosPessoasImpressas, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
+                    .addComponent(ListaBancosPessoasImpressas, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(ListaBancosPessoas))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 492, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -495,8 +569,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         jTabbedPaneBoletas.addTab("Geração", jPanel1);
@@ -508,6 +582,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Remessa(s)"));
         jPanel8.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        jPanel8.setPreferredSize(new java.awt.Dimension(809, 300));
 
         tblBancosRemessa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -555,7 +630,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane3)
                 .addContainerGap())
         );
 
@@ -570,10 +645,10 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+            .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel14.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -610,7 +685,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jListarRemessa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jProgressRemessa, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                    .addComponent(jProgressRemessa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnGerarRemessa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -619,7 +694,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jListarRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
                 .addComponent(btnGerarRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jProgressRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -632,13 +707,13 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 842, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 837, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 593, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)))
+                .addGap(6, 6, 6))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -648,8 +723,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         jTabbedPaneBoletas.addTab("Remessa", jPanel5);
@@ -719,15 +794,15 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
-                    .addComponent(btnEnviarTodos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnEnviarSelecao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnEditarCadastro, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnListarBoletasEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSemEnvio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jSemEnvio, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEnviarTodos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEnviarSelecao, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEditarCadastro, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jProgressEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(
@@ -763,15 +838,15 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel11Layout.createSequentialGroup()
-                        .addContainerGap()
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel11Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(edtSubJect, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE))
-                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(edtSubJect)))
                 .addContainerGap())
         );
         jPanel11Layout.setVerticalGroup(
@@ -784,7 +859,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addGap(9, 9, 9)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+                .addComponent(jScrollPane4)
                 .addContainerGap())
         );
 
@@ -796,10 +871,10 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 593, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 581, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel9Layout.setVerticalGroup(
@@ -816,22 +891,414 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
         jTabbedPaneBoletas.addTab("E-Mail", jPanel9);
 
+        jPanel12.setMaximumSize(new java.awt.Dimension(800, 504));
+        jPanel12.setMinimumSize(new java.awt.Dimension(800, 504));
+        jPanel12.setPreferredSize(new java.awt.Dimension(800, 504));
+
+        jPanel13.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel13.setMaximumSize(new java.awt.Dimension(723, 50));
+        jPanel13.setMinimumSize(new java.awt.Dimension(723, 50));
+        jPanel13.setPreferredSize(new java.awt.Dimension(840, 44));
+        jPanel13.setLayout(null);
+
+        jLabel13.setText("Banco:");
+        jPanel13.add(jLabel13);
+        jLabel13.setBounds(10, 10, 38, 16);
+
+        jPanel13.add(jcbConsultaBancos);
+        jcbConsultaBancos.setBounds(50, 10, 190, 28);
+
+        jLabel10.setText("Listar:");
+        jPanel13.add(jLabel10);
+        jLabel10.setBounds(290, 20, 34, 16);
+
+        jTipoListagem.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODOS", "PAGO", "EXPIRADO", "VENCIDO", "EMABERTO", "CANCELADO" }));
+        jPanel13.add(jTipoListagem);
+        jTipoListagem.setBounds(330, 10, 153, 28);
+
+        jLabel11.setText("Periodo:");
+        jPanel13.add(jLabel11);
+        jLabel11.setBounds(510, 20, 46, 16);
+
+        conDataInicial.setDate(new java.util.Date(-2208977612000L));
+        jPanel13.add(conDataInicial);
+        conDataInicial.setBounds(560, 10, 90, 26);
+
+        jLabel12.setText("até");
+        jPanel13.add(jLabel12);
+        jLabel12.setBounds(660, 20, 17, 10);
+
+        conDataFinal.setDate(new java.util.Date(-2208977612000L));
+        jPanel13.add(conDataFinal);
+        conDataFinal.setBounds(680, 10, 90, 26);
+        jPanel13.add(filler1);
+        filler1.setBounds(0, 0, 0, 0);
+
+        conBtnListar.setText("Listar");
+        conBtnListar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                conBtnListarActionPerformed(evt);
+            }
+        });
+        jPanel13.add(conBtnListar);
+        conBtnListar.setBounds(780, 10, 59, 26);
+
+        jPanel16.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel16.setMaximumSize(new java.awt.Dimension(456, 361));
+        jPanel16.setMinimumSize(new java.awt.Dimension(456, 361));
+
+        jLabel14.setBackground(new java.awt.Color(153, 204, 255));
+        jLabel14.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icones/Asp.net_0031_color1_16x16.gif"))); // NOI18N
+        jLabel14.setText("Boletos no sistema do Banco.");
+        jLabel14.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        jLabel14.setIconTextGap(8);
+        jLabel14.setOpaque(true);
+
+        conLista.setAutoCreateRowSorter(true);
+        conLista.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Emissão", "Vencimento", "Pagamento", "SeuNumero", "NossoNumero", "CnpjCpf", "Sacado", "lMulta", "Juros", "Valor", "Situação", "B"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        conLista.setColumnSelectionAllowed(true);
+        conLista.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        conLista.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                conListaMouseClicked(evt);
+            }
+        });
+        conLista.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                conListaKeyPressed(evt);
+            }
+        });
+        jScrollPane6.setViewportView(conLista);
+
+        jProgressListaBoletasConsulta.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        jProgressListaBoletasConsulta.setMaximumSize(new java.awt.Dimension(146, 14));
+        jProgressListaBoletasConsulta.setMinimumSize(new java.awt.Dimension(146, 14));
+        jProgressListaBoletasConsulta.setStringPainted(true);
+
+        jProgressListaBoletasConsulta1.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        jProgressListaBoletasConsulta1.setStringPainted(true);
+
+        jBtnBaixar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icones/DownArrow.gif"))); // NOI18N
+        jBtnBaixar.setText("Baixar no Sistema");
+        jBtnBaixar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnBaixarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
+        jPanel16.setLayout(jPanel16Layout);
+        jPanel16Layout.setHorizontalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane6)
+            .addGroup(jPanel16Layout.createSequentialGroup()
+                .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jBtnBaixar, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jProgressListaBoletasConsulta1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel16Layout.setVerticalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel16Layout.createSequentialGroup()
+                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(jBtnBaixar))
+                .addGap(0, 0, 0)
+                .addComponent(jScrollPane6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jProgressListaBoletasConsulta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel17.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jPanel17.setMaximumSize(new java.awt.Dimension(834, 115));
+        jPanel17.setMinimumSize(new java.awt.Dimension(834, 115));
+        jPanel17.setLayout(new javax.swing.BoxLayout(jPanel17, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel17.add(filler3);
+
+        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 204), 1, true), " [ Vencidos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(0, 0, 102))); // NOI18N
+        jPanel18.setMaximumSize(new java.awt.Dimension(198, 89));
+        jPanel18.setMinimumSize(new java.awt.Dimension(198, 89));
+        jPanel18.setPreferredSize(new java.awt.Dimension(148, 81));
+
+        jLabel16.setText("Quantidade:");
+
+        baiQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        baiQuantidade.setForeground(new java.awt.Color(0, 51, 204));
+        baiQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        baiQuantidade.setText("000");
+
+        jLabel17.setText("Valor:");
+
+        baiValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        baiValor.setForeground(new java.awt.Color(0, 51, 204));
+        baiValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        baiValor.setText("0,00");
+
+        javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
+        jPanel18.setLayout(jPanel18Layout);
+        jPanel18Layout.setHorizontalGroup(
+            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel18Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel18Layout.createSequentialGroup()
+                        .addComponent(jLabel17)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(baiValor, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel18Layout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(baiQuantidade)))
+                .addGap(67, 67, 67))
+        );
+        jPanel18Layout.setVerticalGroup(
+            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel18Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(baiQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(baiValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel17.add(jPanel18);
+        jPanel17.add(filler4);
+
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(51, 204, 0), 1, true), " [ Pagos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(51, 204, 0))); // NOI18N
+        jPanel19.setMaximumSize(new java.awt.Dimension(148, 89));
+        jPanel19.setMinimumSize(new java.awt.Dimension(148, 89));
+        jPanel19.setPreferredSize(new java.awt.Dimension(150, 81));
+
+        jLabel18.setText("Quantidade:");
+
+        recQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        recQuantidade.setForeground(new java.awt.Color(51, 153, 0));
+        recQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        recQuantidade.setText("000");
+
+        jLabel19.setText("Valor:");
+
+        recValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        recValor.setForeground(new java.awt.Color(51, 153, 0));
+        recValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        recValor.setText("0,00");
+
+        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
+        jPanel19.setLayout(jPanel19Layout);
+        jPanel19Layout.setHorizontalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel19Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(recQuantidade, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE))
+                    .addGroup(jPanel19Layout.createSequentialGroup()
+                        .addComponent(jLabel19)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(recValor)))
+                .addContainerGap())
+        );
+        jPanel19Layout.setVerticalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(recQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19)
+                    .addComponent(recValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel17.add(jPanel19);
+        jPanel17.add(filler5);
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 0, 0), 1, true), " [ Expirados ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(255, 0, 0))); // NOI18N
+        jPanel20.setMaximumSize(new java.awt.Dimension(148, 89));
+        jPanel20.setMinimumSize(new java.awt.Dimension(148, 89));
+        jPanel20.setPreferredSize(new java.awt.Dimension(148, 81));
+
+        jLabel20.setText("Quantidade:");
+
+        expQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        expQuantidade.setForeground(new java.awt.Color(255, 0, 0));
+        expQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        expQuantidade.setText("000");
+
+        jLabel21.setText("Valor:");
+
+        expValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        expValor.setForeground(new java.awt.Color(255, 0, 0));
+        expValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        expValor.setText("0,00");
+        expValor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                expValorActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
+        jPanel20.setLayout(jPanel20Layout);
+        jPanel20Layout.setHorizontalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel20Layout.createSequentialGroup()
+                        .addComponent(jLabel21)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(expValor))
+                    .addGroup(jPanel20Layout.createSequentialGroup()
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(expQuantidade, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)))
+                .addGap(7, 7, 7))
+        );
+        jPanel20Layout.setVerticalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel20)
+                    .addComponent(expQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel21)
+                    .addComponent(expValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel17.add(jPanel20);
+        jPanel17.add(filler6);
+
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 204), 1, true), " [ Em Abertos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(0, 204, 204))); // NOI18N
+        jPanel21.setMaximumSize(new java.awt.Dimension(198, 89));
+        jPanel21.setMinimumSize(new java.awt.Dimension(198, 89));
+        jPanel21.setPreferredSize(new java.awt.Dimension(148, 81));
+
+        jLabel22.setText("Quantidade:");
+
+        preQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        preQuantidade.setForeground(new java.awt.Color(0, 204, 204));
+        preQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        preQuantidade.setText("000");
+
+        jLabel23.setText("Valor:");
+
+        preValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        preValor.setForeground(new java.awt.Color(0, 204, 204));
+        preValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        preValor.setText("0,00");
+
+        javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
+        jPanel21.setLayout(jPanel21Layout);
+        jPanel21Layout.setHorizontalGroup(
+            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel21Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel21Layout.createSequentialGroup()
+                        .addComponent(jLabel23)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(preValor))
+                    .addGroup(jPanel21Layout.createSequentialGroup()
+                        .addComponent(jLabel22)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(preQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(56, Short.MAX_VALUE))
+        );
+        jPanel21Layout.setVerticalGroup(
+            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel21Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel22)
+                    .addComponent(preQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel23)
+                    .addComponent(preValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel17.add(jPanel21);
+        jPanel17.add(filler2);
+
+        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
+        jPanel12.setLayout(jPanel12Layout);
+        jPanel12Layout.setHorizontalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+        jPanel12Layout.setVerticalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jTabbedPaneBoletas.addTab("Consultas/Baixa de Boletas", jPanel12);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTabbedPaneBoletas)
-                .addContainerGap())
+            .addComponent(jTabbedPaneBoletas, javax.swing.GroupLayout.DEFAULT_SIZE, 860, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPaneBoletas, javax.swing.GroupLayout.PREFERRED_SIZE, 543, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPaneBoletas, javax.swing.GroupLayout.PREFERRED_SIZE, 544, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jTabbedPaneBoletas.getAccessibleContext().setAccessibleName("Consultas");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1031,18 +1498,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jGerarActionPerformed
 
     private void jListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jListarActionPerformed
-//        if (!jemdia.isSelected()) {
-//            Object[] options = { "Sim", "Não" };
-//            int n = JOptionPane.showOptionDialog(null,
-//                "Você já alterou o vencimento para boletas em atraso ?",
-//                "Atenção", JOptionPane.YES_NO_OPTION,
-//                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-//            if (n == JOptionPane.NO_OPTION) {
-//                VencBoleto.requestFocus();
-//                return;
-//            }
-//        }
-        
         jListar.setEnabled(false);
 
         if (jemdia.isSelected()) {
@@ -1428,6 +1883,149 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             
         }        
     }//GEN-LAST:event_btnEditarCadastroActionPerformed
+
+    private void conBtnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_conBtnListarActionPerformed
+        try {
+            ListaBoletasBanco();
+        } catch (Exception ex) {
+            System.out.println("Problema de comunicação com o banco ou sem Internet.");
+        }
+    }//GEN-LAST:event_conBtnListarActionPerformed
+
+    private void ListaBoletasBanco() throws Exception {
+        Integer[] tam = {0,80,80,70,100,0,240,70,70,80,80,30};
+        String[] col = {"Emissão","Vencimento","Pagamento","SeuNumero","NossoNumero","CnpjCpf","Sacado","Multa","Juros","Valor","Situação","B"};
+        Boolean[] edt = {false,false,false,false,false,false,false,false,false,false,false,false};
+        String[] aln = {"C","C","C","C","C","C","L","R","R","R","C","C"};
+        Object[][] data = {};
+        
+        int a = 1; int b = 1;
+        jProgressListaBoletasConsulta.setValue(0);
+        
+        String tipoListagem = jTipoListagem.getSelectedItem().toString();
+        tipoListagem = (tipoListagem.equalsIgnoreCase("TODOS") ? "" : tipoListagem);
+        
+        String conDataIni = Dates.DateFormata("yyyy-MM-dd", conDataInicial.getDate());
+        String conDataFim = Dates.DateFormata("yyyy-MM-dd", conDataFinal.getDate());
+        /*
+        / Inicializa variavel para jtable
+        */
+        List<classInterConsulta> pessoasBoleta = new ArrayList<classInterConsulta>();
+        
+//                            
+//                            pessoasBoleta.add(new classInterConsulta(dataEmissao, dataVencimento, dataPagamento, seuNumero, nossoNumero, cnpjCpfSacado, nomeSacado, valorMulta, valorJuros, valorNominal, situacao, baixado));
+//                            
+//                            int pgs2 = ((b++ * 100) / brc) + 1;
+//                            jProgressListaBoletasConsulta1.setValue(pgs2);     
+//                            try { Thread.sleep(20); } catch (InterruptedException ex) { }
+//        
+        if (pessoasBoleta.size() > 0) {
+            for (classInterConsulta item : pessoasBoleta) { 
+                String mData = "";
+                try { mData = Dates.DateFormata("dd-MM-yyyy", item.getDataPagamento().getValue()); } catch (Exception ex) {}
+                Object[] dado = {
+                        Dates.DateFormata("dd-MM-yyyy", item.getDataEmissao().getValue()), 
+                        Dates.DateFormata("dd-MM-yyyy", item.getDataVencimento().getValue()), 
+                        mData, 
+                        item.getSeuNumero().getValue().toString(), 
+                        item.getNossoNumero().getValue().toString(), 
+                        item.getCnpjCpfSacado().getValue().toString(), 
+                        item.getNomeSacado().getValue().toString(), 
+                        new DecimalFormat("#,##0.00").format(item.getValorMulta().getValue()),
+                        new DecimalFormat("#,##0.00").format(item.getValorJuros().getValue()),
+                        new DecimalFormat("#,##0.00").format(item.getValorNominal().getValue()),
+                        item.getSituacao().getValue().toString(),
+                        item.getBaixado().getValue() ? "S" : "N"
+                };
+                data = tabela.insert(data, dado);
+            }
+            
+            tabela.Show(conLista, data, tam, aln, col, edt);            
+        } 
+    }
+    
+    
+    private void conListaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_conListaMouseClicked
+        //
+    }//GEN-LAST:event_conListaMouseClicked
+
+    private void conListaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_conListaKeyPressed
+        //
+    }//GEN-LAST:event_conListaKeyPressed
+
+    private void jBtnBaixarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBaixarActionPerformed
+        List<classBaixar> listas = new ArrayList<>();
+        for (int i = 0; i < conLista.getRowCount(); i++) {
+            String avulso =   conLista.getValueAt(i, 3).toString().toUpperCase();
+            if ("AVULSO".contains(avulso)) continue;
+
+            String situacao = conLista.getValueAt(i, 10).toString().toUpperCase();
+            String baixado =  conLista.getValueAt(i, 11).toString().toUpperCase();
+            if ("PAGO".contains(situacao) && "N".contains(baixado)) {
+                String seuNumero = conLista.getValueAt(i, 3).toString();
+                String seuNome = conLista.getValueAt(i, 6).toString();
+                String vencimento = conLista.getValueAt(i, 1).toString();
+                String pagamento = conLista.getValueAt(i, 2).toString();
+                String nossoNumero = conLista.getValueAt(i, 4).toString();
+                float multa = LerValor.StringToFloat(conLista.getValueAt(i, 7).toString());
+                float juros = LerValor.StringToFloat(conLista.getValueAt(i, 8).toString());
+                float valor = LerValor.StringToFloat(conLista.getValueAt(i, 9).toString());
+
+                Date dvencimento = null; Date dpagamento = null;
+                try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+
+                classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
+                tbaixar.setAtrasado();
+                listas.add(tbaixar);
+            }
+        }
+        if (listas.size() <= 0) {
+            JOptionPane.showInternalMessageDialog(this, "Não há vencimentos a baixar no sistema.");
+        } else {
+            JOptionPane.showInternalMessageDialog(this, "Há " + listas.size() + " vencimentos a baixar no sistema.");
+            try {
+                Map<String, Object> param = new HashMap();
+                param.put("banco", jcbConsultaBancos.getSelectedItem().toString());
+        
+                String fileName = "reports/BolBaixadas.jasper";
+                JRDataSource jrds = new JRBeanCollectionDataSource(listas);
+                JasperPrint print = JasperFillManager.fillReport(fileName, param, jrds);
+
+                // Create a PDF exporter
+                JRExporter exporter = new JRPdfExporter();
+
+                new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
+                String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+
+                // Configure the exporter (set output file name and print object)
+                String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
+                exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+
+                // Export the PDF file
+                exporter.exportReport();
+
+                new toPreview(outFileName);
+
+            } catch (JRException e) {
+                e.printStackTrace();
+                System.exit(1);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+        }
+    }//GEN-LAST:event_jBtnBaixarActionPerformed
+
+    private void expValorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expValorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_expValorActionPerformed
+
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        
+    }//GEN-LAST:event_formMousePressed
 
     public void EmDia() {
         lbl_Status.setText("Criando Lista...");
@@ -2977,6 +3575,18 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         retorno[0] = exp; retorno[1] = multa; retorno[2] = juros; retorno[3] = correcao; retorno[4] = tRecibo;
         return retorno;
     }
+ 
+    private void FillBancos() {
+        String sql = "SELECT codigo nbanco, nome FROM bancos bc WHERE EXISTS(SELECT bcobol FROM locatarios WHERE codigo = bcobol AND NULLIF(bcobol, ' ') IS NOT NULL AND NOT EXISTS(SELECT nbanco FROM bancos_digital WHERE codigo = nbanco) GROUP BY bcobol);";
+        ResultSet rs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
+        try {
+            jcbConsultaBancos.removeAllItems();
+            while (rs.next()) {
+                jcbConsultaBancos.addItem(rs.getString("nbanco") + " - " + rs.getString("nome"));
+            }
+        } catch (Exception e) {e.printStackTrace();}
+        DbMain.FecharTabela(rs);
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner AnoRef;
@@ -2985,19 +3595,47 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane ListaBancosPessoasRemessa;
     private javax.swing.JSpinner MesRef;
     private com.toedter.calendar.JDateChooser VencBoleto;
+    private javax.swing.JTextField baiQuantidade;
+    private javax.swing.JTextField baiValor;
     private javax.swing.JButton btnEditarCadastro;
     private javax.swing.JButton btnEnviarSelecao;
     private javax.swing.JButton btnEnviarTodos;
     private javax.swing.JButton btnGerarRemessa;
     private javax.swing.JButton btnListarBoletasEmail;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton conBtnListar;
+    private com.toedter.calendar.JDateChooser conDataFinal;
+    private com.toedter.calendar.JDateChooser conDataInicial;
+    private javax.swing.JTable conLista;
     private javax.swing.JTextField edtSubJect;
+    private javax.swing.JTextField expQuantidade;
+    private javax.swing.JTextField expValor;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
+    private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
+    private javax.swing.JButton jBtnBaixar;
     private javax.swing.JFormattedTextField jContrato;
     private com.toedter.calendar.JDateChooser jFinal;
     private javax.swing.JButton jGerar;
     private com.toedter.calendar.JDateChooser jInicial;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -3011,9 +3649,17 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -3024,18 +3670,27 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPeriodo;
     private javax.swing.JProgressBar jProgress;
     private javax.swing.JProgressBar jProgressEmail;
+    private javax.swing.JProgressBar jProgressListaBoletasConsulta;
+    private javax.swing.JProgressBar jProgressListaBoletasConsulta1;
     private javax.swing.JProgressBar jProgressRemessa;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JCheckBox jSemEnvio;
     private javax.swing.JTabbedPane jTabbedPaneBoletas;
+    private javax.swing.JComboBox<String> jTipoListagem;
     private javax.swing.JToggleButton jToggleButton2;
     private javax.swing.JRadioButton jatrasados;
+    private javax.swing.JComboBox<String> jcbConsultaBancos;
     private javax.swing.JRadioButton jemdia;
     private javax.swing.JRadioButton jperiodo;
     private javax.swing.JRadioButton jtodos;
     private javax.swing.JLabel lbl_Status;
+    private javax.swing.JTextField preQuantidade;
+    private javax.swing.JTextField preValor;
+    private javax.swing.JTextField recQuantidade;
+    private javax.swing.JTextField recValor;
     private javax.swing.JTable tblBancosRemessa;
     private javax.swing.JTable tblEmails;
     // End of variables declaration//GEN-END:variables

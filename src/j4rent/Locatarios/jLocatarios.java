@@ -800,7 +800,6 @@ public class jLocatarios extends javax.swing.JInternalFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         jDadosIniciais = new javax.swing.JPanel();
@@ -1940,10 +1939,7 @@ public class jLocatarios extends javax.swing.JInternalFrame {
 
         jLabel38.setText("Mensagem:");
 
-        jcbxBcoBoleta.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "104 - CEF", "341 - Itaú", "033 - Santander", "001 - Banco do Brasil", "237 - Bradesco" }));
-
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jcbxEnvio, org.jdesktop.beansbinding.ELProperty.create("${enabled}"), jcbxBcoBoleta, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
-        bindingGroup.addBinding(binding);
+        jcbxBcoBoleta.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "104 - CEF", "341 - Itaú", "033 - Santander", "001 - Banco do Brasil", "237 - Bradesco", "077 - Inter" }));
 
         jLabel63.setText("Forma de Envio:");
 
@@ -2310,8 +2306,6 @@ public class jLocatarios extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mFiaCorHist, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-
-        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -2997,7 +2991,6 @@ public class jLocatarios extends javax.swing.JInternalFrame {
     private javax.swing.JLabel plus;
     private javax.swing.JLabel plus1;
     private javax.swing.JTable tbFiadores;
-    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
 }

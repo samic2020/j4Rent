@@ -5,8 +5,11 @@
  */
 package BancosDigital;
 
+import Funcoes.Autenticacao;
 import Funcoes.CentralizaTela;
+import Funcoes.CriticaExtrato;
 import Funcoes.Dates;
+import Funcoes.Db;
 import Funcoes.DbMain;
 import Funcoes.FuncoesGlobais;
 import Funcoes.LerValor;
@@ -20,6 +23,7 @@ import static Funcoes.gmail.GmailOperations.createMessageWithEmail;
 import Funcoes.jDirectory;
 import Funcoes.jTableControl;
 import Funcoes.toPreview;
+import Funcoes.toPrint2;
 import Movimento.BoletasCentral.BancosBoleta;
 import Movimento.BoletasCentral.BoletaTreeTableModel;
 import Movimento.BoletasCentral.PessoasBoleta;
@@ -57,7 +61,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.mail.internet.MimeMessage;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -125,6 +131,8 @@ public class BancosDigital extends javax.swing.JInternalFrame {
     private List<BancosErros> bancosBoletaErros;
 
     DbMain conn = VariaveisGlobais.conexao;
+    Db db = new Db();
+
     String[] month;
     int[] dmonth;
 
@@ -163,6 +171,8 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             FillBancos();
             conDataInicial.setDate(Dates.primeiraDataMes(new Date()));
             conDataFinal.setDate(Dates.ultimoDataMes(new Date()));
+            jBtnBaixar.setEnabled(false);
+            jBtnBaixar.setText("Baixar [000]");
         }
         
         /*
@@ -952,7 +962,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                 .addComponent(btnListarBoletasEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSemEnvio)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnEnviarTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnEnviarSelecao, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1146,14 +1156,29 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         jLabel9.setText("Listar:");
 
         jTipoListagem.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODOS", "PAGO", "EXPIRADO", "VENCIDO", "EMABERTO", "CANCELADO" }));
+        jTipoListagem.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTipoListagemFocusGained(evt);
+            }
+        });
 
         jLabel10.setText("Periodo:");
 
         conDataInicial.setDate(new java.util.Date(-2208977612000L));
+        conDataInicial.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                conDataInicialFocusGained(evt);
+            }
+        });
 
         jLabel11.setText("até");
 
         conDataFinal.setDate(new java.util.Date(-2208977612000L));
+        conDataFinal.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                conDataFinalFocusGained(evt);
+            }
+        });
 
         conBtnListar.setText("Listar");
         conBtnListar.addActionListener(new java.awt.event.ActionListener() {
@@ -1163,6 +1188,12 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         });
 
         jLabel13.setText("Banco:");
+
+        jcbConsultaBancos.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jcbConsultaBancosFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -1258,8 +1289,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        conLista.setColumnSelectionAllowed(true);
-        conLista.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        conLista.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         conLista.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 conListaMouseClicked(evt);
@@ -1300,7 +1330,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jProgressListaBoletasConsulta1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 846, Short.MAX_VALUE)
+            .addComponent(jScrollPane6)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1312,15 +1342,15 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
                     .addComponent(jBtnBaixar))
-                .addGap(0, 0, 0)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(76, 76, 76)
                 .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jProgressListaBoletasConsulta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jConsulta.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 72, 850, -1));
+        jConsulta.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 72, 850, 390));
 
         jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jPanel7.setMaximumSize(new java.awt.Dimension(834, 115));
@@ -1540,21 +1570,19 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         jPanel7.add(jPanel16);
         jPanel7.add(filler2);
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), " [ Cancelados ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(0, 0, 0))); // NOI18N
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), " [ Cancelados ] "));
         jPanel19.setMaximumSize(new java.awt.Dimension(148, 89));
         jPanel19.setMinimumSize(new java.awt.Dimension(148, 89));
 
         jLabel32.setText("Quantidade:");
 
         canQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        canQuantidade.setForeground(new java.awt.Color(0, 0, 0));
         canQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         canQuantidade.setText("000");
 
         jLabel33.setText("Valor:");
 
         canValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        canValor.setForeground(new java.awt.Color(0, 0, 0));
         canValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         canValor.setText("0,00");
 
@@ -1723,11 +1751,11 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         jPanel18.setLayout(jPanel18Layout);
         jPanel18Layout.setHorizontalGroup(
             jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 837, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
         jPanel18Layout.setVerticalGroup(
             jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
 
         javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
@@ -1737,67 +1765,70 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             .addGroup(jPanel20Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(jLabel26)
-                        .addGap(9, 9, 9)
-                        .addComponent(pbairro, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel27)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pcidade)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel28)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pestado, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel29)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pcep, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnome, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                        .addComponent(jLabel24)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pdocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(jLabel25)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pendereco)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnumero, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pcomplto, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jcodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(opcprop))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel20Layout.createSequentialGroup()
-                                .addComponent(opcloca)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(opcavulsa))
-                            .addComponent(jnome, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jSeparator2)
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(jLabel36)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbanco, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(btLimpar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel30)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jvencto, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel31)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jvalor, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
+                        .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel20Layout.createSequentialGroup()
+                                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jcodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(opcprop))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel20Layout.createSequentialGroup()
+                                        .addComponent(opcloca)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(opcavulsa))
+                                    .addComponent(jnome, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel20Layout.createSequentialGroup()
+                                .addComponent(jLabel15)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pnome, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel24)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pdocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel20Layout.createSequentialGroup()
+                                .addComponent(jLabel25)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pendereco)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pnumero, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pcomplto, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel20Layout.createSequentialGroup()
+                                .addComponent(jLabel26)
+                                .addGap(9, 9, 9)
+                                .addComponent(pbairro, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel27)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pcidade)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel28)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pestado, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel29)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pcep, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel18, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel20Layout.createSequentialGroup()
+                                .addComponent(jLabel36)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jbanco, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel20Layout.createSequentialGroup()
+                                .addComponent(btLimpar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel30)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jvencto, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel31)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jvalor, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(17, 17, 17)))
                 .addContainerGap())
         );
         jPanel20Layout.setVerticalGroup(
@@ -1946,7 +1977,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                             .addComponent(jLabel42)
                             .addComponent(jLabel43)
                             .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 539, Short.MAX_VALUE)))
+                        .addGap(0, 507, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel21Layout.setVerticalGroup(
@@ -2001,10 +2032,10 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel17Layout.createSequentialGroup()
+            .addGroup(jPanel17Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane2)
-                .addContainerGap())
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 850, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2022,7 +2053,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jAletas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jAletas, javax.swing.GroupLayout.PREFERRED_SIZE, 872, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -2030,7 +2061,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jAletas, javax.swing.GroupLayout.PREFERRED_SIZE, 597, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -3309,56 +3340,146 @@ public class BancosDigital extends javax.swing.JInternalFrame {
 
     private void jBtnBaixarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBaixarActionPerformed
         List<classBaixar> listas = new ArrayList<>();
-        for (int i = 0; i < conLista.getRowCount(); i++) {
-            String avulso =   conLista.getValueAt(i, 3).toString().toUpperCase();
-            if ("AVULSO".contains(avulso)) continue;
+        Map<String, Object> param = new HashMap();
+        
+        if (conLista.getSelectedRows().length == 0) {
+            for (int i = 0; i < conLista.getRowCount(); i++) {
+                String avulso =   conLista.getValueAt(i, 3).toString().toUpperCase();
+                if ("AVULSO".contains(avulso)) continue;
 
-            String situacao = conLista.getValueAt(i, 10).toString().toUpperCase();
-            String baixado =  conLista.getValueAt(i, 11).toString().toUpperCase();
-            if ("PAGO".contains(situacao) && "N".contains(baixado)) {
-                String seuNumero = conLista.getValueAt(i, 3).toString();
-                String seuNome = conLista.getValueAt(i, 6).toString();
-                String vencimento = conLista.getValueAt(i, 1).toString();
-                String pagamento = conLista.getValueAt(i, 2).toString();
-                String nossoNumero = conLista.getValueAt(i, 4).toString();
-                float multa = LerValor.StringToFloat(conLista.getValueAt(i, 7).toString());
-                float juros = LerValor.StringToFloat(conLista.getValueAt(i, 8).toString());
-                float valor = LerValor.StringToFloat(conLista.getValueAt(i, 9).toString());
-                
-                Date dvencimento = null; Date dpagamento = null;
-                try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
-                try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
-                
-                classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
-                tbaixar.setAtrasado();
-                listas.add(tbaixar);
-            } 
+                String situacao = conLista.getValueAt(i, 10).toString().toUpperCase();
+                String baixado =  conLista.getValueAt(i, 11).toString().toUpperCase();
+                if ("PAGO".contains(situacao) && "N".contains(baixado)) {
+                    String seuNumero = conLista.getValueAt(i, 3).toString();
+                    String seuNome = conLista.getValueAt(i, 6).toString();
+                    String vencimento = conLista.getValueAt(i, 1).toString();
+                    String pagamento = conLista.getValueAt(i, 2).toString();
+                    String nossoNumero = conLista.getValueAt(i, 4).toString();
+                    float multa = LerValor.StringToFloat(conLista.getValueAt(i, 7).toString());
+                    float juros = LerValor.StringToFloat(conLista.getValueAt(i, 8).toString());
+                    float valor = LerValor.StringToFloat(conLista.getValueAt(i, 9).toString());
+
+                    Date dvencimento = null; Date dpagamento = null;
+                    try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                    try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+
+                    classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
+                    tbaixar.setAtrasado();
+                    listas.add(tbaixar);
+                } 
+            }
+            param.put("banco", jcbConsultaBancos.getSelectedItem().toString());
+            param.put("logado", VariaveisGlobais.usuario.toUpperCase().trim());
+            param.put("status", "NÃO BAXADOS");
+        } else {
+            for (int i = 0; i < conLista.getSelectedRows().length; i++) {
+                int selecRow = conLista.getSelectedRows()[i];
+                String avulso = conLista.getValueAt(selecRow, 3).toString().toUpperCase();
+                if ("AVULSO".contains(avulso)) continue;
+
+                String situacao = conLista.getValueAt(selecRow, 10).toString().toUpperCase();
+                String baixado =  conLista.getValueAt(selecRow, 11).toString().toUpperCase();
+                if ("PAGO".contains(situacao) && "N".contains(baixado)) {
+                    String seuNumero = conLista.getValueAt(selecRow, 3).toString();
+                    String seuNome = conLista.getValueAt(selecRow, 6).toString();
+                    String vencimento = conLista.getValueAt(selecRow, 1).toString();
+                    String pagamento = conLista.getValueAt(selecRow, 2).toString();
+                    String nossoNumero = conLista.getValueAt(selecRow, 4).toString();
+                    float multa = LerValor.StringToFloat(conLista.getValueAt(selecRow, 7).toString());
+                    float juros = LerValor.StringToFloat(conLista.getValueAt(selecRow, 8).toString());
+                    float valor = LerValor.StringToFloat(conLista.getValueAt(selecRow, 9).toString());
+
+                    Date dvencimento = null; Date dpagamento = null;
+                    try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                    try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+
+                    classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
+                    tbaixar.setAtrasado();
+                    listas.add(tbaixar);
+                } 
+            }
+            param.put("banco", jcbConsultaBancos.getSelectedItem().toString());
+            param.put("logado", VariaveisGlobais.usuario.toUpperCase().trim());
+            param.put("status", "");
         }
+        
         if (listas.size() <= 0) {
             JOptionPane.showInternalMessageDialog(this, "Não há vencimentos a baixar no sistema.");
         } else {
-            JOptionPane.showInternalMessageDialog(this, "Há " + listas.size() + " vencimentos a baixar no sistema.");
             try {
-                String fileName = "reports/BolBaixadas.jasper";
-                JRDataSource jrds = new JRBeanCollectionDataSource(listas);
-                JasperPrint print = JasperFillManager.fillReport(fileName, null, jrds);
+                if (conLista.getSelectedRows().length == 0) {
+                    String fileName = "reports/BolBaixadas.jasper";
+                    JRDataSource jrds = new JRBeanCollectionDataSource(listas);
+                    JasperPrint print = JasperFillManager.fillReport(fileName, param, jrds);
 
-                // Create a PDF exporter
-                JRExporter exporter = new JRPdfExporter();
+                    // Create a PDF exporter
+                    JRExporter exporter = new JRPdfExporter();
 
-                new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
-                String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+                    new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
+                    String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
 
-                // Configure the exporter (set output file name and print object)
-                String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
-                exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+                    // Configure the exporter (set output file name and print object)
+                    String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
+                    exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+                    exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
 
-                // Export the PDF file
-                exporter.exportReport();
+                    // Export the PDF file
+                    exporter.exportReport();
+                    new toPreview(outFileName);
+                } else {
+                    if (JOptionPane.showConfirmDialog(this, "Consolida as Boletas?", "Consolidação",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        // Baixa as boletas
+                        for (int i = 0; i < conLista.getSelectedRows().length; i++) {
+                            int selecRow = conLista.getSelectedRows()[i];
+                            String avulso = conLista.getValueAt(selecRow, 3).toString().toUpperCase();
+                            if ("AVULSO".contains(avulso)) continue;
 
-                new toPreview(outFileName);
+                            String situacao = conLista.getValueAt(selecRow, 10).toString().toUpperCase();
+                            String baixado =  conLista.getValueAt(selecRow, 11).toString().toUpperCase();
+                            if ("PAGO".contains(situacao) && "N".contains(baixado)) {
+                                String seuNumero = conLista.getValueAt(selecRow, 3).toString();
+                                String seuNome = conLista.getValueAt(selecRow, 6).toString();
+                                String vencimento = conLista.getValueAt(selecRow, 1).toString();
+                                String pagamento = conLista.getValueAt(selecRow, 2).toString();
+                                String nossoNumero = conLista.getValueAt(selecRow, 4).toString();
+                                float multa = LerValor.StringToFloat(conLista.getValueAt(selecRow, 7).toString());
+                                float juros = LerValor.StringToFloat(conLista.getValueAt(selecRow, 8).toString());
+                                float valor = LerValor.StringToFloat(conLista.getValueAt(selecRow, 9).toString());
 
+                                Date dvencimento = null; Date dpagamento = null;
+                                try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                                try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+
+                                // Faz a baixa da boleta
+                                boolean bSucesso = Distribuicao(selecRow);
+                                if (!bSucesso) {
+                                    Object obj = conLista.getSelectedRows()[selecRow];
+                                    listas.remove(listas.indexOf(obj));
+                                } 
+                            } 
+                        }
+                        
+                        // Imprime na impressora jato/laser configurada
+                        String fileName = "reports/BolBaixadas.jasper";
+                        JRDataSource jrds = new JRBeanCollectionDataSource(listas);
+                        JasperPrint print = JasperFillManager.fillReport(fileName, param, jrds);
+
+                        // Create a PDF exporter
+                        JRExporter exporter = new JRPdfExporter();
+
+                        new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
+                        String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+
+                        // Configure the exporter (set output file name and print object)
+                        String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
+                        exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+                        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+
+                        // Export the PDF file
+                        exporter.exportReport();
+                        new toPrint2(outFileName, 3);
+                    }
+                }                    
             } catch (JRException e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -3677,6 +3798,26 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         LerMsgAv();
     }//GEN-LAST:event_jTabbedPane2MousePressed
 
+    private void conDataFinalFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_conDataFinalFocusGained
+        jBtnBaixar.setEnabled(false);
+        jBtnBaixar.setText("Baixar [000]");
+    }//GEN-LAST:event_conDataFinalFocusGained
+
+    private void conDataInicialFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_conDataInicialFocusGained
+        jBtnBaixar.setEnabled(false);
+        jBtnBaixar.setText("Baixar [000]");
+    }//GEN-LAST:event_conDataInicialFocusGained
+
+    private void jTipoListagemFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTipoListagemFocusGained
+        jBtnBaixar.setEnabled(false);
+        jBtnBaixar.setText("Baixar [000]");
+    }//GEN-LAST:event_jTipoListagemFocusGained
+
+    private void jcbConsultaBancosFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jcbConsultaBancosFocusGained
+        jBtnBaixar.setEnabled(false);
+        jBtnBaixar.setText("Baixar [000]");
+    }//GEN-LAST:event_jcbConsultaBancosFocusGained
+
     private void ListaBoletasBanco() throws Exception {
         Integer[] tam = {0,80,80,70,100,0,240,70,70,80,80,30};
         String[] col = {"Emissão","Vencimento","Pagamento","SeuNumero","NossoNumero","CnpjCpf","Sacado","Multa","Juros","Valor","Situação","B"};
@@ -3684,6 +3825,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         String[] aln = {"C","C","C","C","C","C","L","R","R","R","C","C"};
         Object[][] data = {};
         
+        int bPagasENaoBaixadas = 0;
         int a = 1; int b = 1;
         jProgressListaBoletasConsulta.setValue(0);
         
@@ -3805,6 +3947,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                             BigDecimal valorNominal = new BigDecimal(c.myfunction(lista,"valorNominal").toString());
                             String situacao = c.myfunction(lista,"situacao").toString();
                             boolean baixado = isBaixado(nossoNumero);
+                            if (situacao.equalsIgnoreCase("PAGO") && !baixado) bPagasENaoBaixadas++;
                             
                             // Calculo - Adicionado em 07-06-2022
                             if (valorRecebido.floatValue() != 0) valorMulta = valorRecebido.subtract(valorNominal);
@@ -3846,6 +3989,13 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             
             tabela.Show(conLista, data, tam, aln, col, edt);            
         } 
+        if (bPagasENaoBaixadas != 0) {
+            jBtnBaixar.setEnabled(true);
+            jBtnBaixar.setText("Baixar [" + FuncoesGlobais.StrZero(String.valueOf(bPagasENaoBaixadas), 3) + "]");            
+        } else {
+            jBtnBaixar.setEnabled(false);
+            jBtnBaixar.setText("Baixar [000]");            
+        }
     }
 
     private boolean isBaixado(String nnumero) {
@@ -5348,7 +5498,43 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         private Color fg;
     }
     
-    private boolean Distribuicao(String rgprp, String rgimv, String contrato, String nAut, String vencto, String campo) throws SQLException {
+    private boolean Distribuicao(int selRow) throws SQLException {
+        String nnumero = conLista.getValueAt(selRow, 4).toString();
+        // Pega MU; CO; recebidos no boleto
+        String BMU = FuncoesGlobais.GravaValor(conLista.getValueAt(selRow, 7).toString());
+        String BCO = FuncoesGlobais.GravaValor(conLista.getValueAt(selRow, 8).toString());
+        
+        // Pega dados do recibo
+        Object[][] aDados = null;
+        try {
+            aDados = db.ReadFieldsTable(new String[] {"rgprp", "rgimv", "contrato", "dtvencimento", "campo"}, "recibo", "TRIM(nnumero) LIKE '%" + nnumero + "%'");
+        } catch (SQLException sqlEx) {}
+        if (aDados == null) {
+            JOptionPane.showMessageDialog(this, "Erro ao localizar ou NossoNumero apagado!");
+            return false;
+        }
+        String rgprp = aDados[0][3].toString();
+        String rgimv = aDados[1][3].toString();
+        String contrato = aDados[2][3].toString();
+        String vencto = Dates.StringtoString(aDados[3][3].toString(),"yyyy-MM-dd","dd-MM-yyyy");
+        String campo= aDados[4][3].toString();
+
+        // Autenticacao
+        float nAut = (float)Autenticacao.getAut();
+        if (!Autenticacao.setAut((double)nAut, 1)) {
+            JOptionPane.showMessageDialog(null, "Erro ao gravar autenticacão!!!\nChane o suporte técnico...", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        float rc = LerValor.StringToFloat("0,00"); // acertar
+
+        boolean sucesso = true;
+        try {
+            conn.LancarCaixa(new String[] {rgprp, rgimv, contrato}, new String[][] {{"","","","","0.00","CT","CRE","RC","BOLETA"}}, String.valueOf((int)nAut).replace(".0", ""));
+        } catch (Exception e) { sucesso = false; }
+        
+        // Calcula o recibo
+        new Calculos().Inicializa(rgprp, rgimv, contrato);
+        
         DepuraCampos zCampos; String[] zCampo;
 
         String[][] aCC = DivideCC.Divisao(rgimv);
@@ -5368,7 +5554,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
 
         float[] aComissao = null;
         try {aComissao = new Calculos().percComissao2(rgprp, rgimv);} catch (Exception e) {}
-        float fComissao = aComissao[0]; float rComissao = aComissao[1];
+        float fComissao = aComissao[0]; 
         String sComissao = FuncoesGlobais.GravaValores(String.valueOf(fComissao).replace(".", ","), 3);
 
         String[] sVenctos = {vencto};
@@ -5377,8 +5563,28 @@ public class BancosDigital extends javax.swing.JInternalFrame {
         String tCampo = CriticaCampo(rgprp, rgimv, contrato, sVenctos[i], campo);
 
         // Checa IPTU Automático
-        tCampo = IPTU(rgimv, sVenctos[i], tCampo);
+        //tCampo = IPTU(rgimv, sVenctos[i], tCampo);
 
+        // Aqui coloca a MU e CO do boleto e Apaga o JU
+        int intMPos = tCampo.indexOf("MU");
+        if (intMPos != 0) {
+            String part1 = tCampo.substring(0, intMPos + 2);
+            String part2 = tCampo.substring(intMPos + 12);
+            tCampo = part1 + BMU + part2;
+        }
+        int intCPos = tCampo.indexOf("CO");
+        if (intCPos != 0) {
+            String part1 = tCampo.substring(0, intCPos + 2);
+            String part2 = tCampo.substring(intCPos + 12);
+            tCampo = part1 + BCO + part2;
+        }
+        int intJPos = tCampo.indexOf("JU");
+        if (intJPos != 0) {
+            String part1 = tCampo.substring(0, intJPos + 2);
+            String part2 = tCampo.substring(intJPos + 12);
+            tCampo = part1 + "0000000000" + part2;
+        }
+        
         String[] aCampo = tCampo.split(";");
 
         // Captura descontas/diferencas
@@ -5415,11 +5621,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                     float reslt = calc1 * calc2;
 
                     String valor = "";
-                    if (fComissao != 0 && rComissao == 0) {
-                        valor = String.valueOf(reslt).replace(".", ",");
-                    } else if (fComissao == 0 && rComissao != 0) {
-                        valor = String.valueOf(rComissao).replace(".", ",");
-                    } else {
+                    if (fComissao != 0) {
                         valor = String.valueOf(reslt).replace(".", ",");
                     }
                     aCampo[j] += ":CM" + FuncoesGlobais.GravaValores(valor, 2);
@@ -5668,7 +5870,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
             divaCampo[l] = FuncoesGlobais.ArrayAdd(divaCampo[l], finalCampos);
         }
 
-        boolean sucesso = true;
+        sucesso = true;
         for (int l=0;l<gCampo.length;l++) {
             String sADMCPOS = "";
             for (int p=0;p<gCampo[l].length - 1;p++) {
@@ -5679,7 +5881,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                     String par2 = "GG:9:" +
                                   FuncoesGlobais.GravaValores(gCampo[l][p],2) +
                                   ":000000:GG:ET:" +
-                                  FuncoesGlobais.StrZero(nAut.trim(), 6) +
+                                  FuncoesGlobais.StrZero(String.valueOf((int)nAut).replace(".0", "").trim(), 6) +
                                   VariaveisGlobais.cContas.get("GG") +
                                   FuncoesGlobais.Choose(p + 1,new String[] {"", "MU", "JU", "CO", "EP"}) +
                                   ":" + Dates.DateFormata("yyyyMMdd", new Date()) +
@@ -5687,7 +5889,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                                   VariaveisGlobais.usuario;
                     String par3 = Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy"));
                     String par4 = Dates.DateFormata("yyyy-MM-dd", new Date());
-                    String par5 = nAut;
+                    String par5 = String.valueOf((int)nAut).replace(".0", "");
                     sSql = FuncoesGlobais.Subst(sSql, new String[] {par1, par2, par3, par4, par5});
 
                     try {
@@ -5705,7 +5907,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                 String[] variavel = new String[] {contrato, rgprp, rgimv, sADMCPOS,
                        Dates.DateFormata("yyyy-MM-dd",Dates.StringtoDate(gCampo[l][gCampo[l].length - 1],"dd/MM/yyyy")),
                        Dates.DateFormata("yyyy-MM-dd", new Date()),
-                       nAut,
+                       String.valueOf((int)nAut).replace(".0", ""),
                        "ADM"};
                 sSql = FuncoesGlobais.Subst(sSql, variavel);
 
@@ -5728,7 +5930,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                    divaCampo[l][2],
                    divaCampo[l][3],
                    Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
-                   Dates.DateFormata("yyyy-MM-dd", new Date()), nAut, "REC"});
+                   Dates.DateFormata("yyyy-MM-dd", new Date()), String.valueOf((int)nAut).replace(".0", ""), "REC"});
 
             try {
                 conn.ExecutarComando(sSql);
@@ -5743,7 +5945,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                                  divaSplit[3],
                                  Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
                                  Dates.DateFormata("yyyy-MM-dd", new Date()),
-                                 nAut};
+                                 String.valueOf((int)nAut).replace(".0", "")};
                 sSql = FuncoesGlobais.Subst(sSql, par1);
 
                 try {
@@ -5760,7 +5962,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                                  divaSplit[4],
                                  Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
                                  Dates.DateFormata("yyyy-MM-dd", new Date()),
-                                 nAut};
+                                 String.valueOf((int)nAut).replace(".0", "")};
                 sSql = FuncoesGlobais.Subst(sSql, par1);
 
                 try {
@@ -5778,7 +5980,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                                          divaSplit[5],
                                          Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
                                          Dates.DateFormata("yyyy-MM-dd", new Date()),
-                                         nAut};
+                                         String.valueOf((int)nAut).replace(".0", "")};
                         sSql = FuncoesGlobais.Subst(sSql, par1);
 
                         try {
@@ -5797,7 +5999,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                                      divaCampo[l][2],
                                      retencaoSplit[n],
                                      Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
-                                     nAut,"0"," ","0"};
+                                     String.valueOf((int)nAut).replace(".0", ""),"0"," ","0"};
                     sSql = FuncoesGlobais.Subst(sSql, par1);
 
                     try {
@@ -5814,7 +6016,7 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                     String sSql = "UPDATE ANTECIPADOS SET dtrecebimento = '&1.', rc_aut = '&2.' WHERE contrato = '&3.' AND dtvencimento = '&4.' AND Mid(campo,1,2) = '&5.';";
                     sSql = FuncoesGlobais.Subst(sSql, new String[] {
                             Dates.DateFormata("yyyy-MM-dd", new Date()),
-                        nAut, contrato, Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(jCampo[h][4], "ddMMyyyy")), jCampo[h][0]});
+                        String.valueOf((int)nAut).replace(".0", ""), contrato, Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(jCampo[h][4], "ddMMyyyy")), jCampo[h][0]});
 
                     System.out.println(sSql);
                     try {
@@ -5823,8 +6025,52 @@ public class BancosDigital extends javax.swing.JInternalFrame {
                 }
             }
         }
+
+        if (nAut > -1 && sucesso) {
+            // Elimina os recibos
+            String sql = "UPDATE RECIBO SET tag = 'X', AUTENTICACAO = '" + String.valueOf((int)nAut).replace(".0", "") + "' WHERE contrato = '" + contrato + "' AND dtvencimento = '" + Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(vencto, "dd/MM/yyyy")) + "';";
+            try {
+                conn.ExecutarComando(sql);
+            } catch (Exception e) { sucesso = false; }
+
+            if (!sucesso) { 
+                ExtornaRecibo(String.valueOf((int)nAut).replace(".0", "")); 
+            } 
+
+            try {
+                sql = "UPDATE CARTEIRA SET dtultrecebimento = '" + Dates.DateFormata("dd-MM-yyyy",Dates.StringtoDate(vencto,"dd-MM-yyyy")) + "' WHERE contrato = '" + contrato + "';";
+                conn.ExecutarComando(sql);
+            } catch (Exception e) { 
+                sucesso = false;
+                e.printStackTrace(); 
+            }
+        } 
+
         return sucesso;
     }    
+    
+    private void ExtornaRecibo(String nAut) {
+        try {
+            String sql = "";
+            sql = FuncoesGlobais.Subst("DELETE FROM Cheques WHERE ch_autenticacao = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM razao WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM retencao WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM imposto WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM extrato WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("UPDATE RECIBO SET TAG = ' ', AUTENTICACAO = '0' WHERE AUTENTICACAO = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);        
+        } catch (Exception e) {}
+    }
     
     private String CriticaCampo(String rgprp, String rgimv, String contrato, String recto, String campo) throws SQLException {
         String[] aCampo; int tCampo = 0; String ctCampo = "";
@@ -5938,5 +6184,4 @@ public class BancosDigital extends javax.swing.JInternalFrame {
 
         return auxCpo;
     }
-
 }

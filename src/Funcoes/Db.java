@@ -239,6 +239,9 @@ public class Db {
                         case "float":
                             vRetorno[i][3] = tmpResult.getFloat(variavel);
                             break;
+                        case "text":
+                            vRetorno[i][3] = tmpResult.getString(variavel);
+                            break;
                         default:
                             throw new AssertionError();
                     }                    

@@ -1835,18 +1835,16 @@
         <Component class="javax.swing.JComboBox" name="jcbxBcoBoleta">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
+              <StringArray count="6">
                 <StringItem index="0" value="104 - CEF"/>
                 <StringItem index="1" value="341 - Ita&#xfa;"/>
                 <StringItem index="2" value="033 - Santander"/>
                 <StringItem index="3" value="001 - Banco do Brasil"/>
                 <StringItem index="4" value="237 - Bradesco"/>
+                <StringItem index="5" value="077 - Inter"/>
               </StringArray>
             </Property>
           </Properties>
-          <BindingProperties>
-            <BindingProperty name="enabled" source="jcbxEnvio" sourcePath="${enabled}" target="jcbxBcoBoleta" targetPath="enabled" updateStrategy="0" immediately="false"/>
-          </BindingProperties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel63">
           <Properties>

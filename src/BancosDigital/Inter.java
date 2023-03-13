@@ -76,8 +76,8 @@ public class Inter {
         File crtFile = new File(path_crt);
         File keyFile = new File(path_key);
         
-        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "ericasantos");
-        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "ericasantos");
+        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "samic");
+        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "samic");
         SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();        
                 
         byte[] postData = json_message.getBytes( StandardCharsets.UTF_8 );
@@ -120,7 +120,7 @@ public class Inter {
         //   System.out.println(out);
         //}
 
-        String[] infoMessage = null;
+        String[] infoMessage = null; JSONObject jsonOb = null;
         if (statusCode != 200) {
             if (message == null) {
                 infoMessage = new String[] {"Erro desconhecido."};
@@ -132,10 +132,16 @@ public class Inter {
                 } else if (statusCode == 400) {                    
                     JSONArray arrJson = null;
                     try {
-                        JSONObject jsonOb = new JSONObject(message);      
+                        jsonOb = new JSONObject(message);      
                         arrJson = jsonOb.getJSONArray("violacoes");
                     } catch (JSONException jex) {} finally {
-                        if (arrJson != null) infoMessage = new String[] {arrJson.getString(0)};                    
+                        if (arrJson != null) {
+                            if (arrJson.length() != 0 ) {
+                                infoMessage = new String[] {arrJson.getString(0)};                                
+                            } else infoMessage = new String[] { jsonOb.getString("detail")};
+                        } else {
+                            infoMessage = new String[] { jsonOb.getString("detail")};
+                        }                    
                     }
                 } else {
                     infoMessage = new String[] {"Erro desconhecido."};
@@ -143,7 +149,7 @@ public class Inter {
             }
             codErro = String.valueOf(statusCode); msgErro = infoMessage != null ? infoMessage[0].toString() : null;
         } else {
-            JSONObject jsonOb = new JSONObject(message);
+            jsonOb = new JSONObject(message);
             String nossoNumero = myfunction(jsonOb,"nossoNumero").toString();
             String codigoBarras = myfunction(jsonOb,"codigoBarras").toString();
             String linhaDigitavel = myfunction(jsonOb,"linhaDigitavel").toString();
@@ -164,8 +170,8 @@ public class Inter {
         File crtFile = new File(path_crt);
         File keyFile = new File(path_key);
 
-        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "ericasantos");
-        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "ericasantos");
+        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "samic");
+        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "samic");
         SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();        
 
         // Pega dados
@@ -232,8 +238,8 @@ public class Inter {
         File crtFile = new File(path_crt);
         File keyFile = new File(path_key);
 
-        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "ericasantos");
-        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "ericasantos");
+        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "samic");
+        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "samic");
         SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();        
 
         byte[] postData = codBaixa.getBytes( StandardCharsets.UTF_8 );
@@ -304,8 +310,8 @@ public class Inter {
         File crtFile = new File(path_crt);
         File keyFile = new File(path_key);
 
-        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "ericasantos");
-        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "ericasantos");
+        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "samic");
+        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "samic");
         SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();        
         
         byte[] postData = nnumero.getBytes( StandardCharsets.UTF_8 );
@@ -394,8 +400,8 @@ public class Inter {
         File crtFile = new File(path_crt);
         File keyFile = new File(path_key);
 
-        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "ericasantos");
-        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "ericasantos");
+        KeyStore keyStore = PEMImporter.createKeyStore(keyFile, crtFile, "samic");
+        SSLContext sslContext = PEMImporter.createSSLFactory(keyFile, crtFile, "samic");
         SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();        
 
         // Parametros Token
