@@ -7,9 +7,12 @@
             <file>file:/C:/Projetos/original_old/src/BancosDigital/classBaixar.java</file>
             <file>file:/C:/Projetos/original_old/src/Protocolo/Calculos.java</file>
             <file>file:/C:/Projetos/original_old/src/Movimento/jBaixas.java</file>
-            <file>file:/C:/Projetos/original_old/src/Funcoes/DbMain.java</file>
+            <file>file:/C:/Projetos/original_old/src/Bancos/itau.java</file>
+            <file>file:/C:/Projetos/original_old/src/Bancos/cRetorno.java</file>
+            <file>file:/C:/Projetos/original_old/src/Bancos/cSegmentoU.java</file>
             <file>file:/C:/Projetos/original_old/src/Movimento/BoletasCentral/CentralBoletas.java</file>
             <file>file:/C:/Projetos/original_old/src/BancosDigital/BancosDigital.java</file>
+            <file>file:/C:/Projetos/original_old/src/Bancos/cSegmentoT.java</file>
         </group>
     </open-files>
 </project-private>

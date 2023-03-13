@@ -1954,9 +1954,26 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_conListaKeyPressed
 
     private void jBtnBaixarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBaixarActionPerformed
+        List<cRetorno> citau = itau.retorno("C:\\cert\\B408033A.RET");
+        List<cRetorno> baixadas = new ArrayList();
+        
+        for (cRetorno lst : citau) {
+            List<cSegmentoT> segt = lst.getSegmentot();
+            List<cSegmentoT> baisgt = new ArrayList();
+            for (cSegmentoT stl : segt) {
+                if (!stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
+                    baisgt.add(stl);
+                }
+            }
+            baixadas.add(new cRetorno(lst.getBanco(), lst.getTipoInsc(), lst.getInscr(), 
+                    lst.getTparquivo(), lst.getDatacredito(), baisgt, 
+                    lst.getQuantidadereg(), lst.getQuantidadesimples(), 
+                    lst.getQuantidadevinc(), lst.getValorvinc(), lst.getCodigolote(), lst.getTotalreg()));
+        }
+        
         List<classBaixar> listas = new ArrayList<>();
         for (int i = 0; i < conLista.getRowCount(); i++) {
-            String avulso =   conLista.getValueAt(i, 3).toString().toUpperCase();
+            String avulso = conLista.getValueAt(i, 3).toString().toUpperCase();
             if ("AVULSO".contains(avulso)) continue;
 
             String situacao = conLista.getValueAt(i, 10).toString().toUpperCase();
