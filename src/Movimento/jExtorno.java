@@ -435,22 +435,24 @@ public class jExtorno extends javax.swing.JInternalFrame {
         String oldPdf = ""; 
         String newPdf = "";
         if (files != null) {
-            oldPdf = files[0].getPath();
-            int dotPdf = oldPdf.indexOf(".pdf");
-            if (dotPdf > - 1) {
-                newPdf = oldPdf.substring(0, dotPdf) + "_EXTORNADO.pdf";
-            }
-            if (newPdf != "") {
-                File oldFile = new File(oldPdf);
-                File newFile = new File(newPdf);
-                if (!newFile.exists()) {
-                    boolean sucesso = oldFile.renameTo(newFile);
-                    if (!sucesso) {
-                        JOptionPane.showMessageDialog(this, "Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf + "\n\nChame o suporte!!!");
-                        System.out.println("Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf);
+            try {
+                oldPdf = files[0].getPath();
+                int dotPdf = oldPdf.indexOf(".pdf");
+                if (dotPdf > - 1) {
+                    newPdf = oldPdf.substring(0, dotPdf) + "_EXTORNADO.pdf";
+                }
+                if (newPdf != "") {
+                    File oldFile = new File(oldPdf);
+                    File newFile = new File(newPdf);
+                    if (!newFile.exists()) {
+                        boolean sucesso = oldFile.renameTo(newFile);
+                        if (!sucesso) {
+                            JOptionPane.showMessageDialog(this, "Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf + "\n\nChame o suporte!!!");
+                            System.out.println("Não foi possivel renomear o arquivo " + oldPdf + " para " + newPdf);
+                        }
                     }
                 }
-            }
+            } catch (Exception ex) {}
         }
     }
     

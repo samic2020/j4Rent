@@ -81,7 +81,7 @@ public class jTableControl {
 
     public void Repaint() {
        MyTableModel tableModel = new MyTableModel();
-       tabela.setModel(tableModel);
+        try { tabela.setModel(tableModel); } catch (Exception ex) {}
 
         for (int i=0;i < Size.length; i++) {
             tabela.getColumnModel().getColumn(i).setPreferredWidth(Size[i]);
@@ -172,7 +172,7 @@ public class jTableControl {
     public void Clear(JTable table) {
         DefaultTableModel mdl = (DefaultTableModel) table.getModel();
         mdl.setRowCount(0);
-        tabela.updateUI();
+        table.updateUI();
     }
 
 }

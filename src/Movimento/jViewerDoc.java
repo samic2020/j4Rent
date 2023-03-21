@@ -500,13 +500,44 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
     private void btPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPreviewActionPerformed
         int selRow = tFiles.getSelectedRow();
         int modelRow = tFiles.convertRowIndexToModel(selRow);
+        int nAut =  Integer.parseInt(tFiles.getValueAt(selRow, 4).toString());
+        Date vencto = Dates.StringtoDate(tFiles.getValueAt(selRow, 3).toString(),"yyyy-MM-dd");
+        String contrato = tFiles.getValueAt(selRow, 0).toString();
+        
         String docName = "";
         if (tipo.getSelectedIndex() == 0) {
             // Recibos
             docName = ImprimeReciboPDF(selRow, true);
         } else if (tipo.getSelectedIndex() == 1) {
             // Boletas
-            docName = ImprimeReciboPDF(selRow, false);
+            if (nAut == 0) {
+                // Imprime 2ª Via do pdf da boleta já gerada
+                Object[][] aDados = {};
+                try { 
+                    aDados = db.ReadFieldsTable(new String[] {"boletapath"}, "recibo", "contrato = :contrato AND (DTVENCIMENTO = :dtvenc OR dtvencbol = :dtvenc2)", new Object[][] {
+                        {"string", "contrato", contrato},
+                        {"date", "dtvenc", vencto},
+                        {"date", "dtvenc2", vencto}
+                    });
+                } catch (SQLException sqlEx) {};
+                if (aDados != null) docName = aDados[0][3].toString();
+            } else {
+                if (JOptionPane.showConfirmDialog(this, "Escolha conforme informado.\n" + 
+                        "<Sim> para espelho da boleta.\n" +
+                        "<Não> para comprovante de recebimento.", "Atenção", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    Object[][] aDados = {};
+                    try { 
+                        aDados = db.ReadFieldsTable(new String[] {"boletapath"}, "recibo", "contrato = :contrato AND (DTVENCIMENTO = :dtvenc OR dtvencbol = :dtvenc2)", new Object[][] {
+                            {"string", "contrato", contrato},
+                            {"date", "dtvenc", vencto},
+                            {"date", "dtvenc2", vencto}
+                        });
+                    } catch (SQLException sqlEx) {};
+                    if (aDados != null) docName = aDados[0][3].toString();
+                } else {
+                    docName = ImprimeReciboPDF(selRow, false);
+                }
+            }
         } else if (tipo.getSelectedIndex() == 2) {
             // Extratos
             docName = ImprimeExtratoPDF(selRow);
@@ -514,7 +545,7 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
             // Avisos
             docName = ImprimeAvisoPDF(selRow);
         }
-        new toPreview(docName);
+        if (!docName.isEmpty()) new toPreview(docName);
     }//GEN-LAST:event_btPreviewActionPerformed
 
     private void BuildTable(JTable grade, Object[][] data) {
@@ -605,14 +636,22 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
     }
 
     private void ListarBoletos(Date dtini, Date dtfin) {
+//        String selectSQL = "SELECT r.contrato, (SELECT l.nomerazao FROM locatarios l " + 
+//                "WHERE l.contrato = r.contrato LIMIT 1) nome, r.dtvencimento, r.autenticacao " + 
+//                "FROM recibo r WHERE r.tag = 'X' AND r.autenticacao != 0 AND " + 
+//                "NOT ISNULL(r.nnumero) AND r.dtvencimento BETWEEN :inicio AND :final " + 
+//                "ORDER BY r.dtvencimento, 2;";
         String selectSQL = "SELECT r.contrato, (SELECT l.nomerazao FROM locatarios l " + 
                 "WHERE l.contrato = r.contrato LIMIT 1) nome, r.dtvencimento, r.autenticacao " + 
-                "FROM recibo r WHERE r.tag = 'X' AND r.autenticacao != 0 AND " + 
-                "NOT ISNULL(r.nnumero) AND r.dtvencimento BETWEEN :inicio AND :final " + 
-                "ORDER BY r.dtvencimento, 2;";
+                "FROM recibo r WHERE NOT ISNULL(r.nnumero) AND " + 
+                "CASE WHEN isnull(r.dtvencbol) THEN (r.DTVENCIMENTO between :dtini1 AND :dtfim1) " +
+                "ELSE (r.dtvencbol between :dtini2 AND :dtfim2) END ORDER BY r.dtvencimento, 2;";
+
         ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
-            {"date", "inicio", dtini},
-            {"date", "final", dtfin}
+            {"date", "dtini1", dtini},
+            {"date", "dtfim1", dtfin},
+            {"date", "dtini2", dtini},
+            {"date", "dtfim2", dtfin}
         });
         Object[][] data = {};
         try {

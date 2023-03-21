@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -71,7 +72,7 @@ public class NamedPreparedStatement extends PreparedStatementImpl {
             parsedQuery.append(c);
         }
 
-        return new NamedPreparedStatement(conn.prepareStatement(parsedQuery.toString()), sql, orderedParameters);
+        return new NamedPreparedStatement(conn.prepareStatement(parsedQuery.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY), sql, orderedParameters);
     }
 
     private NamedPreparedStatement(PreparedStatement preparedStatement, String originalSQL, List<String> orderedParameters) {

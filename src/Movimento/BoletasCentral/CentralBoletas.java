@@ -8,8 +8,10 @@ package Movimento.BoletasCentral;
 import Bancos.*;
 import BancosDigital.classBaixar;
 import BancosDigital.classInterConsulta;
+import Funcoes.Autenticacao;
 import Funcoes.CentralizaTela;
 import Funcoes.Dates;
+import Funcoes.Db;
 import Funcoes.DbMain;
 import Funcoes.FuncoesGlobais;
 import Funcoes.LerValor;
@@ -23,17 +25,22 @@ import static Funcoes.gmail.GmailOperations.createMessageWithEmail;
 import Funcoes.jDirectory;
 import Funcoes.jTableControl;
 import Funcoes.toPreview;
+import Funcoes.toPrint2;
 import Protocolo.Calculos;
 import Protocolo.DepuraCampos;
+import Protocolo.DivideCC;
+import Protocolo.ReCalculos;
 import j4rent.Partida.Collections;
 import boleta.Boleta;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
 import com.toedter.calendar.JTextFieldDateEditor;
+import java.awt.Cursor;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JTable;
@@ -79,6 +87,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private List<BancosBoleta> bancosBoletaRemessa;
 
     DbMain conn = VariaveisGlobais.conexao;
+    Db db = new Db();
+
     String[] month;
     int[] dmonth;
     
@@ -197,8 +207,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jScrollPane6 = new javax.swing.JScrollPane();
         conLista = new javax.swing.JTable();
         jProgressListaBoletasConsulta = new javax.swing.JProgressBar();
-        jProgressListaBoletasConsulta1 = new javax.swing.JProgressBar();
         jBtnBaixar = new javax.swing.JButton();
+        jLabel15 = new javax.swing.JLabel();
+        arqRetorno = new javax.swing.JTextField();
         jPanel17 = new javax.swing.JPanel();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel18 = new javax.swing.JPanel();
@@ -213,11 +224,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jLabel19 = new javax.swing.JLabel();
         recValor = new javax.swing.JTextField();
         filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        jPanel20 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
-        expQuantidade = new javax.swing.JTextField();
-        jLabel21 = new javax.swing.JLabel();
-        expValor = new javax.swing.JTextField();
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel21 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
@@ -561,7 +567,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 492, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 541, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -569,7 +575,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)))
+                        .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -630,7 +636,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -640,7 +646,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 832, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -694,7 +700,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jListarRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                 .addComponent(btnGerarRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jProgressRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -708,11 +714,11 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 837, Short.MAX_VALUE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)))
+                        .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)))
                 .addGap(6, 6, 6))
         );
         jPanel5Layout.setVerticalGroup(
@@ -724,7 +730,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(57, Short.MAX_VALUE))
         );
 
         jTabbedPaneBoletas.addTab("Remessa", jPanel5);
@@ -903,34 +909,34 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
         jLabel13.setText("Banco:");
         jPanel13.add(jLabel13);
-        jLabel13.setBounds(10, 10, 38, 16);
+        jLabel13.setBounds(10, 10, 36, 16);
 
         jPanel13.add(jcbConsultaBancos);
-        jcbConsultaBancos.setBounds(50, 10, 190, 28);
+        jcbConsultaBancos.setBounds(50, 10, 190, 22);
 
         jLabel10.setText("Listar:");
         jPanel13.add(jLabel10);
-        jLabel10.setBounds(290, 20, 34, 16);
+        jLabel10.setBounds(290, 20, 31, 16);
 
-        jTipoListagem.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODOS", "PAGO", "EXPIRADO", "VENCIDO", "EMABERTO", "CANCELADO" }));
+        jTipoListagem.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODOS", "PAGOS", "EMABERTO" }));
         jPanel13.add(jTipoListagem);
-        jTipoListagem.setBounds(330, 10, 153, 28);
+        jTipoListagem.setBounds(330, 10, 94, 22);
 
         jLabel11.setText("Periodo:");
         jPanel13.add(jLabel11);
-        jLabel11.setBounds(510, 20, 46, 16);
+        jLabel11.setBounds(510, 20, 44, 16);
 
         conDataInicial.setDate(new java.util.Date(-2208977612000L));
         jPanel13.add(conDataInicial);
-        conDataInicial.setBounds(560, 10, 90, 26);
+        conDataInicial.setBounds(560, 10, 90, 22);
 
         jLabel12.setText("até");
         jPanel13.add(jLabel12);
-        jLabel12.setBounds(660, 20, 17, 10);
+        jLabel12.setBounds(660, 20, 16, 10);
 
         conDataFinal.setDate(new java.util.Date(-2208977612000L));
         jPanel13.add(conDataFinal);
-        conDataFinal.setBounds(680, 10, 90, 26);
+        conDataFinal.setBounds(680, 10, 90, 22);
         jPanel13.add(filler1);
         filler1.setBounds(0, 0, 0, 0);
 
@@ -941,7 +947,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             }
         });
         jPanel13.add(conBtnListar);
-        conBtnListar.setBounds(780, 10, 59, 26);
+        conBtnListar.setBounds(780, 10, 72, 22);
 
         jPanel16.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel16.setMaximumSize(new java.awt.Dimension(456, 361));
@@ -980,8 +986,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        conLista.setColumnSelectionAllowed(true);
-        conLista.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        conLista.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         conLista.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 conListaMouseClicked(evt);
@@ -999,9 +1004,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jProgressListaBoletasConsulta.setMinimumSize(new java.awt.Dimension(146, 14));
         jProgressListaBoletasConsulta.setStringPainted(true);
 
-        jProgressListaBoletasConsulta1.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jProgressListaBoletasConsulta1.setStringPainted(true);
-
         jBtnBaixar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icones/DownArrow.gif"))); // NOI18N
         jBtnBaixar.setText("Baixar no Sistema");
         jBtnBaixar.addActionListener(new java.awt.event.ActionListener() {
@@ -1010,30 +1012,45 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel15.setText("Arquivo de Retorno:");
+
+        arqRetorno.setEditable(false);
+        arqRetorno.setBackground(new java.awt.Color(255, 255, 255));
+        arqRetorno.setForeground(new java.awt.Color(0, 0, 0));
+        arqRetorno.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                arqRetornoMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 856, Short.MAX_VALUE)
             .addGroup(jPanel16Layout.createSequentialGroup()
-                .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(arqRetorno)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jBtnBaixar, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jProgressListaBoletasConsulta1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
-                    .addComponent(jBtnBaixar))
+                    .addComponent(jBtnBaixar)
+                    .addComponent(jLabel15)
+                    .addComponent(arqRetorno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane6)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jProgressListaBoletasConsulta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jProgressListaBoletasConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jPanel17.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -1042,7 +1059,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel17.setLayout(new javax.swing.BoxLayout(jPanel17, javax.swing.BoxLayout.LINE_AXIS));
         jPanel17.add(filler3);
 
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 204), 1, true), " [ Vencidos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(0, 0, 102))); // NOI18N
+        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 204), 1, true), " [ Vencidos e Não Baixados] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(0, 0, 102))); // NOI18N
         jPanel18.setMaximumSize(new java.awt.Dimension(198, 89));
         jPanel18.setMinimumSize(new java.awt.Dimension(198, 89));
         jPanel18.setPreferredSize(new java.awt.Dimension(148, 81));
@@ -1095,7 +1112,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel17.add(jPanel18);
         jPanel17.add(filler4);
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(51, 204, 0), 1, true), " [ Pagos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(51, 204, 0))); // NOI18N
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(51, 204, 0), 1, true), " [ Pagos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(51, 204, 0))); // NOI18N
         jPanel19.setMaximumSize(new java.awt.Dimension(148, 89));
         jPanel19.setMinimumSize(new java.awt.Dimension(148, 89));
         jPanel19.setPreferredSize(new java.awt.Dimension(150, 81));
@@ -1124,7 +1141,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     .addGroup(jPanel19Layout.createSequentialGroup()
                         .addComponent(jLabel18)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(recQuantidade, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE))
+                        .addComponent(recQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 37, Short.MAX_VALUE))
                     .addGroup(jPanel19Layout.createSequentialGroup()
                         .addComponent(jLabel19)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1147,69 +1164,12 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
         jPanel17.add(jPanel19);
         jPanel17.add(filler5);
-
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 0, 0), 1, true), " [ Expirados ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(255, 0, 0))); // NOI18N
-        jPanel20.setMaximumSize(new java.awt.Dimension(148, 89));
-        jPanel20.setMinimumSize(new java.awt.Dimension(148, 89));
-        jPanel20.setPreferredSize(new java.awt.Dimension(148, 81));
-
-        jLabel20.setText("Quantidade:");
-
-        expQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        expQuantidade.setForeground(new java.awt.Color(255, 0, 0));
-        expQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        expQuantidade.setText("000");
-
-        jLabel21.setText("Valor:");
-
-        expValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        expValor.setForeground(new java.awt.Color(255, 0, 0));
-        expValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        expValor.setText("0,00");
-        expValor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                expValorActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
-        jPanel20.setLayout(jPanel20Layout);
-        jPanel20Layout.setHorizontalGroup(
-            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel20Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(jLabel21)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(expValor))
-                    .addGroup(jPanel20Layout.createSequentialGroup()
-                        .addComponent(jLabel20)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(expQuantidade, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)))
-                .addGap(7, 7, 7))
-        );
-        jPanel20Layout.setVerticalGroup(
-            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel20Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel20)
-                    .addComponent(expQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0)
-                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel21)
-                    .addComponent(expValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel17.add(jPanel20);
         jPanel17.add(filler6);
 
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 204), 1, true), " [ Em Abertos ] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 0, 12), new java.awt.Color(0, 204, 204))); // NOI18N
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 204), 1, true), " [ Em Abertos  e Não Baixados] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(0, 204, 204))); // NOI18N
         jPanel21.setMaximumSize(new java.awt.Dimension(198, 89));
         jPanel21.setMinimumSize(new java.awt.Dimension(198, 89));
-        jPanel21.setPreferredSize(new java.awt.Dimension(148, 81));
+        jPanel21.setPreferredSize(new java.awt.Dimension(198, 81));
 
         jLabel22.setText("Quantidade:");
 
@@ -1231,16 +1191,16 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel21Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel23)
+                    .addComponent(jLabel22))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(preValor)
                     .addGroup(jPanel21Layout.createSequentialGroup()
-                        .addComponent(jLabel23)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(preValor))
-                    .addGroup(jPanel21Layout.createSequentialGroup()
-                        .addComponent(jLabel22)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(35, 35, 35)
                         .addComponent(preQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel21Layout.setVerticalGroup(
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1893,8 +1853,46 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_conBtnListarActionPerformed
 
     private void ListaBoletasBanco() throws Exception {
+        conBtnListar.setEnabled(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        List<cRetorno> baixadas = new ArrayList();
+        if (arqRetorno.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");            
+        } else {        
+            List<cRetorno> citau = itau.retorno(arqRetorno.getText());
+
+            for (cRetorno lst : citau) {
+                List<cSegmentoT> segt = lst.getSegmentot();
+                List<cSegmentoT> baisgt = new ArrayList();
+                for (cSegmentoT stl : segt) {
+                    if (!stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
+                        baisgt.add(stl);
+                    }
+                }
+                baixadas.add(new cRetorno(lst.getBanco(), lst.getTipoInsc(), lst.getInscr(), 
+                        lst.getTparquivo(), lst.getDatacredito(), baisgt, 
+                        lst.getQuantidadereg(), lst.getQuantidadesimples(), 
+                        lst.getQuantidadevinc(), lst.getValorvinc(), lst.getCodigolote(), lst.getTotalreg()));
+            }
+
+            String sBancoSel = jcbConsultaBancos.getSelectedItem().toString().substring(0, 3);
+            if (!baixadas.get(0).getBanco().equalsIgnoreCase(sBancoSel)) {
+                JOptionPane.showMessageDialog(this, "Banco selecionado diferente do arquivo de retorno!");
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                conBtnListar.setEnabled(true);
+                return;
+            }
+        }
+        
+        TableControl.header(conLista, new String[][] {
+            {"Emissão","Vencimento","Pagamento","SeuNumero","NossoNumero","CnpjCpf","Sacado","Multa","Juros","Valor","Situação","R"},
+            {"0","80","80","70","100","0","240","70","70","80","80","30"}
+        });
+        TableControl.Clear(conLista);
+        
         Integer[] tam = {0,80,80,70,100,0,240,70,70,80,80,30};
-        String[] col = {"Emissão","Vencimento","Pagamento","SeuNumero","NossoNumero","CnpjCpf","Sacado","Multa","Juros","Valor","Situação","B"};
+        String[] col = {"Emissão","Vencimento","Pagamento","SeuNumero","NossoNumero","CnpjCpf","Sacado","Multa","Juros","Valor","Situação","R"};
         Boolean[] edt = {false,false,false,false,false,false,false,false,false,false,false,false};
         String[] aln = {"C","C","C","C","C","C","L","R","R","R","C","C"};
         Object[][] data = {};
@@ -1903,47 +1901,183 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jProgressListaBoletasConsulta.setValue(0);
         
         String tipoListagem = jTipoListagem.getSelectedItem().toString();
+        int tpListagem = 0;
+        if (tipoListagem.equalsIgnoreCase("TODOS")) {
+            tipoListagem = "";
+            tpListagem = 0;
+        } else if (tipoListagem.equalsIgnoreCase("PAGOS")) {
+            tipoListagem = "r.tag = 'X' AND ";
+            tpListagem = 1;
+        } else {
+            tipoListagem = "r.tag != 'X' AND ";
+            tpListagem = 2;
+        }
         tipoListagem = (tipoListagem.equalsIgnoreCase("TODOS") ? "" : tipoListagem);
         
         String conDataIni = Dates.DateFormata("yyyy-MM-dd", conDataInicial.getDate());
         String conDataFim = Dates.DateFormata("yyyy-MM-dd", conDataFinal.getDate());
-        /*
-        / Inicializa variavel para jtable
-        */
-        List<classInterConsulta> pessoasBoleta = new ArrayList<classInterConsulta>();
         
-//                            
-//                            pessoasBoleta.add(new classInterConsulta(dataEmissao, dataVencimento, dataPagamento, seuNumero, nossoNumero, cnpjCpfSacado, nomeSacado, valorMulta, valorJuros, valorNominal, situacao, baixado));
-//                            
-//                            int pgs2 = ((b++ * 100) / brc) + 1;
-//                            jProgressListaBoletasConsulta1.setValue(pgs2);     
-//                            try { Thread.sleep(20); } catch (InterruptedException ex) { }
-//        
-        if (pessoasBoleta.size() > 0) {
-            for (classInterConsulta item : pessoasBoleta) { 
-                String mData = "";
-                try { mData = Dates.DateFormata("dd-MM-yyyy", item.getDataPagamento().getValue()); } catch (Exception ex) {}
-                Object[] dado = {
-                        Dates.DateFormata("dd-MM-yyyy", item.getDataEmissao().getValue()), 
-                        Dates.DateFormata("dd-MM-yyyy", item.getDataVencimento().getValue()), 
-                        mData, 
-                        item.getSeuNumero().getValue().toString(), 
-                        item.getNossoNumero().getValue().toString(), 
-                        item.getCnpjCpfSacado().getValue().toString(), 
-                        item.getNomeSacado().getValue().toString(), 
-                        new DecimalFormat("#,##0.00").format(item.getValorMulta().getValue()),
-                        new DecimalFormat("#,##0.00").format(item.getValorJuros().getValue()),
-                        new DecimalFormat("#,##0.00").format(item.getValorNominal().getValue()),
-                        item.getSituacao().getValue().toString(),
-                        item.getBaixado().getValue() ? "S" : "N"
-                };
-                data = tabela.insert(data, dado);
+        String selectSQL = "SELECT r.rgprp, r.rgimv, r.contrato, IF(ISNULL(r.dtvencbol), r.dtvencimento, r.dtvencbol) dtvencimento, " +
+        "(SELECT e.dtrecebimento FROM jgeral.extrato e WHERE e.rgprp = r.rgprp AND e.rgimv = r.rgimv AND e.contrato = r.contrato AND e.DTVENCIMENTO = r.DTVENCIMENTO) as dtrecebimento, " +
+        "l.nomerazao, l.cpfcnpj, r.nnumero, r.tag FROM recibo r, locatarios l WHERE " +
+        "(r.contrato = l.contrato) AND (r.remessa = 'S' AND NOT ISNULL(r.nnumero)) AND " +
+        (!tipoListagem.equalsIgnoreCase("") ? tipoListagem : "") +
+        "CASE WHEN isnull(r.dtvencbol) THEN (r.DTVENCIMENTO between :dtini1 AND :dtfim1) " +
+        "ELSE (r.dtvencbol between :dtini2 AND :dtfim2) END ORDER BY 4;";
+        
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"date", "dtini1", conDataInicial.getDate()},
+            {"date", "dtfim1", conDataFinal.getDate()},
+            {"date", "dtini2", conDataInicial.getDate()},
+            {"date", "dtfim2", conDataFinal.getDate()},
+        });
+        
+        String trgprp = null, trgimv = null, tcontrato = null;
+        Date tvencimento = null; Date trecebimento = null;
+        String tnomerazao = null; String tcpfcnpj = null;
+        int tautenticacaco = -1; String tnnumero = null; 
+        String ttag = null; String tcampo = null;
+        String tmulta = "0,00", tjuros = "0,00", tvalor = "0,00";
+        String tmu = "0,00", tju = "0,00", tvr = "0,00";
+        
+        // Totalizadores
+        int baiQtd = 0; BigDecimal baiVlr = new BigDecimal("0");
+        int recQtd = 0; BigDecimal recVlr = new BigDecimal("0");
+        int preQtd = 0; BigDecimal preVlr = new BigDecimal("0");
+        int brc = DbMain.RecordCount(rs);
+        try {
+            while (rs.next()) {
+                try { trgprp = rs.getString("rgprp"); } catch (SQLException exSQL) { trgprp = ""; }
+                try { trgimv = rs.getString("rgimv"); } catch (SQLException exSQL) { trgimv = ""; }
+                try { tcontrato = rs.getString("contrato"); } catch (SQLException exSQL) { tcontrato = ""; }
+                try { tvencimento = rs.getDate("dtvencimento"); } catch (SQLException exSQL) { tvencimento = null; }
+                try { trecebimento = rs.getDate("dtrecebimento"); } catch (SQLException exSQL) { trecebimento = null; }
+                try { tnomerazao = rs.getString("nomerazao"); } catch (SQLException exSQL) { tnomerazao = ""; }
+                try { tcpfcnpj = rs.getString("cpfcnpj"); } catch (SQLException exSQL) { tcpfcnpj = ""; }
+                try { tnnumero = rs.getString("nnumero"); } catch (SQLException exSQL) { tnnumero = ""; }
+                try { ttag = rs.getString("tag"); } catch (SQLException exSQL) { ttag = ""; }
+                                                              
+                // Checa se esta no arquivo de remessa
+                String isRetorno = "N";
+                for (cRetorno ret : baixadas) {
+                    for (cSegmentoT segt : ret.getSegmentot()) {
+                        String _nnumero = segt.getNnumero() + segt.getDacnnumero();
+                        String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
+                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3))).replaceAll(".00", "");
+                        if (_nnumero.contains(_tnnumero)) {
+                            isRetorno = "S";
+                            trecebimento = Dates.StringtoDate(fmtDataCredito(segt.getSegmentou().getDatacredito()),"dd-MM-yyyy");
+                            tmu = LerValor.FormatNumber(segt.getSegmentou().getJurousmulta().substring(5),2);
+                            tju = "0,00";
+                            tvr = LerValor.FormatNumber(segt.getSegmentou().getValorcred().substring(5),2);
+                            
+                            break;
+                        } else {
+                            tmu = "0,00"; tju = "0,00"; tvr = "0,00";
+                        }                            
+                    }
+                }
+                
+                // Pega valor da boleta, multa, juros e correção do arquivo de retorno
+                float[] tboleta = CalcularRecibo(
+                        trgprp, 
+                        trgimv, 
+                        tcontrato, 
+                        Dates.DateFormata("dd-MM-yyyy",tvencimento), 
+                        (trecebimento != null ? Dates.DateFormata("dd-MM-yyyy", trecebimento) : null)
+                );
+                tmulta = new DecimalFormat("#,##0.00").format(tboleta[1]);
+                tjuros = new DecimalFormat("#,##0.00").format(tboleta[2] + tboleta[3]);
+                tvalor = new DecimalFormat("#,##0.00").format(tboleta[4]);                
+
+                if (isRetorno.equalsIgnoreCase("S")) {
+                    tnomerazao = (LerValor.StringToFloat(tvalor) == LerValor.StringToFloat(tvr) ? tnomerazao : "*" + tnomerazao);
+                    tmulta = tmu;
+                    tjuros = tju;
+                    tvalor = tvr;
+                }
+                
+                if (tpListagem == 2) {
+                    if (isRetorno.equalsIgnoreCase("S")) {
+                        TableControl.add(conLista, new String[][]{
+                            {
+                                "", 
+                                (tvencimento != null ?  Dates.DateFormata("dd-MM-yyyy",tvencimento) : ""), 
+                                (trecebimento != null ? Dates.DateFormata("dd-MM-yyyy", trecebimento) : ""), 
+                                tcontrato, 
+                                (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3)), 
+                                tcpfcnpj, 
+                                tnomerazao,
+                                tmulta,
+                                tjuros,
+                                tvalor,
+                                (ttag.equalsIgnoreCase("X") ? "PAGO" : "EMABERTO"),
+                                isRetorno
+                            },
+                            {"C","C","C","C","C","C","L","R","R","R","C","C"}
+                        }, true);
+                    }
+                } else {
+                    TableControl.add(conLista, new String[][]{
+                        {
+                            "", 
+                            (tvencimento != null ?  Dates.DateFormata("dd-MM-yyyy",tvencimento) : ""), 
+                            (trecebimento != null ? Dates.DateFormata("dd-MM-yyyy", trecebimento) : ""), 
+                            tcontrato, 
+                            (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3)), 
+                            tcpfcnpj, 
+                            tnomerazao,
+                            tmulta,
+                            tjuros,
+                            tvalor,
+                            (ttag.equalsIgnoreCase("X") ? "PAGO" : "EMABERTO"),
+                            (ttag.equalsIgnoreCase("X") ? "" : isRetorno)
+                        },
+                        {"C","C","C","C","C","C","L","R","R","R","C","C"}
+                    }, true);
+                }
+                
+                
+                // Totalizadores
+                if (ttag.equalsIgnoreCase("X")) {
+                    // PAGOS
+                    recQtd++;
+                    recVlr = recVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
+                } else if (!ttag.equalsIgnoreCase("X") && (Dates.DateDiff(Dates.DIA, tvencimento, new Date()) <= 0) ) {
+                    // EM ABERTO
+                    preQtd++;
+                    preVlr = preVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
+                } else if (!ttag.equalsIgnoreCase("X") && (Dates.DateDiff(Dates.DIA, tvencimento, new Date()) > 0) ) {
+                    // VENCIDO
+                    baiQtd++;
+                    baiVlr = baiVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
+                }
+                
+                int pgs2 = ((b++ * 100) / brc) + 1;
+                jProgressListaBoletasConsulta.setValue(pgs2);     
+                try { Thread.sleep(20); } catch (InterruptedException ex) { }
+
             }
-            
-            tabela.Show(conLista, data, tam, aln, col, edt);            
-        } 
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        
+        baiQuantidade.setText(FuncoesGlobais.StrZero(String.valueOf(baiQtd),3));
+        baiValor.setText(LerValor.floatToCurrency(baiVlr.floatValue(),2));
+
+        recQuantidade.setText(FuncoesGlobais.StrZero(String.valueOf(recQtd),3));
+        recValor.setText(LerValor.floatToCurrency(recVlr.floatValue(),2));
+
+        preQuantidade.setText(FuncoesGlobais.StrZero(String.valueOf(preQtd),3));
+        preValor.setText(LerValor.floatToCurrency(preVlr.floatValue(),2));
+
+        // Retorna cursor
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        conBtnListar.setEnabled(true);
     }
     
+    private String fmtDataCredito(String value) {
+        return value.substring(0,2) + "-" + value.substring(2,4) + "-" + value.substring(4);
+    }
     
     private void conListaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_conListaMouseClicked
         //
@@ -1954,96 +2088,185 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_conListaKeyPressed
 
     private void jBtnBaixarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBaixarActionPerformed
-        List<cRetorno> citau = itau.retorno("C:\\cert\\B408033A.RET");
-        List<cRetorno> baixadas = new ArrayList();
-        
-        for (cRetorno lst : citau) {
-            List<cSegmentoT> segt = lst.getSegmentot();
-            List<cSegmentoT> baisgt = new ArrayList();
-            for (cSegmentoT stl : segt) {
-                if (!stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
-                    baisgt.add(stl);
-                }
-            }
-            baixadas.add(new cRetorno(lst.getBanco(), lst.getTipoInsc(), lst.getInscr(), 
-                    lst.getTparquivo(), lst.getDatacredito(), baisgt, 
-                    lst.getQuantidadereg(), lst.getQuantidadesimples(), 
-                    lst.getQuantidadevinc(), lst.getValorvinc(), lst.getCodigolote(), lst.getTotalreg()));
-        }
-        
         List<classBaixar> listas = new ArrayList<>();
-        for (int i = 0; i < conLista.getRowCount(); i++) {
-            String avulso = conLista.getValueAt(i, 3).toString().toUpperCase();
-            if ("AVULSO".contains(avulso)) continue;
+        Map<String, Object> param = new HashMap();
+        
+        if (conLista.getSelectedRows().length == 0) {
+            for (int i = 0; i < conLista.getRowCount(); i++) {
+                String avulso =   conLista.getValueAt(i, 3).toString().toUpperCase();
+                if ("AVULSO".contains(avulso)) continue;
 
-            String situacao = conLista.getValueAt(i, 10).toString().toUpperCase();
-            String baixado =  conLista.getValueAt(i, 11).toString().toUpperCase();
-            if ("PAGO".contains(situacao) && "N".contains(baixado)) {
-                String seuNumero = conLista.getValueAt(i, 3).toString();
-                String seuNome = conLista.getValueAt(i, 6).toString();
-                String vencimento = conLista.getValueAt(i, 1).toString();
-                String pagamento = conLista.getValueAt(i, 2).toString();
-                String nossoNumero = conLista.getValueAt(i, 4).toString();
-                float multa = LerValor.StringToFloat(conLista.getValueAt(i, 7).toString());
-                float juros = LerValor.StringToFloat(conLista.getValueAt(i, 8).toString());
-                float valor = LerValor.StringToFloat(conLista.getValueAt(i, 9).toString());
+                String situacao = conLista.getValueAt(i, 10).toString().toUpperCase();
+                String baixado =  conLista.getValueAt(i, 11).toString().toUpperCase();
+                if ("PAGO".contains(situacao) && "N".contains(baixado)) {
+                    String seuNumero = conLista.getValueAt(i, 3).toString();
+                    String seuNome = conLista.getValueAt(i, 6).toString();
+                    String vencimento = conLista.getValueAt(i, 1).toString();
+                    String pagamento = conLista.getValueAt(i, 2).toString();
+                    String nossoNumero = conLista.getValueAt(i, 4).toString();
+                    float multa = LerValor.StringToFloat(conLista.getValueAt(i, 7).toString());
+                    float juros = LerValor.StringToFloat(conLista.getValueAt(i, 8).toString());
+                    float valor = LerValor.StringToFloat(conLista.getValueAt(i, 9).toString());
 
-                Date dvencimento = null; Date dpagamento = null;
-                try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
-                try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+                    Date dvencimento = null; Date dpagamento = null;
+                    try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                    try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
 
-                classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
-                tbaixar.setAtrasado();
-                listas.add(tbaixar);
+                    classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
+                    tbaixar.setAtrasado();
+                    listas.add(tbaixar);
+                } 
             }
+            param.put("banco", jcbConsultaBancos.getSelectedItem().toString());
+            param.put("logado", VariaveisGlobais.usuario.toUpperCase().trim());
+            param.put("status", "NÃO BAXADOS");
+        } else {
+            for (int i = 0; i < conLista.getSelectedRows().length; i++) {
+                int selecRow = conLista.getSelectedRows()[i];
+                String avulso = conLista.getValueAt(selecRow, 3).toString().toUpperCase();
+                if ("AVULSO".contains(avulso)) continue;
+
+                String situacao = conLista.getValueAt(selecRow, 10).toString().toUpperCase();
+                String baixado =  conLista.getValueAt(selecRow, 11).toString().toUpperCase();
+                if ("EMABERTO".contains(situacao) && "S".contains(baixado)) {
+                    String seuNumero = conLista.getValueAt(selecRow, 3).toString();
+                    String seuNome = conLista.getValueAt(selecRow, 6).toString();
+                    String vencimento = conLista.getValueAt(selecRow, 1).toString();
+                    String pagamento = conLista.getValueAt(selecRow, 2).toString();
+                    String nossoNumero = conLista.getValueAt(selecRow, 4).toString();
+                    float multa = LerValor.StringToFloat(conLista.getValueAt(selecRow, 7).toString());
+                    float juros = LerValor.StringToFloat(conLista.getValueAt(selecRow, 8).toString());
+                    float valor = LerValor.StringToFloat(conLista.getValueAt(selecRow, 9).toString());
+
+                    Date dvencimento = null; Date dpagamento = null;
+                    try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                    try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+
+                    classBaixar tbaixar = new classBaixar(seuNumero, seuNome, dvencimento, dpagamento, nossoNumero, multa, juros, valor);
+                    tbaixar.setAtrasado();
+                    listas.add(tbaixar);
+                } 
+            }
+            param.put("banco", jcbConsultaBancos.getSelectedItem().toString());
+            param.put("logado", VariaveisGlobais.usuario.toUpperCase().trim());
+            param.put("status", "");
         }
+        
         if (listas.size() <= 0) {
             JOptionPane.showInternalMessageDialog(this, "Não há vencimentos a baixar no sistema.");
         } else {
-            JOptionPane.showInternalMessageDialog(this, "Há " + listas.size() + " vencimentos a baixar no sistema.");
             try {
-                Map<String, Object> param = new HashMap();
-                param.put("banco", jcbConsultaBancos.getSelectedItem().toString());
-        
-                String fileName = "reports/BolBaixadas.jasper";
-                JRDataSource jrds = new JRBeanCollectionDataSource(listas);
-                JasperPrint print = JasperFillManager.fillReport(fileName, param, jrds);
+                if (conLista.getSelectedRows().length == 0) {
+                    String fileName = "reports/BolBaixadas.jasper";
+                    JRDataSource jrds = new JRBeanCollectionDataSource(listas);
+                    JasperPrint print = JasperFillManager.fillReport(fileName, param, jrds);
 
-                // Create a PDF exporter
-                JRExporter exporter = new JRPdfExporter();
+                    // Create a PDF exporter
+                    JRExporter exporter = new JRPdfExporter();
 
-                new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
-                String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+                    new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
+                    String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
 
-                // Configure the exporter (set output file name and print object)
-                String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
-                exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+                    // Configure the exporter (set output file name and print object)
+                    String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
+                    exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+                    exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
 
-                // Export the PDF file
-                exporter.exportReport();
+                    // Export the PDF file
+                    exporter.exportReport();
+                    new toPreview(outFileName);
+                } else {
+                    if (JOptionPane.showConfirmDialog(this, "Consolida as Boletas?", "Consolidação",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        // Retirar da lista todas as boletas que não estão no retorno
+                        
+                        
+                        // Baixa as boletas
+                        for (int i = 0; i < conLista.getSelectedRows().length; i++) {
+                            int selecRow = conLista.getSelectedRows()[i];
+                            String avulso = conLista.getValueAt(selecRow, 3).toString().toUpperCase();
+                            if ("AVULSO".contains(avulso)) continue;
 
-                new toPreview(outFileName);
+                            String situacao = conLista.getValueAt(selecRow, 10).toString().toUpperCase();
+                            String baixado =  conLista.getValueAt(selecRow, 11).toString().toUpperCase();
+                            if ("EMABERTO".contains(situacao) && "S".contains(baixado)) {
+                                String seuNumero = conLista.getValueAt(selecRow, 3).toString();
+                                String seuNome = conLista.getValueAt(selecRow, 6).toString();
+                                String vencimento = conLista.getValueAt(selecRow, 1).toString();
+                                String pagamento = conLista.getValueAt(selecRow, 2).toString();
+                                String nossoNumero = conLista.getValueAt(selecRow, 4).toString();
+                                float multa = LerValor.StringToFloat(conLista.getValueAt(selecRow, 7).toString());
+                                float juros = LerValor.StringToFloat(conLista.getValueAt(selecRow, 8).toString());
+                                float valor = LerValor.StringToFloat(conLista.getValueAt(selecRow, 9).toString());
 
+                                Date dvencimento = null; Date dpagamento = null;
+                                try { dvencimento = Dates.StringtoDate(vencimento, "dd-MM-yyyy"); } catch (Exception e) {}
+                                try { dpagamento = Dates.StringtoDate(pagamento, "dd-MM-yyyy"); } catch (Exception e) {}
+
+                                // Faz a baixa da boleta
+                                boolean bSucesso = Distribuicao(selecRow);
+                                if (!bSucesso) {
+                                    Object obj = conLista.getSelectedRows()[selecRow];
+                                    listas.remove(listas.indexOf(obj));
+                                } 
+                            } 
+                        }
+                        
+                        // Imprime na impressora jato/laser configurada
+                        String fileName = "reports/BolBaixadas.jasper";
+                        JRDataSource jrds = new JRBeanCollectionDataSource(listas);
+                        JasperPrint print = JasperFillManager.fillReport(fileName, param, jrds);
+
+                        // Create a PDF exporter
+                        JRExporter exporter = new JRPdfExporter();
+
+                        new jDirectory("reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/");
+                        String pathName = "reports/Relatorios/" + Dates.iYear(new Date()) + "/" + Dates.Month(new Date()) + "/";
+
+                        // Configure the exporter (set output file name and print object)
+                        String outFileName = pathName + "BolBaixadas_" + Dates.DateFormata("ddMMyyyyHHmmss", new Date()) + ".pdf";
+                        exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, outFileName);
+                        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+
+                        // Export the PDF file
+                        exporter.exportReport();
+                        new toPrint2(outFileName, 3);
+                    }
+                }                    
             } catch (JRException e) {
                 e.printStackTrace();
                 System.exit(1);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
-            }
-
+            }                    
         }
     }//GEN-LAST:event_jBtnBaixarActionPerformed
-
-    private void expValorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expValorActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_expValorActionPerformed
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
         
     }//GEN-LAST:event_formMousePressed
 
+    private void arqRetornoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_arqRetornoMouseClicked
+        String arq = escolherArquivo();
+        arqRetorno.setText(arq);
+    }//GEN-LAST:event_arqRetornoMouseClicked
+
+    private String escolherArquivo() {
+        File arquivos = null;
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle("Escolha o arquivo de retorno.");
+        fc.setDialogType(0);
+        fc.setApproveButtonText("OK");
+        fc.setFileSelectionMode(0);
+        fc.setMultiSelectionEnabled(false);
+        fc.showOpenDialog(fc);
+        arquivos = fc.getSelectedFile();
+        String aArquivos = "";
+        try { aArquivos = arquivos.getCanonicalPath().substring(2); } catch (IOException ioEx) { aArquivos = ""; }
+        
+        return aArquivos;
+    }
+    
     public void EmDia() {
         lbl_Status.setText("Criando Lista...");
         jProgress.setValue(0);
@@ -2749,7 +2972,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         }
 
         String[][] linhas = Recalcula(rgprp, rgimv, contrato, vencto);
-        float[] totais = CalcularRecibo(rgprp, rgimv, contrato, vencto);
+        float[] totais = CalcularRecibo(rgprp, rgimv, contrato, vencto, null);
 
         // exp, mul, jur, cor
         //float expediente = totais[0], multa = totais[1], juros = totais[2], correcao = totais[3];
@@ -3003,7 +3226,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         bean1.setnumeroBanco(bancos.getBanco() + "-" + bancos.getBancoDv());
 
         String[][] linhas = Recalcula(rgprp, rgimv, contrato, vencto);
-        float[] totais = CalcularRecibo(rgprp, rgimv, contrato, vencto);
+        float[] totais = CalcularRecibo(rgprp, rgimv, contrato, vencto, null);
 
         // exp, mul, jur, cor
         //float expediente = totais[0], multa = totais[1], juros = totais[2], correcao = totais[3];
@@ -3540,16 +3763,19 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         return linhas;
     }
 
-    private float[] CalcularRecibo(String rgprp, String rgimv, String contrato, String vecto) {
+    private float[] CalcularRecibo(String rgprp, String rgimv, String contrato, String vecto, String pagto) {
         if ("".equals(vecto.trim())) { return null; }
 
-        Calculos rc = new Calculos();
+        ReCalculos rc = new ReCalculos();
+        if (pagto != null) rc.setCalcDate(Dates.StringtoDate(pagto, "dd-MM-yyyy"));
         try {
             rc.Inicializa(rgprp, rgimv, contrato);
         } catch (SQLException ex) {}
 
         String campo = ""; String rcampo = ""; boolean mCartVazio = false;
-        String sql = "SELECT * FROM RECIBO WHERE contrato = '" + contrato + "' AND dtvencimento = '" + Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(vecto, "dd/MM/yyyy")) + "';";
+        String sql = "SELECT * FROM RECIBO WHERE contrato = '" + contrato + 
+                "' AND (dtvencimento = '" + Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(vecto, "dd/MM/yyyy")) + "' OR " + 
+                "dtvencbol = '" + Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(vecto, "dd/MM/yyyy")) + "');";
         ResultSet pResult = conn.AbrirTabela(sql, ResultSet.CONCUR_UPDATABLE);
         try {
             if (pResult.first()) {
@@ -3585,7 +3811,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         } catch (SQLException ex) {}
 
         float tRecibo = 0;
-        tRecibo = Calculos.RetValorCampos(campo);
+        tRecibo = ReCalculos.RetValorCampos(campo);
         tRecibo += exp + multa + juros + correcao;
 
         float[] retorno = new float[5];
@@ -3604,6 +3830,697 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         } catch (Exception e) {e.printStackTrace();}
         DbMain.FecharTabela(rs);
     }
+ 
+    private boolean Distribuicao(int selRow) throws SQLException {
+        String nnumero = conLista.getValueAt(selRow, 4).toString();
+        // Pega MU; CO; recebidos no boleto
+        String BMU = FuncoesGlobais.GravaValor(conLista.getValueAt(selRow, 7).toString());
+        String BCO = FuncoesGlobais.GravaValor(conLista.getValueAt(selRow, 8).toString());
+        
+        // Pega dados do recibo
+        Object[][] aDados = null;
+        try {
+            aDados = db.ReadFieldsTable(new String[] {"rgprp", "rgimv", "contrato", "dtvencimento", "campo"}, "recibo", "TRIM(nnumero) LIKE '%" + nnumero + "%'");
+        } catch (SQLException sqlEx) {}
+        if (aDados == null) {
+            JOptionPane.showMessageDialog(this, "Erro ao localizar ou NossoNumero apagado!");
+            return false;
+        }
+        String rgprp = aDados[0][3].toString();
+        String rgimv = aDados[1][3].toString();
+        String contrato = aDados[2][3].toString();
+        String vencto = Dates.StringtoString(aDados[3][3].toString(),"yyyy-MM-dd","dd-MM-yyyy");
+        String campo= aDados[4][3].toString();
+        
+        // Pega valor da lista
+        String vrboleta = conLista.getValueAt(selRow, 9).toString();
+
+        // Autenticacao
+        float nAut = (float)Autenticacao.getAut();
+        if (!Autenticacao.setAut((double)nAut, 1)) {
+            JOptionPane.showMessageDialog(null, "Erro ao gravar autenticacão!!!\nChane o suporte técnico...", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        float rc = LerValor.StringToFloat(vrboleta); 
+        String src = String.valueOf(rc);
+
+        boolean sucesso = true;
+        try {
+            conn.LancarCaixa(new String[] {rgprp, rgimv, contrato}, new String[][] {{"","","","",src,"CT","CRE","RC","BOLETA"}}, String.valueOf((int)nAut).replace(".0", ""));
+        } catch (Exception e) { sucesso = false; }
+        
+        // Calcula o recibo
+        new Calculos().Inicializa(rgprp, rgimv, contrato);
+        
+        DepuraCampos zCampos; String[] zCampo;
+
+        String[][] aCC = DivideCC.Divisao(rgimv);
+        String[][] jCampo;
+        String[] gmpCampo, difCampo;
+        String[][] tmpCampo;
+        String[][] divaCampo = {};
+        String[] admValores = {};
+        String[][] gCampo = {};
+
+        String[] admPer = null;
+        admPer = new Calculos().percADM(rgprp, rgimv);
+
+        String[][] dvCampo;
+
+        float fDC = 0, fDF = 0;
+
+        float[] aComissao = null;
+        try {aComissao = new Calculos().percComissao2(rgprp, rgimv);} catch (Exception e) {}
+        float fComissao = aComissao[0]; 
+        String sComissao = FuncoesGlobais.GravaValores(String.valueOf(fComissao).replace(".", ","), 3);
+
+        String[] sVenctos = {vencto};
+
+        int i = 0;
+        String tCampo = CriticaCampo(rgprp, rgimv, contrato, sVenctos[i], campo);
+
+        // Checa IPTU Automático
+        //tCampo = IPTU(rgimv, sVenctos[i], tCampo);
+
+        // Aqui coloca a MU e CO do boleto e Apaga o JU
+        int intMPos = tCampo.indexOf("MU");
+        if (intMPos != 0) {
+            String part1 = tCampo.substring(0, intMPos + 2);
+            String part2 = tCampo.substring(intMPos + 12);
+            tCampo = part1 + BMU + part2;
+        }
+        int intCPos = tCampo.indexOf("CO");
+        if (intCPos != 0) {
+            String part1 = tCampo.substring(0, intCPos + 2);
+            String part2 = tCampo.substring(intCPos + 12);
+            tCampo = part1 + BCO + part2;
+        }
+        int intJPos = tCampo.indexOf("JU");
+        if (intJPos != 0) {
+            String part1 = tCampo.substring(0, intJPos + 2);
+            String part2 = tCampo.substring(intJPos + 12);
+            tCampo = part1 + "0000000000" + part2;
+        }
+        
+        String[] aCampo = tCampo.split(";");
+
+        // Captura descontas/diferencas
+        jCampo = FuncoesGlobais.treeArray(FuncoesGlobais.join(aCampo, ";"), false);
+        gmpCampo = null; fDC = 0; 
+        difCampo = null; fDF = 0;
+        for (int w=0;w<jCampo.length;w++) {
+            gmpCampo = null;
+            gmpCampo = FuncoesGlobais.treeSeekArray2(jCampo, "DC", w, w);
+            if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                fDC += ("LQ".equals(gmpCampo[4]) ? LerValor.StringToFloat(gmpCampo[3]) : 0);
+            } else fDC += 0;
+
+            difCampo = null;
+            difCampo = FuncoesGlobais.treeSeekArray2(jCampo, "DF", w, w);                        
+            if (Integer.valueOf(difCampo[0]) > -1 && Integer.valueOf(difCampo[1]) > -1) {
+                fDF += ("LQ".equals(difCampo[4]) ? LerValor.StringToFloat(difCampo[3]) : 0);
+            } else fDF += 0;
+        }
+        // ------------- FIM Descontos/Diferenças
+
+        for (int j=0; j < aCampo.length; j++) {
+            int k = aCampo[j].indexOf("AL");
+            if (k > -1) {
+                //zCampos = new DepuraCampos(aCampo[j]);
+                zCampos = new DepuraCampos(tCampo);
+                VariaveisGlobais.ccampos = aCampo[j];
+                zCampos.SplitCampos();
+                zCampo = zCampos.Depurar(j); 
+
+                if ("AL".equals(aCampo[j].split(":")[4])) {
+                    float calc1 = LerValor.StringToFloat(zCampo[1]) + fDF - fDC;
+                    float calc2 = fComissao / 100;
+                    float reslt = calc1 * calc2;
+
+                    String valor = "";
+                    if (fComissao != 0) {
+                        valor = String.valueOf(reslt).replace(".", ",");
+                    }
+                    aCampo[j] += ":CM" + FuncoesGlobais.GravaValores(valor, 2);
+                }
+                tmpCampo = FuncoesGlobais.treeArray(FuncoesGlobais.join(aCampo, ";"),false);
+
+                // Ja foi adiantado
+                boolean bad = (FuncoesGlobais.treeSeekArray(tmpCampo, "AD", 0)[0].equalsIgnoreCase("-1") ? false : true);
+
+                if (!"DC".equals(aCampo[j].split(":")[4]) || !"DF".equals(aCampo[j].split(":")[4]) || !"SG".equals(aCampo[j].split(":")[4])) {
+                    admValores = new String[] {};
+                    // Separa valores da ADM
+                    // Separa Multa
+                    gmpCampo = FuncoesGlobais.treeSeekArray(tmpCampo, "MU", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = LerValor.StringToFloat(gmpCampo[3]) - (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[0])) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        if (valor1 > 0) {
+                            tmpCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "MU" + FuncoesGlobais.GravaValores(valor, 2);
+                        } else {
+                            tmpCampo = FuncoesGlobais.ArraysDelSub(tmpCampo, Integer.valueOf(gmpCampo[0]), Integer.valueOf(gmpCampo[1]));
+                        }
+                        float valor3 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[0])) / 100));
+                        String valor_mu = String.valueOf(valor3).replace(".", ",");
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, valor_mu);
+                    } else {
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, "0");
+                    }
+
+                    // Juros
+                    gmpCampo = FuncoesGlobais.treeSeekArray(tmpCampo, "JU", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = LerValor.StringToFloat(gmpCampo[3]) - (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[1])) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        if (valor1 > 0) {
+                            tmpCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "JU" + FuncoesGlobais.GravaValores(valor, 2);
+                        } else {
+                            tmpCampo = FuncoesGlobais.ArraysDelSub(tmpCampo, Integer.valueOf(gmpCampo[0]), Integer.valueOf(gmpCampo[1]));
+                        }
+                        float valor3 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[1])) / 100));
+                        String valor_ju = String.valueOf(valor3).replace(".", ",");
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, valor_ju);
+                    } else {
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, "0");
+                    }
+
+                    // Correção
+                    gmpCampo = FuncoesGlobais.treeSeekArray(tmpCampo, "CO", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = LerValor.StringToFloat(gmpCampo[3]) - (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[2])) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        if (valor1 > 0) {
+                            tmpCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "CO" + FuncoesGlobais.GravaValores(valor, 2);
+                        } else {
+                            tmpCampo = FuncoesGlobais.ArraysDelSub(tmpCampo, Integer.valueOf(gmpCampo[0]), Integer.valueOf(gmpCampo[1]));
+                        }
+                        float valor3 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[2])) / 100));
+                        String valor_co = String.valueOf(valor3).replace(".", ",");
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, valor_co);
+                    } else admValores = FuncoesGlobais.ArrayAdd(admValores, "0");
+
+                    // Expediente
+                    gmpCampo = FuncoesGlobais.treeSeekArray(tmpCampo, "EP", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = LerValor.StringToFloat(gmpCampo[3]) - (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[3])) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        if (valor1 > 0) {
+                            tmpCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "EP" + FuncoesGlobais.GravaValores(valor, 2);
+                        } else {
+                            tmpCampo = FuncoesGlobais.ArraysDelSub(tmpCampo, Integer.valueOf(gmpCampo[0]), Integer.valueOf(gmpCampo[1]));
+                        }
+                        float valor3 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat((bad ? "100" : admPer[3])) / 100));
+                        String valor_ep = String.valueOf(valor3).replace(".", ",");
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, valor_ep);
+                    } else admValores = FuncoesGlobais.ArrayAdd(admValores, "0");
+
+                    // Separa comissão
+                    gmpCampo = FuncoesGlobais.treeSeekArray(tmpCampo, "CM", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        admValores = FuncoesGlobais.ArrayAdd(admValores, gmpCampo[3]);
+                    } else admValores = FuncoesGlobais.ArrayAdd(admValores, "0");
+
+                    aCampo[j] = FuncoesGlobais.join(tmpCampo[j], ":");
+
+                    // Envio dos Valores da ADM
+                    if (LerValor.StringToFloat(admValores[0]) + LerValor.StringToFloat(admValores[1]) + LerValor.StringToFloat(admValores[2]) + LerValor.StringToFloat(admValores[3]) > 0) {
+                        gCampo = FuncoesGlobais.ArraysAdd(gCampo, new String[] {admValores[0], admValores[1], admValores[2], admValores[3], sVenctos[i]});
+                    }
+                }
+            }
+        }
+
+        // Clona Variavel
+        String[] oCampo = aCampo;
+
+        for (int l=0;l<aCC.length;l++) {
+            dvCampo = FuncoesGlobais.treeArray(FuncoesGlobais.join(aCampo, ";"), false);
+            for (int m=0;m<dvCampo.length;m++){
+                //';
+                float part1 = LerValor.StringToFloat(LerValor.FormatNumber(dvCampo[m][2], 2));
+                float part2 = LerValor.StringToFloat(aCC[l][1].replace(".", ",")) / 100;
+                if (FuncoesGlobais.IndexOf(dvCampo[m], "AL") < 0) part2 = 1;
+
+                // 15-12-2016 12h30m
+                if (l==0) {
+                    if (FuncoesGlobais.IndexOf(dvCampo[m], "AL") < 0) part2 = 1;
+                } else {
+                    if (FuncoesGlobais.IndexOf(dvCampo[m], "AL") < 0) {
+                        part2 = 0;
+                    } else part2 = 1;
+                }
+
+                String vrfinal = LerValor.FloatToString(part1 * part2);
+
+                //dvCampo[m][2] = winger.GravarValor(winger.LerValor(dvCampo[m][2]) * If(FuncoesGlobais.ArraFind(dvCampo[m], "AL") < 0, 1, (aCC[l][1] / 100)));
+
+                if (aCC[l][2].trim().toUpperCase().equalsIgnoreCase("TRUE")) {
+                    //'; divide tudo
+                    float fValor1 = LerValor.StringToFloat(LerValor.FormatNumber(dvCampo[m][2], 2));
+                    float fValor2 = Float.valueOf(aCC[l][1].replace(",", ".")) / 100;
+                    dvCampo[m][2] = FuncoesGlobais.GravaValores(LerValor.FloatToString(fValor1 * fValor2),2);
+                } else {
+                    // 06/01/2017 8h10m
+                    if ("AL".equals(dvCampo[m][4])) {
+                        float fValor1 = LerValor.StringToFloat(LerValor.FormatNumber(dvCampo[m][2], 2));
+                        float fValor2 = Float.valueOf(aCC[l][1].replace(",", ".")) / 100;
+                        dvCampo[m][2] = FuncoesGlobais.GravaValores(LerValor.FloatToString(fValor1 * fValor2),2);
+                    } else {
+                        dvCampo[m][2] = FuncoesGlobais.GravaValores(vrfinal, 2);                    
+                    }
+                }
+
+                if ("AL".equals(dvCampo[m][4])) {
+                    // Separa Multa
+                    gmpCampo = new String[] {};
+                    gmpCampo = FuncoesGlobais.treeSeekArray(dvCampo, "MU", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat(aCC[l][1]) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        dvCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "MU" + FuncoesGlobais.GravaValores(valor, 2);
+                    }
+
+
+                    // Separa juros
+                    gmpCampo = new String[] {};
+                    gmpCampo = FuncoesGlobais.treeSeekArray(dvCampo, "JU", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat(aCC[l][1]) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        dvCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "JU" + FuncoesGlobais.GravaValores(valor, 2);
+                    }
+
+                    // Separa Correção
+                    gmpCampo = new String[] {};
+                    gmpCampo = FuncoesGlobais.treeSeekArray(dvCampo, "CO", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat(aCC[l][1]) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        dvCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "CO" + FuncoesGlobais.GravaValores(valor, 2);
+                    }
+
+                    // Separa Expediente
+                    gmpCampo = new String[] {};
+                    gmpCampo = FuncoesGlobais.treeSeekArray(dvCampo, "EP", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat(aCC[l][1]) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        dvCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "EP" + FuncoesGlobais.GravaValores(valor, 2);
+                    }
+
+                    // Separa Comissao
+                    gmpCampo = new String[] {};
+                    gmpCampo = FuncoesGlobais.treeSeekArray(dvCampo, "CM", 0);
+                    if (Integer.valueOf(gmpCampo[0]) > -1 && Integer.valueOf(gmpCampo[1]) > -1) {
+                        float valor1 = (LerValor.StringToFloat(gmpCampo[3]) * (LerValor.StringToFloat(aCC[l][1].replace(".", ",")) / 100));
+                        String valor = String.valueOf(valor1).replace(".", ",");
+                        dvCampo[Integer.valueOf(gmpCampo[0])][Integer.valueOf(gmpCampo[1])] = "CM" + FuncoesGlobais.GravaValores(valor, 2);
+                    }
+                }
+            }
+
+            //String[] tpCampo = {contrato.trim(), aCC[l][0], rgimv, FuncoesGlobais.SuperJoin(dvCampo, l == 0)};
+            String[] tpCampo = {contrato.trim(), aCC[l][0], rgimv, FuncoesGlobais.SuperJoin(dvCampo, true)};
+            divaCampo = FuncoesGlobais.ArraysAdd(divaCampo, tpCampo);
+        }
+
+        for (int l=0; l<aCC.length; l++) {
+            aCampo = null; aCampo = divaCampo[l][3].split(";");
+
+            String[] rCampo = {};
+            String[] eCampo = {};
+            String[] iCampo = {};
+
+            String[] lCampo = {};
+            String[] xCampo = {};
+            String[] pCampo = {};
+            String[] sCampo = {};
+            String[] hCampo = {};
+
+            for (int j=0; j<aCampo.length; j++) {
+                String[] wCampo = aCampo[j].split(":");
+
+                int k = aCampo[j].indexOf("AL");
+                if (k > -1) lCampo = FuncoesGlobais.ArrayAdd(lCampo, aCampo[j]);
+
+                // Retenção
+                k = aCampo[j].indexOf("RT");
+                if (k > -1) sCampo = FuncoesGlobais.ArrayAdd(sCampo, aCampo[j]);
+
+                // Antecipados
+                k = aCampo[j].indexOf("AT");
+                if (k > -1) hCampo = FuncoesGlobais.ArrayAdd(hCampo, aCampo[j]);
+
+                // Expediente
+                k = FuncoesGlobais.IndexOf(wCampo, "EP");
+                if (k > -1) pCampo = FuncoesGlobais.ArrayAdd(pCampo, "EP" + wCampo[k].substring(wCampo[k].length() - 10, wCampo[k].length()) + ":0000:EP");
+
+                // Taxas -------------
+                k = aCampo[j].indexOf("AL");
+                if (k < 0) xCampo = FuncoesGlobais.ArrayAdd(xCampo, aCampo[j]);
+
+                // Campos Razao
+                k = aCampo[j].indexOf("RZ");
+                if (k > -1) rCampo = FuncoesGlobais.ArrayAdd(rCampo, aCampo[j]);
+
+                k = aCampo[j].indexOf("ET");
+                if (k > -1) eCampo = FuncoesGlobais.ArrayAdd(eCampo, aCampo[j]);
+
+                k = aCampo[j].indexOf("IP");
+                if (k > -1) iCampo = FuncoesGlobais.ArrayAdd(iCampo, aCampo[j]);
+            }
+
+            //String[] tpCampo = {lCampo, pCampo, xCampo, rCampo, eCampo, iCampo, sCampo};
+            String slCampo = "", spCampo = "", sxCampo = "", srCampo = "", seCampo = "", siCampo = "", ssCampo = "", waCampo = "";
+            try {slCampo = FuncoesGlobais.join(lCampo, ";");} catch (Exception ex) {slCampo = "";}
+            try {spCampo = FuncoesGlobais.join(pCampo, ";");} catch (Exception ex) {spCampo = "";}
+            try {sxCampo = FuncoesGlobais.join(rCampo, ";");} catch (Exception ex) {sxCampo = "";}
+            try {srCampo = FuncoesGlobais.join(rCampo, ";");} catch (Exception ex) {srCampo = "";}
+            try {seCampo = FuncoesGlobais.join(eCampo, ";");} catch (Exception ex) {seCampo = "";}
+            try {siCampo = FuncoesGlobais.join(iCampo, ";");} catch (Exception ex) {siCampo = "";}
+            try {ssCampo = FuncoesGlobais.join(sCampo, ";");} catch (Exception ex) {ssCampo = "";}
+
+            // 29/09/2014 11h
+            try {waCampo = FuncoesGlobais.join(hCampo, ";");} catch (Exception ex) {waCampo = "";}
+            String finalCampos = slCampo + "," + spCampo + "," + sxCampo + "," + srCampo + "," + seCampo + "," + siCampo + "," + ssCampo; // + "," + waCampo;
+            divaCampo[l] = FuncoesGlobais.ArrayAdd(divaCampo[l], finalCampos);
+        }
+
+        sucesso = true;
+        for (int l=0;l<gCampo.length;l++) {
+            String sADMCPOS = "";
+            for (int p=0;p<gCampo[l].length - 1;p++) {
+                if (LerValor.StringToFloat(gCampo[l][p]) != 0) {
+                    String sSql = "INSERT INTO razao (rgprp, campo, dtvencimento, dtrecebimento, rc_aut, tag) VALUES ('&1.','&2.','&3.','&4.','&5.',' ')";
+
+                    String par1 = "GG";
+                    String par2 = "GG:9:" +
+                                  FuncoesGlobais.GravaValores(gCampo[l][p],2) +
+                                  ":000000:GG:ET:" +
+                                  FuncoesGlobais.StrZero(String.valueOf((int)nAut).replace(".0", "").trim(), 6) +
+                                  VariaveisGlobais.cContas.get("GG") +
+                                  FuncoesGlobais.Choose(p + 1,new String[] {"", "MU", "JU", "CO", "EP"}) +
+                                  ":" + Dates.DateFormata("yyyyMMdd", new Date()) +
+                                  ":CRE:DN:656877:" +
+                                  VariaveisGlobais.usuario;
+                    String par3 = Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy"));
+                    String par4 = Dates.DateFormata("yyyy-MM-dd", new Date());
+                    String par5 = String.valueOf((int)nAut).replace(".0", "");
+                    sSql = FuncoesGlobais.Subst(sSql, new String[] {par1, par2, par3, par4, par5});
+
+                    try {
+                        // Grava no Razao
+                        conn.ExecutarComando(sSql);
+                    } catch (Exception e) { sucesso = false; }
+
+                    sADMCPOS += FuncoesGlobais.Choose(p + 1, new String[] {"", "MU", "JU", "CO", "EP"}) + FuncoesGlobais.GravaValores(gCampo[l][p].replace(".", ","),2) + ":";
+                }
+            }
+            if (!"".equals(sADMCPOS)) {
+                sADMCPOS = sADMCPOS.substring(0, sADMCPOS.length() - 1);
+                conn.CreateArqAux();
+                String sSql = "INSERT INTO auxiliar (contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento, rc_aut, conta) VALUES ('&1.','&2.','&3.','&4.','&5.','&6.','&7.','&8.')";
+                String[] variavel = new String[] {contrato, rgprp, rgimv, sADMCPOS,
+                       Dates.DateFormata("yyyy-MM-dd",Dates.StringtoDate(gCampo[l][gCampo[l].length - 1],"dd/MM/yyyy")),
+                       Dates.DateFormata("yyyy-MM-dd", new Date()),
+                       String.valueOf((int)nAut).replace(".0", ""),
+                       "ADM"};
+                sSql = FuncoesGlobais.Subst(sSql, variavel);
+
+                try {
+                    conn.ExecutarComando(sSql);
+                } catch (Exception e) { sucesso = false; }
+            }
+        }
+
+        for (int l=0;l<divaCampo.length;l++) {
+            // Splitar Itens do DivaCampos Elemento (4)
+            String[] divaSplit = divaCampo[l][4].split(",");
+
+            // gravar no arquivo auxiliar
+            conn.CreateArqAux();
+            String sSql = "INSERT INTO auxiliar (contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento, rc_aut, conta) VALUES ('&1.','&2.','&3.','&4.','&5.','&6.','&7.','&8.')";
+            sSql = FuncoesGlobais.Subst(sSql, new String[] {
+                   divaCampo[l][0],
+                   divaCampo[l][1],
+                   divaCampo[l][2],
+                   divaCampo[l][3],
+                   Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
+                   Dates.DateFormata("yyyy-MM-dd", new Date()), String.valueOf((int)nAut).replace(".0", ""), "REC"});
+
+            try {
+                conn.ExecutarComando(sSql);
+            } catch (Exception e) { sucesso = false; }
+
+            // gravar gravar razao na tabela
+            if (!"".equals(divaSplit[3].trim())) {
+                sSql = "INSERT INTO razao (contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento, rc_aut, tag) VALUES ('&1.','&2.','&3.','&4.','&5.','&6.','&7.', ' ')";
+                String[] par1 = {divaCampo[l][0],
+                                 divaCampo[l][1],
+                                 divaCampo[l][2],
+                                 divaSplit[3],
+                                 Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
+                                 Dates.DateFormata("yyyy-MM-dd", new Date()),
+                                 String.valueOf((int)nAut).replace(".0", "")};
+                sSql = FuncoesGlobais.Subst(sSql, par1);
+
+                try {
+                    conn.ExecutarComando(sSql);
+                } catch (Exception e) { sucesso = false; }
+            }
+
+            // gravar extrato na tabela
+            if (!"".equals(divaSplit[4].trim())) {
+                sSql = "INSERT INTO extrato (contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento, rc_aut, tag) VALUES ('&1.','&2.','&3.','&4.','&5.','&6.','&7.', ' ')";
+                String[] par1 = {divaCampo[l][0],
+                                 divaCampo[l][1],
+                                 divaCampo[l][2],
+                                 divaSplit[4],
+                                 Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
+                                 Dates.DateFormata("yyyy-MM-dd", new Date()),
+                                 String.valueOf((int)nAut).replace(".0", "")};
+                sSql = FuncoesGlobais.Subst(sSql, par1);
+
+                try {
+                    conn.ExecutarComando(sSql);
+                } catch (Exception e) { sucesso = false; }
+            }
+
+            // Grava imposto na tabela
+            if (divaSplit.length >= 6) {
+                    if (!"".equals(divaSplit[5].trim())) {
+                        sSql = "INSERT INTO imposto (contrato, rgprp, rgimv, campo, dtvencimento, dtrecebimento, rc_aut, tag) VALUES ('&1.','&2.','&3.','&4.','&5.','&6.','&7.',' ')";
+                        String[] par1 = {divaCampo[l][0],
+                                         divaCampo[l][1],
+                                         divaCampo[l][2],
+                                         divaSplit[5],
+                                         Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
+                                         Dates.DateFormata("yyyy-MM-dd", new Date()),
+                                         String.valueOf((int)nAut).replace(".0", "")};
+                        sSql = FuncoesGlobais.Subst(sSql, par1);
+
+                        try {
+                            conn.ExecutarComando(sSql);
+                        } catch (Exception e) { sucesso = false; }
+                }
+            }
+
+            // Grava Retenções na tabela
+            if (divaSplit.length > 6) {
+                String[] retencaoSplit = divaSplit[6].split(";");
+                for (int n=0;n<retencaoSplit.length;n++) {
+                    sSql = "INSERT INTO retencao (contrato, rgprp, rgimv, campo, vencimento, rc_aut, tag, gat, rt_aut) VALUES ('&1.','&2.','&3.','&4.','&5.','&6.','&7.','&8.','&9.')";
+                    String[] par1 = {divaCampo[l][0],
+                                     divaCampo[l][1],
+                                     divaCampo[l][2],
+                                     retencaoSplit[n],
+                                     Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(sVenctos[i], "dd/MM/yyyy")),
+                                     String.valueOf((int)nAut).replace(".0", ""),"0"," ","0"};
+                    sSql = FuncoesGlobais.Subst(sSql, par1);
+
+                    try {
+                        conn.ExecutarComando(sSql);
+                    } catch (Exception e) { sucesso = false; }
+                }
+            }
+        }
+
+        // Atualiza Antecipados 29/09/2014
+        for (int h=0;h<jCampo.length;h++) {
+            if (jCampo[h][jCampo[h].length - 1].equalsIgnoreCase("AT")) {
+                if (Dates.isDateValid(jCampo[h][4], "ddMMyyyy")) {
+                    String sSql = "UPDATE ANTECIPADOS SET dtrecebimento = '&1.', rc_aut = '&2.' WHERE contrato = '&3.' AND dtvencimento = '&4.' AND Mid(campo,1,2) = '&5.';";
+                    sSql = FuncoesGlobais.Subst(sSql, new String[] {
+                            Dates.DateFormata("yyyy-MM-dd", new Date()),
+                        String.valueOf((int)nAut).replace(".0", ""), contrato, Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(jCampo[h][4], "ddMMyyyy")), jCampo[h][0]});
+
+                    System.out.println(sSql);
+                    try {
+                        conn.ExecutarComando(sSql);
+                    } catch (Exception e) { sucesso = false; }
+                }
+            }
+        }
+
+        if (nAut > -1 && sucesso) {
+            // Elimina os recibos
+            String sql = "UPDATE RECIBO SET tag = 'X', AUTENTICACAO = '" + String.valueOf((int)nAut).replace(".0", "") + "' WHERE contrato = '" + contrato + "' AND dtvencimento = '" + Dates.DateFormata("yyyy-MM-dd", Dates.StringtoDate(vencto, "dd/MM/yyyy")) + "';";
+            try {
+                conn.ExecutarComando(sql);
+            } catch (Exception e) { sucesso = false; }
+
+            if (!sucesso) { 
+                ExtornaRecibo(String.valueOf((int)nAut).replace(".0", "")); 
+            } 
+
+            try {
+                sql = "UPDATE CARTEIRA SET dtultrecebimento = '" + Dates.DateFormata("dd-MM-yyyy",Dates.StringtoDate(vencto,"dd-MM-yyyy")) + "' WHERE contrato = '" + contrato + "';";
+                conn.ExecutarComando(sql);
+            } catch (Exception e) { 
+                sucesso = false;
+                e.printStackTrace(); 
+            }
+        } 
+
+        return sucesso;
+    }    
+    
+    private void ExtornaRecibo(String nAut) {
+        try {
+            String sql = "";
+            sql = FuncoesGlobais.Subst("DELETE FROM Cheques WHERE ch_autenticacao = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM razao WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM retencao WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM imposto WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("DELETE FROM extrato WHERE rc_aut = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);
+
+            sql = FuncoesGlobais.Subst("UPDATE RECIBO SET TAG = ' ', AUTENTICACAO = '0' WHERE AUTENTICACAO = '&1.'", new String[] {nAut});
+            conn.ExecutarComando(sql);        
+        } catch (Exception e) {}
+    }
+    
+    private String CriticaCampo(String rgprp, String rgimv, String contrato, String recto, String campo) throws SQLException {
+        String[] aCampo; int tCampo = 0; String ctCampo = "";
+        float tbTaxa, tbMulta, tbJurosxt, tbCorrecao = 0;
+
+        String tmpCampo = campo.trim();
+        if (!"".equalsIgnoreCase(tmpCampo)) {
+            aCampo = tmpCampo.split(";");
+            aCampo = FuncoesGlobais.OrdenaMatriz(aCampo, 3, 1, true);
+            tCampo = aCampo.length - 1;
+
+            ReCalculos rc = new ReCalculos();
+            rc.Inicializa(rgprp, rgimv, contrato);
+            rc.setCalcDate(Dates.StringtoDate(recto, "dd/MM/yyyy"));      
+            tbTaxa = rc.TaxaExp(tmpCampo);
+            tbMulta = rc.Multa(tmpCampo, recto, false);
+            tbJurosxt = rc.Juros(tmpCampo, recto);
+            tbCorrecao = rc.Correcao(tmpCampo, recto);
+
+            for (int nConta=0; nConta <= tCampo; nConta++) {
+                ctCampo = aCampo[nConta];
+                String[] rCampos = ctCampo.split(":");
+
+                if ("AL".equals(rCampos[4])) {
+                    int iMulta = FuncoesGlobais.IndexOf(rCampos,"MU");
+                    if (iMulta > -1) {
+                        rCampos[iMulta] = "MU" + FuncoesGlobais.GravaValores(String.valueOf(tbMulta).replace(".", ","), 2);
+                    } else {
+                        rCampos = FuncoesGlobais.ArrayAdd(rCampos, "MU" + FuncoesGlobais.GravaValores(String.valueOf(tbMulta).replace(".", ","), 2));
+                    }
+
+                    int iJuros = FuncoesGlobais.IndexOf(rCampos,"JU");
+                    if (iJuros > -1) {
+                        rCampos[iJuros] = "JU" + FuncoesGlobais.GravaValores(String.valueOf(tbJurosxt).replace(".", ","), 2);
+                    } else {
+                        rCampos = FuncoesGlobais.ArrayAdd(rCampos, "JU" + FuncoesGlobais.GravaValores(String.valueOf(tbJurosxt).replace(".", ","), 2));
+                    }
+
+                    int iCorrecao = FuncoesGlobais.IndexOf(rCampos,"CO");
+                    if (iCorrecao > -1) {
+                        rCampos[iCorrecao] = "CO" + FuncoesGlobais.GravaValores(String.valueOf(tbCorrecao).replace(".", ","), 2);
+                    } else {
+                        rCampos = FuncoesGlobais.ArrayAdd(rCampos, "CO" + FuncoesGlobais.GravaValores(String.valueOf(tbCorrecao).replace(".", ","), 2));
+                    }
+
+                    int iExp = FuncoesGlobais.IndexOf(rCampos,"EP");
+                    if (iExp > -1) {
+                        rCampos[iExp] = "EP" + FuncoesGlobais.GravaValores(String.valueOf(tbTaxa).replace(".", ","), 2);
+                    } else {
+                        rCampos = FuncoesGlobais.ArrayAdd(rCampos, "EP" + FuncoesGlobais.GravaValores(String.valueOf(tbTaxa).replace(".", ","), 2));
+                    }
+                }
+                aCampo[nConta] = FuncoesGlobais.join(rCampos, ":");
+            }
+            tmpCampo = FuncoesGlobais.join(aCampo, ";");
+        }
+        return tmpCampo;
+    }
+    
+    private String AlteraMUJUCOEP(String campos, String[][] mujucoep) {
+        String auxCpo = campos;
+        String tmujucoep = "";        
+        String vMulta = ""; String vJuros = ""; String vCorrecao = ""; String vExpediente = "";
+        String jMulta = ""; String jJuros = ""; String jCorrecao = ""; String jExpediente = "";
+        for (String[] a : mujucoep) {
+            if (a[0].toString().equalsIgnoreCase("MU")) {
+                jMulta = a[1].toString();
+                if (LerValor.StringToFloat(jMulta) > 0) {
+                    vMulta = "MU" + FuncoesGlobais.GravaValor(jMulta);
+                } else {
+                    vMulta = "MU";
+                }
+                String oldMU = BuscaXX(auxCpo, "MU");
+                auxCpo = auxCpo.replace(oldMU, "");
+                tmujucoep += vMulta + ":";
+            } else if (a[0].toString().equalsIgnoreCase("JU")) {
+                jJuros = a[1].toString();
+                if (LerValor.StringToFloat(jJuros) > 0) {
+                    vJuros = "JU" + FuncoesGlobais.GravaValor(jJuros);
+                } else {
+                    vJuros = "JU";
+                }
+                String oldJU = BuscaXX(auxCpo, "JU");
+                auxCpo = auxCpo.replace(oldJU, "");
+                tmujucoep += vJuros + ":"; 
+            } else if (a[0].toString().equalsIgnoreCase("CO")) {
+                jCorrecao = a[1].toString();
+                if (LerValor.StringToFloat(jCorrecao) > 0) {
+                    vCorrecao = "CO" + FuncoesGlobais.GravaValor(jCorrecao);
+                } else {
+                    vCorrecao = "CO";
+                }
+                String oldCO = BuscaXX(auxCpo, "CO");
+                auxCpo = auxCpo.replace(oldCO, "");
+                tmujucoep += vCorrecao + ":"; 
+            } else if (a[0].toString().equalsIgnoreCase("EP")) {
+                jExpediente = a[1].toString();
+                if (LerValor.StringToFloat(jExpediente) > 0) {
+                    vExpediente = "EP" + FuncoesGlobais.GravaValor(jExpediente);
+                } else {
+                    vExpediente = "EP";
+                }
+                String oldEP = BuscaXX(auxCpo, "EP");
+                auxCpo = auxCpo.replace(oldEP, "");
+                tmujucoep += vExpediente + ":"; 
+            }
+        }
+
+        int pos = auxCpo.indexOf("AL:");
+        auxCpo = auxCpo.substring(0, pos + 3) + tmujucoep + auxCpo.substring(pos + 3);
+
+        return auxCpo;
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner AnoRef;
@@ -3612,6 +4529,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane ListaBancosPessoasRemessa;
     private javax.swing.JSpinner MesRef;
     private com.toedter.calendar.JDateChooser VencBoleto;
+    private javax.swing.JTextField arqRetorno;
     private javax.swing.JTextField baiQuantidade;
     private javax.swing.JTextField baiValor;
     private javax.swing.JButton btnEditarCadastro;
@@ -3625,8 +4543,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private com.toedter.calendar.JDateChooser conDataInicial;
     private javax.swing.JTable conLista;
     private javax.swing.JTextField edtSubJect;
-    private javax.swing.JTextField expQuantidade;
-    private javax.swing.JTextField expValor;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
@@ -3644,13 +4560,12 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
@@ -3675,7 +4590,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -3688,7 +4602,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JProgressBar jProgress;
     private javax.swing.JProgressBar jProgressEmail;
     private javax.swing.JProgressBar jProgressListaBoletasConsulta;
-    private javax.swing.JProgressBar jProgressListaBoletasConsulta1;
     private javax.swing.JProgressBar jProgressRemessa;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;

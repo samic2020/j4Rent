@@ -7,7 +7,6 @@ package BancosDigital;
 
 import Funcoes.Autenticacao;
 import Funcoes.CentralizaTela;
-import Funcoes.CriticaExtrato;
 import Funcoes.Dates;
 import Funcoes.Db;
 import Funcoes.DbMain;
