@@ -1857,12 +1857,29 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         
         List<cRetorno> baixadas = new ArrayList();
+        List<cRetorno> cBanco = null;
         if (arqRetorno.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");            
         } else {        
-            List<cRetorno> citau = itau.retorno(arqRetorno.getText());
+            String codBanco = jcbConsultaBancos.getSelectedItem().toString().substring(0,3);
+            if (codBanco.equalsIgnoreCase("341")) {
+                cBanco = itau.retorno(arqRetorno.getText());
+            } else if (codBanco.equalsIgnoreCase("033")) {
+                cBanco = Santander.retorno(arqRetorno.getText());
+            } else {
+                cBanco = null;
+            }
+            
+            if (cBanco == null) {
+                JOptionPane.showMessageDialog(this, "Retorno para este banco ainda não implantado!");
+                
+                // Retorna cursor
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                conBtnListar.setEnabled(true);
+                return;
+            }
 
-            for (cRetorno lst : citau) {
+            for (cRetorno lst : cBanco) {
                 List<cSegmentoT> segt = lst.getSegmentot();
                 List<cSegmentoT> baisgt = new ArrayList();
                 for (cSegmentoT stl : segt) {

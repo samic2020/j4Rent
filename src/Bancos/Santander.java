@@ -15,10 +15,16 @@ import Funcoes.StringManager;
 import Funcoes.VariaveisGlobais;
 import Protocolo.Calculos;
 import j4rent.Partida.Collections;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 /**
@@ -1081,4 +1087,142 @@ public class Santander {
         
         JOptionPane.showMessageDialog(null, "Arquivo de remessa " + bancos.getBanco() + fileName + nroLote + ".rem" + " gerado com sucesso!!!", "Atenção", JOptionPane.INFORMATION_MESSAGE);
     }
+    
+    static public List<cRetorno> retorno(String fileName) {
+        if (!new File(fileName).exists()) {
+            JOptionPane.showMessageDialog(null, "Arquivo inexistente!");
+            return null;
+        }
+        
+        List<String> Linhas = new ArrayList<>();
+        BufferedReader reader = null;
+        try {
+            FileInputStream stream = new FileInputStream(fileName);
+            InputStreamReader ireader = new InputStreamReader(stream);
+            reader = new BufferedReader(ireader);
+            
+            String linha = reader.readLine();
+            while (linha != null) {
+                Linhas.add(linha);
+                
+                linha = reader.readLine();
+            }   
+        } catch (IOException ioEx) {} finally {       
+            try {reader.close();} catch (IOException oiEx) {}
+        }
+        
+        
+        // Retorno
+        List<cRetorno> retorno = new ArrayList();
+        List<cSegmentoT> segt = new ArrayList();
+        cSegmentoU segu = null;
+        
+        // Linha lida
+        int lineread = 1;
+        // Processa Linhas
+        String _banco = ""; String _tipoInsc = ""; String _inscr = "";
+        String _tparquivo = ""; String _segmento = "";
+        
+        // Segmento T
+        String _codocort = ""; String _nnumero = ""; String _dacnnumero = ""; 
+        String _seunumero = ""; String _dtavencimento = ""; String _vrtitulo = ""; 
+        String _agbaixa = ""; String _dacagbaixa = ""; String _tpinscpagador = "";
+        String _inscpagador = ""; String _tarifa = ""; String _errosrejeicao = "";
+        String _codliquidacao = ""; String _nomepagador = "";
+        
+        // Segmento U
+        String _codocoru = ""; String _jurousmulta = ""; String _desconto = ""; 
+        String _abatimento = ""; String _valorcred = ""; String _valorlanc = "";
+        String _dataocorr1 = ""; String _datacredito = ""; String _ocorrpagador = "";
+        String _dataocorr2 = ""; String _valorocorr = "";
+        
+        //
+        String _quantidadereg = ""; String _quantidadesimples = ""; String _quantidadevinc = ""; 
+        String _valorvinc = ""; String _codigolote = ""; String _totalreg = "";
+        for (String linha : Linhas) {
+            if (lineread == 1) {
+                // Leitura do REGISTRO HEADER DE ARQUIVO
+                _banco = (String)linha.substring(0, 3);
+                _tipoInsc = (String)linha.substring(16,17);
+                _inscr = (String)linha.substring(17,32);
+                _tparquivo = (String)linha.substring(142,143);
+                
+                lineread++;
+                continue;
+            }
+            
+            if (lineread == 2) {
+                // Leitura do REGISTRO HEADER DE LOTE
+                _datacredito = (String)linha.substring(191,199);
+                
+                lineread++;
+                continue;
+            }
+            
+            // Leitura REGISTRO DETALHE
+            _segmento = (String)linha.substring(13,14); 
+            if (_segmento.equalsIgnoreCase("T") && lineread == 3) {
+                _codocort = (String)linha.substring(15,17);
+                _nnumero = (String)linha.substring(40,52);
+                _dacnnumero = (String)linha.substring(51,52);
+                _seunumero = (String)linha.substring(54,69);
+                
+                _dtavencimento = (String)linha.substring(69,77);
+                _vrtitulo = (String)linha.substring(77, 92);
+                _agbaixa = (String)linha.substring(95, 99);
+                _dacagbaixa = (String)linha.substring(99,100);
+                _tpinscpagador = (String)linha.substring(127,128);
+                _inscpagador = (String)linha.substring(128,143);
+                _nomepagador = (String)linha.substring(143,183);
+                _tarifa = (String)linha.substring(193,208);
+                _errosrejeicao = (String)linha.substring(208,218);
+                
+                continue;
+            }
+            
+            if (_segmento.equalsIgnoreCase("U") && lineread == 3) {
+                _codocoru = (String)linha.substring(15,17);
+                _jurousmulta = (String)linha.substring(17,32);
+                _desconto = (String)linha.substring(32,47);
+                _abatimento = (String)linha.substring(47,62);
+                _valorcred = (String)linha.substring(77,92);
+                _valorlanc = (String)linha.substring(92,107);
+                _dataocorr1 = (String)linha.substring(137,145);
+                _datacredito = (String)linha.substring(145,153);
+                _ocorrpagador = (String)linha.substring(153,157);
+                _dataocorr2 = (String)linha.substring(157,165);
+                _valorocorr = (String)linha.substring(165,180);
+                
+
+                segu = new cSegmentoU(_codocoru, _jurousmulta, _desconto, _abatimento, _valorcred, _valorlanc, _dataocorr1, _datacredito, _ocorrpagador, _dataocorr2, _valorocorr);                                
+                cSegmentoT tseg = new cSegmentoT(_codocort, _nnumero, _dacnnumero, _seunumero, _dtavencimento, _vrtitulo, _agbaixa, _dacagbaixa, _tpinscpagador, _inscpagador, _nomepagador, _tarifa, _errosrejeicao, _codliquidacao, segu);
+                segt.add(tseg);
+                continue;
+            }
+            
+            if (lineread == 3) lineread++;
+            
+            if (lineread == 4) {
+                // Leitura REGISTRO TRAILER DO LOTE
+                _quantidadereg = (String)linha.substring(17,23);
+                _quantidadesimples = (String)linha.substring(23,29);
+                _quantidadevinc = (String)linha.substring(46,52);
+                _valorvinc = (String)linha.substring(52,69);
+                
+                lineread++;
+                continue;
+            }
+
+            if (lineread == 5) {
+                // Leitura REGISTRO TRAILER DE ARQUIVO
+                _codigolote = (String)linha.substring(3,7);
+                _totalreg = (String)linha.substring(23,29);
+
+                cRetorno cret = new cRetorno(_banco, _tipoInsc, _inscr, _tparquivo, _datacredito, segt, _quantidadereg, _quantidadesimples, _quantidadevinc, _valorvinc, _codigolote, _totalreg);
+                retorno.add(cret);
+            }            
+        }
+        
+        return retorno.size() != 0 ? retorno : null;
+    }    
 }
