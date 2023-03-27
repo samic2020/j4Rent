@@ -227,7 +227,7 @@ public class jBoletasAvulsas extends javax.swing.JInternalFrame {
             // Colocado aqui para testar 07-12-2016 12h41m
             Santander.Remessa(nrlote, jnomeArq.getText().trim().toLowerCase(), operacao, relacao, "A", false);
         } else if (_banco.equalsIgnoreCase("341")) {
-            itau.Remessa(nrlote, jnomeArq.getText().trim().toLowerCase(), operacao, relacao);
+            itau.Remessa(nrlote, jnomeArq.getText().trim().toLowerCase(), operacao, relacao, "A");
         }
         
         JOptionPane.showMessageDialog(null, "Arquivo de remessa " + jnomeArq.getText().trim() + "_" + jnrlote.getValue().toString().trim() + ".rem" + " gerado com sucesso!!!", "Atenção", JOptionPane.INFORMATION_MESSAGE);

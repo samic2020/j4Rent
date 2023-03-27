@@ -223,7 +223,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         recQuantidade = new javax.swing.JTextField();
         jLabel19 = new javax.swing.JLabel();
         recValor = new javax.swing.JTextField();
-        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel21 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
@@ -231,6 +230,12 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jLabel23 = new javax.swing.JLabel();
         preValor = new javax.swing.JTextField();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel22 = new javax.swing.JPanel();
+        jLabel24 = new javax.swing.JLabel();
+        bcoQuantidade = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        bcoValor = new javax.swing.JTextField();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
 
         jToggleButton2.setText("jToggleButton2");
 
@@ -646,7 +651,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 832, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 831, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -714,11 +719,11 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 848, Short.MAX_VALUE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 847, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)))
+                        .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)))
                 .addGap(6, 6, 6))
         );
         jPanel5Layout.setVerticalGroup(
@@ -1163,7 +1168,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         );
 
         jPanel17.add(jPanel19);
-        jPanel17.add(filler5);
         jPanel17.add(filler6);
 
         jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 204), 1, true), " [ Em Abertos  e Não Baixados] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(0, 204, 204))); // NOI18N
@@ -1218,6 +1222,59 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
         jPanel17.add(jPanel21);
         jPanel17.add(filler2);
+
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 204), 1, true), " [ A Baixar] ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(153, 153, 0))); // NOI18N
+        jPanel22.setMaximumSize(new java.awt.Dimension(198, 89));
+        jPanel22.setMinimumSize(new java.awt.Dimension(198, 89));
+        jPanel22.setPreferredSize(new java.awt.Dimension(198, 81));
+
+        jLabel24.setText("Quantidade:");
+
+        bcoQuantidade.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        bcoQuantidade.setForeground(new java.awt.Color(153, 153, 0));
+        bcoQuantidade.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        bcoQuantidade.setText("000");
+
+        jLabel25.setText("Valor:");
+
+        bcoValor.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        bcoValor.setForeground(new java.awt.Color(153, 153, 0));
+        bcoValor.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        bcoValor.setText("0,00");
+
+        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
+        jPanel22.setLayout(jPanel22Layout);
+        jPanel22Layout.setHorizontalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel22Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel25)
+                    .addComponent(jLabel24))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(bcoValor)
+                    .addGroup(jPanel22Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addComponent(bcoQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        jPanel22Layout.setVerticalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel22Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(bcoQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel25)
+                    .addComponent(bcoValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel17.add(jPanel22);
+        jPanel17.add(filler5);
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
@@ -1856,12 +1913,12 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         conBtnListar.setEnabled(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         
+        String codBanco = jcbConsultaBancos.getSelectedItem().toString().substring(0,3);
         List<cRetorno> baixadas = new ArrayList();
         List<cRetorno> cBanco = null;
         if (arqRetorno.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");            
         } else {        
-            String codBanco = jcbConsultaBancos.getSelectedItem().toString().substring(0,3);
             if (codBanco.equalsIgnoreCase("341")) {
                 cBanco = itau.retorno(arqRetorno.getText());
             } else if (codBanco.equalsIgnoreCase("033")) {
@@ -1883,8 +1940,16 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 List<cSegmentoT> segt = lst.getSegmentot();
                 List<cSegmentoT> baisgt = new ArrayList();
                 for (cSegmentoT stl : segt) {
-                    if (!stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
-                        baisgt.add(stl);
+                    if (codBanco.equalsIgnoreCase("033")) {
+                        if (stl.getSegmentou().getCodocor().equalsIgnoreCase("06")) {
+                            baisgt.add(stl);
+                        }
+                    } else if (codBanco.equalsIgnoreCase("341")) {
+                        if (!stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
+                            baisgt.add(stl);
+                        }
+                    } else {
+                        // Não Implantado ainda...
                     }
                 }
                 baixadas.add(new cRetorno(lst.getBanco(), lst.getTipoInsc(), lst.getInscr(), 
@@ -1893,8 +1958,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                         lst.getQuantidadevinc(), lst.getValorvinc(), lst.getCodigolote(), lst.getTotalreg()));
             }
 
-            String sBancoSel = jcbConsultaBancos.getSelectedItem().toString().substring(0, 3);
-            if (!baixadas.get(0).getBanco().equalsIgnoreCase(sBancoSel)) {
+            if (!baixadas.get(0).getBanco().equalsIgnoreCase(codBanco)) {
                 JOptionPane.showMessageDialog(this, "Banco selecionado diferente do arquivo de retorno!");
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 conBtnListar.setEnabled(true);
@@ -1961,6 +2025,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         int baiQtd = 0; BigDecimal baiVlr = new BigDecimal("0");
         int recQtd = 0; BigDecimal recVlr = new BigDecimal("0");
         int preQtd = 0; BigDecimal preVlr = new BigDecimal("0");
+        int bcoQtd = 0; BigDecimal bcoVlr = new BigDecimal("0");
         int brc = DbMain.RecordCount(rs);
         try {
             while (rs.next()) {
@@ -1980,13 +2045,20 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     for (cSegmentoT segt : ret.getSegmentot()) {
                         String _nnumero = segt.getNnumero() + segt.getDacnnumero();
                         String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
-                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3))).replaceAll(".00", "");
-                        if (_nnumero.contains(_tnnumero)) {
+                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3))).replaceAll(".00", "");                        
+                        String _meunumero = segt.getSeunumero();
+                        if (_nnumero.contains(_tnnumero) && !_meunumero.equalsIgnoreCase("AVULSA")) {
                             isRetorno = "S";
-                            trecebimento = Dates.StringtoDate(fmtDataCredito(segt.getSegmentou().getDatacredito()),"dd-MM-yyyy");
+                            trecebimento = Dates.StringtoDate(fmtDataCredito(segt.getSegmentou().getDataocorr()),"dd-MM-yyyy");
                             tmu = LerValor.FormatNumber(segt.getSegmentou().getJurousmulta().substring(5),2);
                             tju = "0,00";
-                            tvr = LerValor.FormatNumber(segt.getSegmentou().getValorcred().substring(5),2);
+                            if (codBanco.equalsIgnoreCase("341")) {
+                                tvr = LerValor.FormatNumber(fmtVrCredito(segt.getSegmentou().getValorcred()),2);
+                            } else if (codBanco.equalsIgnoreCase("033")) {
+                                tvr = LerValor.FormatNumber(fmtVrCredito(segt.getVrtitulo()),2);
+                            } else {
+                                // Not yet
+                            }                            
                             
                             break;
                         } else {
@@ -2060,7 +2132,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     // PAGOS
                     recQtd++;
                     recVlr = recVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
-                } else if (!ttag.equalsIgnoreCase("X") && (Dates.DateDiff(Dates.DIA, tvencimento, new Date()) <= 0) ) {
+                } else if (!ttag.equalsIgnoreCase("X") && isRetorno.equalsIgnoreCase("N") && (Dates.DateDiff(Dates.DIA, tvencimento, new Date()) <= 0) ) {
                     // EM ABERTO
                     preQtd++;
                     preVlr = preVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
@@ -2068,6 +2140,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     // VENCIDO
                     baiQtd++;
                     baiVlr = baiVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
+                } else if (!ttag.equalsIgnoreCase("X") && isRetorno.equalsIgnoreCase("S") && (Dates.DateDiff(Dates.DIA, tvencimento, new Date()) <= 0) ) {
+                    bcoQtd++;
+                    bcoVlr = bcoVlr.add(new BigDecimal(tvalor.replace(".", "").replace(",", ".")));
                 }
                 
                 int pgs2 = ((b++ * 100) / brc) + 1;
@@ -2087,6 +2162,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         preQuantidade.setText(FuncoesGlobais.StrZero(String.valueOf(preQtd),3));
         preValor.setText(LerValor.floatToCurrency(preVlr.floatValue(),2));
 
+        bcoQuantidade.setText(FuncoesGlobais.StrZero(String.valueOf(bcoQtd),3));
+        bcoValor.setText(LerValor.floatToCurrency(bcoVlr.floatValue(),2));
+
         // Retorna cursor
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         conBtnListar.setEnabled(true);
@@ -2094,6 +2172,11 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     
     private String fmtDataCredito(String value) {
         return value.substring(0,2) + "-" + value.substring(2,4) + "-" + value.substring(4);
+    }
+    
+    private String fmtVrCredito(String value) {
+        int lenvalue = value.length();
+        return value.substring(lenvalue - 10, lenvalue);
     }
     
     private void conListaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_conListaMouseClicked
@@ -4549,6 +4632,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JTextField arqRetorno;
     private javax.swing.JTextField baiQuantidade;
     private javax.swing.JTextField baiValor;
+    private javax.swing.JTextField bcoQuantidade;
+    private javax.swing.JTextField bcoValor;
     private javax.swing.JButton btnEditarCadastro;
     private javax.swing.JButton btnEnviarSelecao;
     private javax.swing.JButton btnEnviarTodos;
@@ -4585,6 +4670,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -4608,6 +4695,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;

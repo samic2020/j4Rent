@@ -282,7 +282,7 @@ public class itau {
                 String tipoDc = "";
                 String rsvad1 = "";
                 String rsvad2 = "";
-                String numDoc = new Pad(_contrato,10).RPad() + FuncoesGlobais.Space(5);
+                String numDoc = new Pad(tipo.equalsIgnoreCase("A") ? "AVULSA" :_contrato,10).RPad() + FuncoesGlobais.Space(5);
                 String dtavtt = Dates.StringtoString(_vencto,"dd/MM/yyyy","ddMMyyyy"); // "ddmmaaaa"; // data de vencimento do titulo
                 String vrnmtt = bancos.fmtNumero(_valor); //"000000000123129"; // valor nominal do titulo
                 String agencb = "00000"; // agencia encarregada

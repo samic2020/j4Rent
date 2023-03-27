@@ -774,7 +774,7 @@ public class Santander {
                 String tipoDc = "2"; // tipo de documento
                 String rsvad1 = FuncoesGlobais.Space(1);
                 String rsvad2 = FuncoesGlobais.Space(1);
-                String numDoc = new Pad(_contrato,15).RPad();
+                String numDoc = new Pad(tipo.equals("A") ? "AVULSA" : _contrato,15).RPad();
                 String dtavtt = Dates.StringtoString(_vencto,"dd/MM/yyyy","ddMMyyyy"); // "ddmmaaaa"; // data de vencimento do titulo
                 String vrnmtt = bancos.fmtNumero(_valor); //"000000000123129"; // valor nominal do titulo
                 String agencb = "0000"; // agencia encarregada
@@ -1164,7 +1164,7 @@ public class Santander {
             if (_segmento.equalsIgnoreCase("T") && lineread == 3) {
                 _codocort = (String)linha.substring(15,17);
                 _nnumero = (String)linha.substring(40,52);
-                _dacnnumero = (String)linha.substring(51,52);
+                _dacnnumero = (String)linha.substring(52,53);
                 _seunumero = (String)linha.substring(54,69);
                 
                 _dtavencimento = (String)linha.substring(69,77);
