@@ -31,7 +31,8 @@ public class Main {
         t.schedule(new RemindTask(), 60 * 1000);
         
         try {
-            UIManager.setLookAndFeel("com.nilo.plaf.nimrod.NimRODLookAndFeel");
+            //UIManager.setLookAndFeel("com.nilo.plaf.nimrod.NimRODLookAndFeel");
+            UIManager.setLookAndFeel("com.jtattoo.plaf.mint.MintLookAndFeel");
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(jLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {

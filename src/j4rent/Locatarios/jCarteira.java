@@ -822,7 +822,7 @@ public final class jCarteira extends javax.swing.JDialog {
         }
         tt.setVisible(true);
         tt.setForeground(Color.BLACK);
-        tt.setBounds(cb.getX() + at + 10, 0 + (at * i), lcp, at);
+        tt.setBounds(cb.getX() + at + 10, 0 + (at * i), lcp / 3, at);
         tt.setName("Ant" + i);
 //        tt.addActionListener(new java.awt.event.ActionListener() {
 //            public void actionPerformed(java.awt.event.ActionEvent evt) {

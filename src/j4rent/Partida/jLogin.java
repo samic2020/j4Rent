@@ -30,8 +30,8 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
  * @author supervisor
  */
 public class jLogin extends javax.swing.JDialog {
-    private int LOGINDIALOGWIDTH = 359;
-    private int LOGINDIALOGHEIGHT = 292;
+    private int LOGINDIALOGWIDTH = 615; //359;
+    private int LOGINDIALOGHEIGHT = 289; //292;
     private Toolkit tk;
     DbMain conn = null;
     
@@ -126,7 +126,7 @@ public class jLogin extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDesktopPane1 = new BackGroundDeskTopPane("/Figuras/senha.png");
+        jDesktopPane1 = new BackGroundDeskTopPane("/Figuras/login_novo.jpg");
         jUnidade = new javax.swing.JComboBox();
         jUsuario = new javax.swing.JTextField();
         jSenha = new javax.swing.JPasswordField();
@@ -149,7 +149,7 @@ public class jLogin extends javax.swing.JDialog {
             }
         });
         jDesktopPane1.add(jUnidade);
-        jUnidade.setBounds(140, 210, 150, 22);
+        jUnidade.setBounds(250, 140, 240, 22);
 
         jUsuario.setFont(new java.awt.Font("SansSerif", 1, 10)); // NOI18N
         jUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -159,7 +159,7 @@ public class jLogin extends javax.swing.JDialog {
             }
         });
         jDesktopPane1.add(jUsuario);
-        jUsuario.setBounds(140, 230, 150, 22);
+        jUsuario.setBounds(310, 170, 180, 22);
 
         jSenha.setFont(new java.awt.Font("SansSerif", 1, 10)); // NOI18N
         jSenha.setForeground(new java.awt.Color(0, 0, 204));
@@ -175,39 +175,41 @@ public class jLogin extends javax.swing.JDialog {
             }
         });
         jDesktopPane1.add(jSenha);
-        jSenha.setBounds(140, 250, 150, 22);
+        jSenha.setBounds(340, 200, 150, 22);
 
         jStatus.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         jStatus.setForeground(new java.awt.Color(255, 0, 0));
         jDesktopPane1.add(jStatus);
-        jStatus.setBounds(140, 280, 150, 22);
+        jStatus.setBounds(340, 230, 150, 22);
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 3, 15)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(254, 254, 254));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Senha:");
         jDesktopPane1.add(jLabel1);
-        jLabel1.setBounds(20, 250, 110, 18);
+        jLabel1.setBounds(220, 200, 110, 20);
 
         jLabel2.setFont(new java.awt.Font("Ubuntu", 3, 15)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(254, 254, 254));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Unidade:");
         jDesktopPane1.add(jLabel2);
-        jLabel2.setBounds(20, 210, 110, 18);
+        jLabel2.setBounds(130, 140, 110, 20);
 
         jLabel3.setFont(new java.awt.Font("Ubuntu", 3, 15)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(254, 254, 254));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Usuário:");
         jDesktopPane1.add(jLabel3);
-        jLabel3.setBounds(20, 230, 110, 18);
+        jLabel3.setBounds(190, 170, 110, 20);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

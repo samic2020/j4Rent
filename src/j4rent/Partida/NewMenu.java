@@ -19,6 +19,7 @@ import Funcoes.VariaveisGlobais;
 import Funcoes.ResizeImageIcon;
 import Funcoes.TableControl;
 import static Funcoes.gmail.GmailAPI.ReadJSon;
+import com.jtattoo.plaf.mint.MintLookAndFeel;
 import java.awt.AWTKeyStroke;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionListener;
@@ -38,6 +39,7 @@ import javax.swing.JMenuItem;
 import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Properties;
 import mondrian.rolap.Test;
 import org.json.JSONException;
 /**
@@ -52,6 +54,10 @@ public final class NewMenu extends javax.swing.JFrame {
     public NewMenu() throws SQLException {
         initComponents();
 
+        Properties props = new Properties();            
+        props.put("logoString", "Samic");
+        MintLookAndFeel.setCurrentTheme(props);
+                
 //        // Autenticador mensal do software
 //        int contadias = 0; int limitedias = 0; Date ultacesso = null; 
 //        Date Hoje = Dates.StringtoDate(Dates.DateFormata("dd-MM-yyyy", new Date()), "dd-MM-yyyy");

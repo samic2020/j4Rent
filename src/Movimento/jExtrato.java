@@ -474,6 +474,9 @@ public class jExtrato extends javax.swing.JInternalFrame {
                 String[][] rCampos = FuncoesGlobais.treeArray(tmpCampo, true);
 
                 for (int j = 0; j<rCampos.length; j++) {
+                    
+                    if (LerValor.StringToFloat(LerValor.FormatNumber(rCampos[j][2],2)) == 0) continue;
+                    
                     //String tpCampo = new Pad(rCampos[j][rCampos[j].length - 1], 25).RPad();
                     String tpCampo = rCampos[j][rCampos[j].length - 1];
                     if (VariaveisGlobais.bShowCotaParcelaExtrato) {
