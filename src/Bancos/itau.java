@@ -1374,7 +1374,7 @@ public class itau {
         String _codocoru = ""; String _jurousmulta = ""; String _desconto = ""; 
         String _abatimento = ""; String _valorcred = ""; String _valorlanc = "";
         String _dataocorr1 = ""; String _datacredito = ""; String _ocorrpagador = "";
-        String _dataocorr2 = ""; String _valorocorr = "";
+        String _dataocorr2 = ""; String _valorocorr = ""; String _datacredito2 = "";
         
         //
         String _quantidadereg = ""; String _quantidadesimples = ""; String _quantidadevinc = ""; 
@@ -1387,6 +1387,8 @@ public class itau {
                 _inscr = (String)linha.substring(18,32);
                 _tparquivo = (String)linha.substring(142,143);
                 
+                _datacredito2 = (String)linha.substring(143,151);
+
                 lineread++;
                 continue;
             }
@@ -1459,7 +1461,7 @@ public class itau {
                 _codigolote = (String)linha.substring(3,7);
                 _totalreg = (String)linha.substring(23,29);
 
-                cRetorno cret = new cRetorno(_banco, _tipoInsc, _inscr, _tparquivo, _datacredito, segt, _quantidadereg, _quantidadesimples, _quantidadevinc, _valorvinc, _codigolote, _totalreg);
+                cRetorno cret = new cRetorno(_banco, _tipoInsc, _inscr, _tparquivo, _datacredito2, segt, _quantidadereg, _quantidadesimples, _quantidadevinc, _valorvinc, _codigolote, _totalreg);
                 retorno.add(cret);
             }            
         }

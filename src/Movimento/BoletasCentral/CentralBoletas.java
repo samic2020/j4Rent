@@ -7,7 +7,6 @@ package Movimento.BoletasCentral;
 
 import Bancos.*;
 import BancosDigital.classBaixar;
-import BancosDigital.classInterConsulta;
 import Funcoes.Autenticacao;
 import Funcoes.CentralizaTela;
 import Funcoes.Dates;
@@ -91,6 +90,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
     String[] month;
     int[] dmonth;
+    
+    Date dataRetorno = null;
     
     jTableControl tabela = new jTableControl(true);    
 
@@ -924,6 +925,16 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jLabel10.setBounds(290, 20, 31, 16);
 
         jTipoListagem.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODOS", "PAGOS", "EMABERTO" }));
+        jTipoListagem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jTipoListagemItemStateChanged(evt);
+            }
+        });
+        jTipoListagem.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
+            public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
+                jTipoListagemVetoableChange(evt);
+            }
+        });
         jPanel13.add(jTipoListagem);
         jTipoListagem.setBounds(330, 10, 94, 22);
 
@@ -1982,16 +1993,37 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jProgressListaBoletasConsulta.setValue(0);
         
         String tipoListagem = jTipoListagem.getSelectedItem().toString();
-        int tpListagem = 0;
+        int tpListagem = 0; 
+        Date dtIni = null; Date dtFim = null;
+        Date dtIni2 = null; Date dtFim2 = null;
         if (tipoListagem.equalsIgnoreCase("TODOS")) {
             tipoListagem = "";
             tpListagem = 0;
+            dtIni = conDataInicial.getDate();
+            dtFim = conDataFinal.getDate();
+            dtIni2 = conDataInicial.getDate();
+            dtFim2 = conDataFinal.getDate();
         } else if (tipoListagem.equalsIgnoreCase("PAGOS")) {
             tipoListagem = "r.tag = 'X' AND ";
             tpListagem = 1;
+            dtIni = conDataInicial.getDate();
+            dtFim = conDataFinal.getDate();
+            dtIni2 = conDataInicial.getDate();
+            dtFim2 = conDataFinal.getDate();
         } else {
             tipoListagem = "r.tag != 'X' AND ";
             tpListagem = 2;
+            if (dataRetorno != null) {
+                dtIni = Dates.primeiraDataMes(dataRetorno);
+                dtFim = Dates.ultimaDataMes(dataRetorno);
+                dtIni2 = Dates.primeiraDataMes(dataRetorno);
+                dtFim2 = Dates.ultimaDataMes(dataRetorno);
+            } else {
+                dtIni = conDataInicial.getDate();
+                dtFim = conDataFinal.getDate();
+                dtIni2 = conDataInicial.getDate();
+                dtFim2 = conDataFinal.getDate();
+            }
         }
         tipoListagem = (tipoListagem.equalsIgnoreCase("TODOS") ? "" : tipoListagem);
         
@@ -2007,10 +2039,10 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         "ELSE (r.dtvencbol between :dtini2 AND :dtfim2) END ORDER BY 4;";
         
         ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
-            {"date", "dtini1", conDataInicial.getDate()},
-            {"date", "dtfim1", conDataFinal.getDate()},
-            {"date", "dtini2", conDataInicial.getDate()},
-            {"date", "dtfim2", conDataFinal.getDate()},
+            {"date", "dtini1", dtIni},
+            {"date", "dtfim1", dtFim},
+            {"date", "dtini2", dtIni2},
+            {"date", "dtfim2", dtFim2},
         });
         
         String trgprp = null, trgimv = null, tcontrato = null;
@@ -2349,7 +2381,51 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     private void arqRetornoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_arqRetornoMouseClicked
         String arq = escolherArquivo();
         arqRetorno.setText(arq);
+        dataRetorno = null;
+        String codBanco = jcbConsultaBancos.getSelectedItem().toString().substring(0,3);     
+        if (arqRetorno.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");            
+        } else {        
+            if (codBanco.equalsIgnoreCase("341")) {
+                dataRetorno = Dates.StringtoDate(fmtDataCredito(itau.retorno(arqRetorno.getText()).get(0).getDatacredito()), "dd-MM-yyyy");
+            } else if (codBanco.equalsIgnoreCase("033")) {
+                dataRetorno = Dates.StringtoDate(fmtDataCredito(Santander.retorno(arqRetorno.getText()).get(0).getDatacredito()),"dd-MM-yyyy");
+            } else {
+                dataRetorno = null;
+            }
+            
+            if (dataRetorno == null) {
+                JOptionPane.showMessageDialog(this, "Retorno para este banco ainda não implantado!");
+                
+                // Retorna cursor
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                conBtnListar.setEnabled(true);
+                return;
+            }
+        }        
     }//GEN-LAST:event_arqRetornoMouseClicked
+
+    private void jTipoListagemVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_jTipoListagemVetoableChange
+    }//GEN-LAST:event_jTipoListagemVetoableChange
+
+    private void jTipoListagemItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jTipoListagemItemStateChanged
+        if (jTipoListagem.getSelectedIndex() == 0) {
+            conDataInicial.setVisible(true);
+            conDataFinal.setVisible(true);
+            jLabel11.setVisible(true);
+            jLabel12.setVisible(true);
+        } else if (jTipoListagem.getSelectedIndex() == 1) {
+            conDataInicial.setVisible(true);
+            conDataFinal.setVisible(true);
+            jLabel11.setVisible(true);
+            jLabel12.setVisible(true);
+        } else {
+            conDataInicial.setVisible(false);
+            conDataFinal.setVisible(false);
+            jLabel11.setVisible(false);
+            jLabel12.setVisible(false);
+        }
+    }//GEN-LAST:event_jTipoListagemItemStateChanged
 
     private String escolherArquivo() {
         File arquivos = null;
