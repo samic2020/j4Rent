@@ -1214,6 +1214,25 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
             }
         }
         
+        // MU; JU; CO
+        Collections gVar = VariaveisGlobais.dCliente;
+        int MPos = -1; int JPos = -1; int CPos = -1;
+        MPos = cCampos[0].indexOf("MU");
+        if (MPos > -1) {
+            String muVr = LerValor.FormatNumber(cCampos[0].substring(MPos + 2, MPos + 12),2);
+            linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("MU"),"",muVr});
+        }
+        JPos = cCampos[0].indexOf("JU");
+        if (JPos > -1) {
+            String juVr = LerValor.FormatNumber(cCampos[0].substring(JPos + 2, JPos + 12),2);
+            linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("JU"),"",juVr});
+        }
+        CPos = cCampos[0].indexOf("CO");
+        if (CPos > -1) {
+            String coVr = LerValor.FormatNumber(cCampos[0].substring(CPos + 2, CPos + 12),2);
+            linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("CO"),"",coVr});
+        }
+        
         return linhas;
     }
    

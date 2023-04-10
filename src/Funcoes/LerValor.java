@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package Funcoes;
 
 import java.text.DecimalFormat;
@@ -11,10 +6,6 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Locale;
 
-/**
- *
- * @author supervisor
- */
 public class LerValor {
 
     static public String FormataCurrency(String cValor) {

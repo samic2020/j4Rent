@@ -103,6 +103,9 @@ public final class NewMenu extends javax.swing.JFrame {
         /**
          * maximiza a janela
          */
+        setMaximumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(800,600));
+        setPreferredSize(new Dimension(800, 600));
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         /**
@@ -116,7 +119,7 @@ public final class NewMenu extends javax.swing.JFrame {
         int x = (int) (dimension.getWidth() - this.getSize().getWidth() ) / 2;
         int y = (int) (dimension.getHeight() - this.getSize().getHeight()) / 2;
         this.setLocation(x,y);
-
+        
         // Colocando enter para pular de campo
         HashSet conj = new HashSet(this.getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
         conj.add(AWTKeyStroke.getAWTKeyStroke(KeyEvent.VK_ENTER, 0));
@@ -309,6 +312,9 @@ public final class NewMenu extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(".:: j4Rent - Programa de Administração de Imobiliárias");
+        setMaximumSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(800, 600));
+        setPreferredSize(new java.awt.Dimension(800, 600));
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);

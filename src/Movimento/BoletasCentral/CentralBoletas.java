@@ -1956,7 +1956,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                             baisgt.add(stl);
                         }
                     } else if (codBanco.equalsIgnoreCase("341")) {
-                        if (!stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
+                        if (stl.getCodocor().trim().equalsIgnoreCase("06") && !stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
                             baisgt.add(stl);
                         }
                     } else {
@@ -2077,8 +2077,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     for (cSegmentoT segt : ret.getSegmentot()) {
                         String _nnumero = segt.getNnumero() + segt.getDacnnumero();
                         String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
-                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3))).replaceAll(".00", "");                        
+                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3)));                        
                         String _meunumero = segt.getSeunumero();
+                        
                         if (_nnumero.contains(_tnnumero) && !_meunumero.equalsIgnoreCase("AVULSA")) {
                             isRetorno = "S";
                             trecebimento = Dates.StringtoDate(fmtDataCredito(segt.getSegmentou().getDataocorr()),"dd-MM-yyyy");
@@ -2098,6 +2099,24 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                         }                            
                     }
                 }
+                
+                // Quando não estiver na lista
+                boolean isList = false;
+                for (cRetorno ret : baixadas) {
+                    isList = false;
+                    for (cSegmentoT segt : ret.getSegmentot()) {
+                        String _nnumero = segt.getNnumero() + segt.getDacnnumero();
+                        String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
+                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3)));           
+                        String _meunumero = segt.getSeunumero();
+                        if (_nnumero.contains(_tnnumero)) {
+                            isList = true;
+                            break;
+                        }
+                    }
+                    if (isList) break;
+                }
+                if (!isList) continue;
                 
                 // Pega valor da boleta, multa, juros e correção do arquivo de retorno
                 float[] tboleta = CalcularRecibo(
@@ -4046,7 +4065,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         } catch (Exception e) { sucesso = false; }
         
         // Calcula o recibo
-        new Calculos().Inicializa(rgprp, rgimv, contrato);
+        Calculos calculos =  new Calculos();
+        calculos.Inicializa(rgprp, rgimv, contrato);      
         
         DepuraCampos zCampos; String[] zCampo;
 
@@ -4075,27 +4095,57 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         int i = 0;
         String tCampo = CriticaCampo(rgprp, rgimv, contrato, sVenctos[i], campo);
 
+        float _fmuP = calculos.Multa(campo, sVenctos[i], false);
+        String _muP = FuncoesGlobais.GravaValor(LerValor.FloatToString(_fmuP));
+        float _tmuP = LerValor.FloatNumber(_muP,2);
+        float _tmbu = LerValor.FloatNumber(BMU,2);
+        if (_tmbu > 0) {
+            BMU = _muP;
+            BCO = FuncoesGlobais.GravaValor(LerValor.FloatToString((_tmbu - _tmuP)));
+        }
+        
         // Checa IPTU Automático
         //tCampo = IPTU(rgimv, sVenctos[i], tCampo);
 
         // Aqui coloca a MU e CO do boleto e Apaga o JU
-        int intMPos = tCampo.indexOf("MU");
-        if (intMPos != 0) {
-            String part1 = tCampo.substring(0, intMPos + 2);
-            String part2 = tCampo.substring(intMPos + 12);
-            tCampo = part1 + BMU + part2;
-        }
-        int intCPos = tCampo.indexOf("CO");
-        if (intCPos != 0) {
-            String part1 = tCampo.substring(0, intCPos + 2);
-            String part2 = tCampo.substring(intCPos + 12);
-            tCampo = part1 + BCO + part2;
-        }
-        int intJPos = tCampo.indexOf("JU");
-        if (intJPos != 0) {
-            String part1 = tCampo.substring(0, intJPos + 2);
-            String part2 = tCampo.substring(intJPos + 12);
-            tCampo = part1 + "0000000000" + part2;
+        if (!BMU.equalsIgnoreCase("0000000000")) {
+            int intMPos = tCampo.indexOf("MU");
+            if (intMPos != 0) {
+                String part1 = tCampo.substring(0, intMPos + 2);
+                String part2 = tCampo.substring(intMPos + 12);
+                String part3 = tCampo.substring(intMPos + 2, intMPos + 12);
+                
+                float _mu = LerValor.StringToFloat(LerValor.FormatNumber(BMU,2));
+                float _mu1 = LerValor.StringToFloat(LerValor.FormatNumber(part3.substring(0,10),2));
+                String _BMU = FuncoesGlobais.GravaValor(LerValor.FloatToString(_mu + _mu1));
+                tCampo = part1 + _BMU + part2;
+            }
+            int intCPos = tCampo.indexOf("CO");
+            if (intCPos != 0) {
+                String part1 = tCampo.substring(0, intCPos + 2);
+                String part2 = tCampo.substring(intCPos + 12);
+                String part3 = tCampo.substring(intCPos + 2, intCPos + 12);
+                
+                float _co = LerValor.StringToFloat(LerValor.FormatNumber(BCO,2));
+                float _co1 = LerValor.StringToFloat(LerValor.FormatNumber(part3.substring(0,10),2));
+                String _BCO = FuncoesGlobais.GravaValor(LerValor.FloatToString(_co + _co1));
+                tCampo = part1 + _BCO + part2;
+            }
+            int intJPos = tCampo.indexOf("JU");
+            if (intJPos != 0) {
+                String part1 = tCampo.substring(0, intJPos + 2);
+                String part2 = tCampo.substring(intJPos + 12);
+                String part3 = tCampo.substring(intJPos + 2, intJPos + 12);
+                
+                float _ju = LerValor.StringToFloat(LerValor.FormatNumber("0000000000",2));
+                float _ju1 = LerValor.StringToFloat(LerValor.FormatNumber(part3.substring(0,10),2));
+                String _BJU = FuncoesGlobais.GravaValor(LerValor.FloatToString(_ju + _ju1));
+                tCampo = part1 + _BJU + part2;
+            }
+            
+            String updateSQL = "UPDATE recibo SET campo = '" + tCampo + "' WHERE rgprp = '" + rgprp + "' AND rgimv = '" + rgimv + "' AND " + 
+                    "contrato = '" + contrato + "' AND DTVENCIMENTO = '" + Dates.StringtoString(sVenctos[i], "dd-MM-yyyy", "yyyy-MM-dd")  + "';";
+            conn.ExecutarComando(updateSQL);
         }
         
         String[] aCampo = tCampo.split(";");
