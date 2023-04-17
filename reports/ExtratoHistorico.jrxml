@@ -30,7 +30,7 @@
 				<textField pattern="dd-MM-yyyy">
 					<reportElement uuid="3bb4fb83-d730-402d-a62b-d31a0f5e2604" x="4" y="0" width="143" height="14"/>
 					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA["Data: " + $F{dtpagamento}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Data: " + new SimpleDateFormat("dd-MM-yyyy").format($F{dtpagamento})]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -60,13 +60,13 @@
 				<textElement/>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy HH.mm.ss">
-				<reportElement uuid="7b0b952a-29b8-4d62-986e-b8171fe23487" x="451" y="31" width="100" height="20"/>
-				<textElement verticalAlignment="Middle"/>
+			<textField pattern="dd-MM-yyyy HH:mm">
+				<reportElement uuid="7b0b952a-29b8-4d62-986e-b8171fe23487" x="464" y="31" width="87" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="b95f8beb-9287-44f2-9f6a-bc7469332eb0" x="391" y="31" width="60" height="20"/>
+				<reportElement uuid="b95f8beb-9287-44f2-9f6a-bc7469332eb0" x="404" y="31" width="60" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Data/Hora:]]></text>
 			</staticText>
@@ -80,12 +80,12 @@
 			<textField>
 				<reportElement uuid="e5f9f736-7cca-4e4b-825d-07cada2f4abe" x="61" y="51" width="157" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA["Data Inicial: " + $P{dtini}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Data Inicial: " + new SimpleDateFormat("dd-MM-yyyy").format($P{dtini})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="63083aff-e58f-46fb-beb9-a404f48e1ad6" x="234" y="51" width="157" height="20"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA["Data Final: " + $P{dtfim}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Data Final: " + new SimpleDateFormat("dd-MM-yyyy").format($P{dtfim})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement uuid="7952f8d4-0460-43da-893f-ca42dffb0c27" x="200" y="29" width="191" height="20"/>
@@ -158,7 +158,7 @@
 				</graphicElement>
 			</rectangle>
 			<rectangle>
-				<reportElement uuid="57f531e2-3fda-48a8-b955-22ab527533c7" mode="Opaque" x="0" y="0" width="555" height="14" forecolor="#FFFFFF" backcolor="#D9D9E1">
+				<reportElement uuid="57f531e2-3fda-48a8-b955-22ab527533c7" mode="Opaque" x="1" y="0" width="553" height="14" forecolor="#FFFFFF" backcolor="#D9D9E1">
 					<printWhenExpression><![CDATA[new Boolean(($V{COLUMN_COUNT}.intValue() % 2) == 0)]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
@@ -172,7 +172,9 @@
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="a2e97fdd-637f-49ee-ac9e-ba0026eb540e" x="262" y="0" width="76" height="14"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{referencia}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">

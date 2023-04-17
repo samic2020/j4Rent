@@ -129,6 +129,7 @@ public final class jCarteira extends javax.swing.JDialog {
             jDtUltRec.setEnabled(true);
             jAltData.setEnabled(false);
         }
+        repaint();
     }
     
     /** This method is called from within the constructor to
@@ -329,6 +330,7 @@ public final class jCarteira extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        repaint();
     }//GEN-LAST:event_jbtInserirActionPerformed
 
     private void jbtGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtGravarActionPerformed
