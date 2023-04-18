@@ -193,11 +193,13 @@ public class DbMain {
         try {
             stm = connectionSQL.createStatement();
         } catch (SQLException ex) {
+            System.out.println("SQL -> " + sqlString);
             ex.printStackTrace();
         }
         try {
             hRetorno = stm.executeUpdate(sqlString);
         } catch (SQLException ex) {
+            System.out.println("SQL -> " + sqlString);
             ex.printStackTrace();
         }
         return hRetorno;

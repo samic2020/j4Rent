@@ -1128,8 +1128,11 @@ public class jProprietarios extends javax.swing.JInternalFrame {
                 "DELETE FROM `" + VariaveisGlobais.dbnome + "`.`parametros` WHERE variavel = 'PROP" + mCodigo.getText() + "';"
             };
             
-            for (String nsql : sql) {
-                try {conn.ExecutarComando(nsql);} catch (Exception e) {System.out.println(nsql);e.printStackTrace();}
+            for (String nsql : sql) {                
+                try {conn.ExecutarComando(nsql);} catch (Exception e) {
+                    System.out.println("SQL -> " + nsql);
+                    System.out.println(nsql);e.printStackTrace();
+                }
             }
             try {
                 conn.Auditor("EXCLUSAO: PROPRIETARIO", mCodigo.getText());

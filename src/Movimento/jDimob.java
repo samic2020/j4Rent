@@ -6,6 +6,7 @@ package Movimento;
 
 import Funcoes.Convert;
 import Funcoes.Dates;
+import Funcoes.Db;
 import Funcoes.DbMain;
 import Funcoes.FuncoesGlobais;
 import Funcoes.Pad;
@@ -37,6 +38,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
  */
 public class jDimob extends javax.swing.JInternalFrame {
     DbMain conn = VariaveisGlobais.conexao;
+    Db db = new Db();
     jTableControl tabela = new jTableControl(true);
     TableRowSorter<TableModel> sorter;
     
@@ -64,7 +66,11 @@ public class jDimob extends javax.swing.JInternalFrame {
     }
     
     private void ListarLocatarios(String sAno) {
-        String sql = "SELECT DISTINCT a.rgprp, l.nome FROM auxiliar a, proprietarios l where (a.rgprp = l.rgprp) AND a.conta = 'REC' and InStr(a.campo,'01:1:') and Year(a.dtrecebimento) = '&1.' order by l.nome;";
+        //String sql = "SELECT DISTINCT a.rgprp, l.nome FROM auxiliar a, proprietarios l where (a.rgprp = l.rgprp) AND a.conta = 'REC' and InStr(a.campo,'01:1:') and Year(a.dtrecebimento) = '&1.' order by l.nome;";
+        String sql = "SELECT DISTINCT a.rgprp, l.nome FROM auxiliar a, proprietarios l where (a.rgprp = l.rgprp) AND a.conta = 'REC' and InStr(a.campo,'01:1:') and Year(a.dtrecebimento) = '&1.' " + 
+                     "union " +
+                     "SELECT DISTINCT ae.rgprp, le.nome FROM jgeral_excluidos.auxiliar ae, jgeral_excluidos.proprietarios le where (ae.rgprp = le.rgprp) AND ae.conta = 'REC' and InStr(ae.campo,'01:1:') and Year(ae.dtrecebimento) = '&1.' " + 
+                     "order by 2;";
         sql = FuncoesGlobais.Subst(sql, new String[] {sAno});
 
         ResultSet rs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
@@ -432,7 +438,7 @@ public class jDimob extends javax.swing.JInternalFrame {
     private void ListaDirrf(String sMes, String sAno) {
         jbtDirrf.setEnabled(false);
         
-        String _where = "";
+        String _where = "", _where2 = "";
         if (!cxTodos.isSelected()) {
             _where = " and (";
             for (int c=0; c< aTable.getRowCount(); c++) {
@@ -442,6 +448,7 @@ public class jDimob extends javax.swing.JInternalFrame {
                 }
             }
             _where = _where.substring(0, _where.length() - 4) + ")";
+            _where2 = _where.replace("rgprp", "ae.rgprp");
             //if (_where.trim().equalsIgnoreCase("a (")) { 
             //    _where += ")";
             //} else {
@@ -456,10 +463,16 @@ public class jDimob extends javax.swing.JInternalFrame {
         //String sql = "SELECT * FROM imposto where InStr(campo,'01:1:') and Year(dtrecebimento) = '&1.' order by contrato, dtrecebimento;";
         String sql = "";
         if (sMes.equalsIgnoreCase("TODOS")) {
-            sql = "SELECT * FROM auxiliar where conta = 'REC' and InStr(campo,'01:1:') and Year(dtrecebimento) = '&1.'" + _where + " order by contrato, dtrecebimento;";
+            sql = "SELECT a.* FROM auxiliar a where a.conta = 'REC' and InStr(a.campo,'01:1:') and Year(a.dtrecebimento) = '&1.'" + _where + 
+                  "union " +
+                  "SELECT ae.* FROM jgeral_excluidos.auxiliar ae where ae.conta = 'REC' and InStr(ae.campo,'01:1:') and Year(ae.dtrecebimento) = '&1.'" + _where2 + 
+                  " order by 5, 8;";
             sql = FuncoesGlobais.Subst(sql, new String[] {sAno});
         } else {
-            sql = "SELECT * FROM auxiliar where conta = 'REC' and InStr(campo,'01:1:') and Month(dtrecebimento) = '&1.' and Year(dtrecebimento) = '&2.'" + _where + " order by contrato, dtrecebimento;";
+            sql = "SELECT a.* FROM auxiliar a where a.conta = 'REC' and InStr(a.campo,'01:1:') and Month(a.dtrecebimento) = '&1.' and Year(a.dtrecebimento) = '&2.'" + _where + 
+                  "unioun " +
+                  "SELECT ae.* FROM jgeral_excluidos.auxiliar ae where ae.conta = 'REC' and InStr(ae.campo,'01:1:') and Month(ae.dtrecebimento) = '&1.' and Year(ae.dtrecebimento) = '&2.'" + _where2 +   
+                  " order by 5, 8;";
             sql = FuncoesGlobais.Subst(sql, new String[] {sMes, sAno});
         }
         ResultSet rs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
@@ -677,26 +690,31 @@ public class jDimob extends javax.swing.JInternalFrame {
             int br = ((pos++ * 100) / eof) + 1;
             jbarra.setValue(br);
 
-            String[][] dados_locador = null;
-            String[][] dados_locatario = null;
-            String[][] dados_imovel = null;
-            String[][] dados_carteira = null;
-            String[][] dados_auxiliar = null;
+            Object[][] dados_locador = null;
+            Object[][] dados_locatario = null;
+            Object[][] dados_imovel = null;
+            Object[][] dados_carteira = null;
+            Object[][] dados_auxiliar = null;
             
-            try {dados_locador = conn.LerCamposTabela(new String[] {"cpfcnpj","nome"}, "proprietarios", FuncoesGlobais.Subst("rgprp = '&1.'",new String[] {dimob[i][0].toString()}));} catch (Exception e) {}
+            //try {dados_locador = conn.LerCamposTabela(new String[] {"cpfcnpj","nome"}, "proprietarios", FuncoesGlobais.Subst("rgprp = '&1.'",new String[] {dimob[i][0].toString()}));} catch (Exception e) {}
+            try {dados_locador = pegaDadosProprietario(dimob[i][0].toString(), new String[] {"cpfcnpj","nome"}); } catch (Exception e) {}
             if (dados_locador != null) {
-                try {dados_locatario = conn.LerCamposTabela(new String[] {"cpfcnpj","nomerazao","contrato"}, "locatarios", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}                    
+                //try {dados_locatario = conn.LerCamposTabela(new String[] {"cpfcnpj","nomerazao","contrato"}, "locatarios", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}                    
+                try {dados_locatario = pegaDadosLocatarios(dimob[i][2].toString(), new String[] {"cpfcnpj","nomerazao","contrato"});} catch (Exception e) {}                    
                 if (dados_locatario != null) {
-                    try {dados_imovel = conn.LerCamposTabela(new String[] {"tpurbrural","end","num","compl","cep","codcid","estado"}, "imoveis", FuncoesGlobais.Subst("rgimv = '&1.'",new String[] {dimob[i][1].toString()}));} catch (Exception e) {}
+                    //try {dados_imovel = conn.LerCamposTabela(new String[] {"tpurbrural","end","num","compl","cep","codcid","estado"}, "imoveis", FuncoesGlobais.Subst("rgimv = '&1.'",new String[] {dimob[i][1].toString()}));} catch (Exception e) {}
+                    try {dados_imovel = pegaDadosImoveis(dimob[i][1].toString(), new String[] {"tpurbrural","end","num","compl","cep","codcid","estado"});} catch (Exception e) {}
                     if (dados_imovel != null) {
-                        try {dados_carteira = conn.LerCamposTabela(new String[] {"dtinicio"}, "CARTEIRA", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                        //try {dados_carteira = conn.LerCamposTabela(new String[] {"dtinicio"}, "CARTEIRA", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                        try {dados_carteira = pegaDadosCarteira(dimob[i][2].toString(), new String[] {"dtinicio"});} catch (Exception e) {}
                         String dtInicio = "00000000";
                         if (dados_carteira != null) {
-                            try {dtInicio = Dates.StringtoString(dados_carteira[0][3], "dd/MM/yyyy", "ddMMyyyy");} catch (Exception e) {}
+                            try {dtInicio = Dates.StringtoString(dados_carteira[0][3].toString(), "dd/MM/yyyy", "ddMMyyyy");} catch (Exception e) {}
                         } else {
-                            try {dados_auxiliar = conn.LerCamposTabela(new String[] {"campo"}, "auxiliar", FuncoesGlobais.Subst("conta = 'CAR' AND contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                            //try {dados_auxiliar = conn.LerCamposTabela(new String[] {"campo"}, "auxiliar", FuncoesGlobais.Subst("conta = 'CAR' AND contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                            try {dados_auxiliar = pegaDadosAuxiliar(dimob[i][2].toString(),new String[] {"campo"});} catch (Exception e) {}
                             if (dados_auxiliar != null) {
-                                String[] auxCampos = dados_auxiliar[0][3].split(",");
+                                String[] auxCampos = dados_auxiliar[0][3].toString().split(",");
                                 try {dtInicio = Dates.StringtoString(auxCampos[1], "dd/MM/yyyy", "ddMMyyyy");} catch (Exception e) {}
                             }
                         }
@@ -734,11 +752,11 @@ public class jDimob extends javax.swing.JInternalFrame {
                         Object[][] meses = (Object[][]) dimob[i][3];
                         uSql = FuncoesGlobais.Subst(uSql, new String[] {
                             dimob[i][0].toString(), dimob[i][1].toString(), dimob[i][2].toString(),
-                            FuncaoX(dados_locador[0][3].replace(".", "").replace("-", "").replace("/", ""),14),
-                            FuncaoX(dados_locador[1][3], 60).replace("'", "''"),
-                            FuncaoX(dados_locatario[0][3].replace(".", "").replace("-", "").replace("/", ""),14),
-                            FuncaoX(dados_locatario[1][3], 60).replace("'", "''"),
-                            FuncaoX(dados_locatario[2][3], 6),
+                            FuncaoX(dados_locador[4][3].toString().replace(".", "").replace("-", "").replace("/", ""),14),
+                            FuncaoX(dados_locador[6][3].toString(), 60).replace("'", "''"),
+                            FuncaoX(dados_locatario[0][3].toString().replace(".", "").replace("-", "").replace("/", ""),14),
+                            FuncaoX(dados_locatario[1][3].toString(), 60).replace("'", "''"),
+                            FuncaoX(dados_locatario[2][3].toString(), 6),
                             dtInicio,
 
                             FuncaoR(meses[0][1]),
@@ -861,11 +879,11 @@ public class jDimob extends javax.swing.JInternalFrame {
                             FuncaoR(meses[11][9]),
                             FuncaoR(meses[11][8]),
 
-                            FuncaoX(dados_imovel[0][3], 1),
+                            FuncaoX(dados_imovel[0][3].toString(), 1),
                             FuncaoX(dados_imovel[1][3] + "," + dados_imovel[2][3] + " " + dados_imovel[3][3], 60).replace("'", "''"),
-                            FuncaoN(dados_imovel[4][3].replace("-", ""), 8),
-                            FuncaoN(dados_imovel[5][3], 4),
-                            FuncaoX(dados_imovel[6][3], 2)
+                            FuncaoN(dados_imovel[4][3].toString().replace("-", ""), 8),
+                            FuncaoN(dados_imovel[5][3].toString(), 4),
+                            FuncaoX(dados_imovel[6][3].toString(), 2)
                         });
 
                         try {conn.ExecutarComando(uSql);} catch (Exception e) {e.printStackTrace();}
@@ -916,9 +934,12 @@ public class jDimob extends javax.swing.JInternalFrame {
         float tAL = 0, tCM = 0, tDC = 0, tDF = 0, tIR = 0;
         Object[][] dimob = {};
         
-        //String sql = "SELECT * FROM imposto where InStr(campo,'01:1:') order by contrato, dtrecebimento and Year(dtrecebimento) = '&1.'";
-        String sql = "SELECT * FROM auxiliar where conta = 'REC' and InStr(campo,'01:1:') and Year(dtrecebimento) = '&1.' order by contrato, dtrecebimento;";
-        sql = FuncoesGlobais.Subst(sql, new String[] {sAno});
+        //String sql = "SELECT * FROM auxiliar where conta = 'REC' and InStr(campo,'01:1:') and Year(dtrecebimento) = '&1.' order by contrato, dtrecebimento;";
+        String sql = "SELECT * FROM auxiliar where conta = 'REC' and InStr(campo,'01:1:') and Year(dtrecebimento) = '&1.' " +
+                     "union " +
+                     "SELECT * FROM jgeral_excluidos.auxiliar where conta = 'REC' and InStr(campo,'01:1:') and Year(dtrecebimento) = '&2.' " +
+                     "order by 5, 8;";
+        sql = FuncoesGlobais.Subst(sql, new String[] {sAno, sAno});
         ResultSet rs = conn.AbrirTabela(sql, ResultSet.CONCUR_READ_ONLY);
         try {
             jbarra.setValue(0);
@@ -1035,8 +1056,12 @@ public class jDimob extends javax.swing.JInternalFrame {
                             
                             // Pega parte da ADM
                             float avMU = 0, avJU = 0, avCO = 0, avEP = 0;
-                            String asql = "SELECT * FROM auxiliar where conta = 'ADM' and Year(dtrecebimento) = '&1.' and contrato = '&2.' and dtvencimento = '&3.' and rc_aut = '&4.' order by contrato, dtrecebimento, Length(campo) DESC LIMIT 1;";
-                            asql = FuncoesGlobais.Subst(asql, new String[] {sAno, tcontrato, tvencimento, trcaut});
+                            //String asql = "SELECT * FROM auxiliar where conta = 'ADM' and Year(dtrecebimento) = '&1.' and contrato = '&2.' and dtvencimento = '&3.' and rc_aut = '&4.' order by contrato, dtrecebimento, Length(campo) DESC LIMIT 1;";
+                            String asql = "SELECT * FROM auxiliar where conta = 'ADM' and Year(dtrecebimento) = '&1.' and contrato = '&2.' and dtvencimento = '&3.' and rc_aut = '&4.' " +
+                                           "union " +
+                                           "SELECT * FROM jgeral_excluidos.auxiliar where conta = 'ADM' and Year(dtrecebimento) = '&5.' and contrato = '&6.' and dtvencimento = '&7.' and rc_aut = '&8.' " +
+                                           "order by 5, 8, Length(6) DESC LIMIT 1;";
+                            asql = FuncoesGlobais.Subst(asql, new String[] {sAno, tcontrato, tvencimento, trcaut, sAno, tcontrato, tvencimento, trcaut});
                             ResultSet ars = conn.AbrirTabela(asql, ResultSet.CONCUR_READ_ONLY);
                             try {
                                 ars.beforeFirst();
@@ -1196,26 +1221,31 @@ public class jDimob extends javax.swing.JInternalFrame {
                     int br = ((pos++ * 100) / eof) + 1;
                     jbarra.setValue(br);
                     
-                    String[][] dados_locador = null;
-                    String[][] dados_locatario = null;
-                    String[][] dados_imovel = null;
-                    String[][] dados_carteira = null;
-                    String[][] dados_auxiliar = null;
+                    Object[][] dados_locador = null;
+                    Object[][] dados_locatario = null;
+                    Object[][] dados_imovel = null;
+                    Object[][] dados_carteira = null;
+                    Object[][] dados_auxiliar = null;
                     
-                    try {dados_locador = conn.LerCamposTabela(new String[] {"cpfcnpj","nome"}, "proprietarios", FuncoesGlobais.Subst("rgprp = '&1.'",new String[] {dimob[i][0].toString()}));} catch (Exception e) {}
+                    //try {dados_locador = conn.LerCamposTabela(new String[] {"cpfcnpj","nome"}, "proprietarios", FuncoesGlobais.Subst("rgprp = '&1.'",new String[] {dimob[i][0].toString()}));} catch (Exception e) {}
+                    try {dados_locador = pegaDadosProprietario(dimob[i][0].toString(), new String[] {"cpfcnpj","nome"}); } catch (Exception e) {}
                     if (dados_locador != null) {
-                        try {dados_locatario = conn.LerCamposTabela(new String[] {"cpfcnpj","nomerazao","contrato"}, "locatarios", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}                    
+                        //try {dados_locatario = conn.LerCamposTabela(new String[] {"cpfcnpj","nomerazao","contrato"}, "locatarios", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}                    
+                        try {dados_locatario = pegaDadosLocatarios(dimob[i][2].toString(), new String[] {"cpfcnpj","nomerazao","contrato"});} catch (Exception e) {}                    
                         if (dados_locatario != null) {
-                            try {dados_imovel = conn.LerCamposTabela(new String[] {"tpurbrural","end","num","compl","cep","codcid","estado"}, "imoveis", FuncoesGlobais.Subst("rgimv = '&1.'",new String[] {dimob[i][1].toString()}));} catch (Exception e) {}
+                            //try {dados_imovel = conn.LerCamposTabela(new String[] {"tpurbrural","end","num","compl","cep","codcid","estado"}, "imoveis", FuncoesGlobais.Subst("rgimv = '&1.'",new String[] {dimob[i][1].toString()}));} catch (Exception e) {}
+                            try {dados_imovel = pegaDadosImoveis(dimob[i][1].toString(), new String[] {"tpurbrural","end","num","compl","cep","codcid","estado"});} catch (Exception e) {}
                             if (dados_imovel != null) {
-                                try {dados_carteira = conn.LerCamposTabela(new String[] {"dtinicio"}, "CARTEIRA", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                                //try {dados_carteira = conn.LerCamposTabela(new String[] {"dtinicio"}, "CARTEIRA", FuncoesGlobais.Subst("contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                                try {dados_carteira = pegaDadosCarteira(dimob[i][2].toString(), new String[] {"dtinicio"});} catch (Exception e) {}
                                 String dtInicio = "01011998";
                                 if (dados_carteira != null) {
-                                    try {dtInicio = Dates.StringtoString(dados_carteira[0][3], "dd/MM/yyyy", "ddMMyyyy");} catch (Exception e) {}
+                                    try {dtInicio = Dates.StringtoString(dados_carteira[0][3].toString(), "dd/MM/yyyy", "ddMMyyyy");} catch (Exception e) {}
                                 }  else {
-                                    try {dados_auxiliar = conn.LerCamposTabela(new String[] {"campo"}, "auxiliar", FuncoesGlobais.Subst("conta = 'CAR' AND contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                                    //try {dados_auxiliar = conn.LerCamposTabela(new String[] {"campo"}, "auxiliar", FuncoesGlobais.Subst("conta = 'CAR' AND contrato = '&1.'",new String[] {dimob[i][2].toString()}));} catch (Exception e) {}
+                                    try {dados_auxiliar = pegaDadosAuxiliar(dimob[i][2].toString(),new String[] {"campo"});} catch (Exception e) {}
                                     if (dados_auxiliar != null) {
-                                        String[] auxCampos = dados_auxiliar[0][3].split(",");
+                                        String[] auxCampos = dados_auxiliar[0][3].toString().split(",");
                                         try {dtInicio = Dates.StringtoString(auxCampos[1], "dd/MM/yyyy", "ddMMyyyy");} catch (Exception e) {}
                                     }
                                 }
@@ -1228,7 +1258,8 @@ public class jDimob extends javax.swing.JInternalFrame {
                                 
                                 Boolean ePrinc = true;
                                 String dados_divisao = null;
-                                try {dados_divisao = conn.LerCamposTabela(new String[] {"rgprp"}, "divisao", "rgimv = '" + dimob[i][1].toString() + "'")[0][3];} catch (Exception e) {}
+                                //try {dados_divisao = conn.LerCamposTabela(new String[] {"rgprp"}, "divisao", "rgimv = '" + dimob[i][1].toString() + "'")[0][3];} catch (Exception e) {}
+                                try {dados_divisao = pegaDadosDivisao(dimob[i][1].toString(),new String[] {"rgprp"})[0][3].toString();} catch (Exception e) {}
                                 if (dados_divisao != null) {
                                     ePrinc = dimob[i][0].toString().equalsIgnoreCase(dados_divisao);
                                 } else ePrinc = false;
@@ -1245,11 +1276,11 @@ public class jDimob extends javax.swing.JInternalFrame {
                                             */
                                 }
 
-                                String nomeProp = dados_locador[1][3];                  
+                                String nomeProp = dados_locador[6][3].toString();                  
                                 int xpos = nomeProp.indexOf(" - ");
                                 if (xpos > -1) nomeProp = nomeProp.substring(0,xpos);
                                 
-                                String nomeLoca = dados_locatario[1][3];
+                                String nomeLoca = dados_locatario[1][3].toString();
                                 int lpos = nomeLoca.indexOf(" - ");
                                 if (lpos > -1) nomeLoca = nomeLoca.substring(0,lpos);
                                 
@@ -1260,26 +1291,26 @@ public class jDimob extends javax.swing.JInternalFrame {
                                 FuncaoN(sAno,4) +
                                 FuncaoN(String.valueOf(i + 1).trim().replace(".0", "").replace(".00", ""),5) +
 
-                                FuncaoX(dados_locador[0][3].replace(".", "").replace("-", "").replace("/", ""),14) +
+                                FuncaoX(dados_locador[4][3].toString().replace(".", "").replace("-", "").replace("/", ""),14) +
 
                                         
                                 FuncaoX(nomeProp, 60) +
 
-                                FuncaoX(dados_locatario[0][3].replace(".", "").replace("-", "").replace("/", ""),14) +
+                                FuncaoX(dados_locatario[0][3].toString().replace(".", "").replace("-", "").replace("/", ""),14) +
 
                                 FuncaoX(nomeLoca, 60) +
-                                FuncaoX(dados_locatario[2][3], 6) +
+                                FuncaoX(dados_locatario[2][3].toString(), 6) +
                                 dtInicio +
 
                                 cMeses +
 
                                 // Dados do imóvel
-                                FuncaoX(dados_imovel[0][3], 1) +
+                                FuncaoX(dados_imovel[0][3].toString(), 1) +
                                 FuncaoX(dados_imovel[1][3] + "," + dados_imovel[2][3] + " " + dados_imovel[3][3], 60) +
-                                FuncaoN(dados_imovel[4][3].replace("-", ""), 8) +
-                                FuncaoN(dados_imovel[5][3], 4) +
+                                FuncaoN(dados_imovel[4][3].toString().replace("-", ""), 8) +
+                                FuncaoN(dados_imovel[5][3].toString(), 4) +
                                 FuncoesGlobais.Space(20) +
-                                FuncaoX(dados_imovel[6][3], 2) +
+                                FuncaoX(dados_imovel[6][3].toString(), 2) +
                                 FuncoesGlobais.Space(10) +
                                 "\r\n"
                                         );
@@ -1299,6 +1330,211 @@ public class jDimob extends javax.swing.JInternalFrame {
             file.Close();
         } catch (NullPointerException e) {e.printStackTrace();}
         jbtDimob.setEnabled(true);
+    }
+    
+    private Object[][] pegaDadosProprietario(String rgprp, String[] campos) {
+        Object[][] retorno = {};
+        
+        String selectSQL = "SELECT p.banco, p.agencia, p.conta, p.favorecido, " +
+                           "p.cpfcnpj, p.saldoant, p.nome, p.email FROM proprietarios p " +
+                           "WHERE p.rgprp = :rgprp1 UNION " +
+                           "SELECT pe.banco, pe.agencia, pe.conta, pe.favorecido, " +
+                           "pe.cpfcnpj, pe.saldoant, pe.nome, pe.email FROM " +
+                           "jgeral_excluidos.proprietarios pe WHERE pe.rgprp = :rgprp2";
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"string", "rgprp1", rgprp},
+            {"string", "rgprp2", rgprp}
+        });
+        
+        try {                    
+            int posPg = 0;
+            String _banco = null, _agencia = null, _favorecido = null, _cpfcnpj = null;
+            String _conta = null, _nome = null; int _saldoant = -1;
+            while (rs.next()) {
+                try { _banco = rs.getString("banco"); } catch (SQLException ex) { _banco = null; }
+                try { _agencia = rs.getString("agencia"); } catch (SQLException ex) { _agencia = null; }
+                try { _conta = rs.getString("conta"); } catch (SQLException ex) { _conta = null; }
+                try { _favorecido = rs.getString("favorecido"); } catch (SQLException ex) { _favorecido = null; }
+                try { _cpfcnpj = rs.getString("cpfcnpj"); } catch (SQLException ex) { _cpfcnpj = null; }
+                try { _nome = rs.getString("nome"); } catch (SQLException ex) { _nome = null; }
+                try { _saldoant = rs.getInt("saldoant"); } catch (SQLException ex) { _saldoant = -1; }
+                
+                Object[] banco = new Object[] {null, null, null, _banco};
+                Object[] agencia = new Object[] {null, null, null, _agencia};
+                Object[] conta = new Object[] {null, null, null, _conta};
+                Object[] favorecido = new Object[] {null, null, null, _favorecido};
+                Object[] cpfcnpj = new Object[] {null, null, null, _cpfcnpj};
+                Object[] nome = new Object[] {null, null, null, _nome};
+                Object[] saldoant = new Object[] {null, null, null, _saldoant};
+                
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, banco);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, agencia);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, conta);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, favorecido);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, cpfcnpj);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, saldoant);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, nome);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        return (retorno.length > 0 ? retorno : null);
+    }
+    
+    private Object[][] pegaDadosImoveis(String rgimv, String[] campos) {
+        Object[][] retorno = {};
+        
+        String selectSQL = "SELECT i.tpurbrural, i.`end` end, i.num, i.compl, " +
+                           "i.cep, i.codcid, i.estado " +
+                           "FROM imoveis i WHERE i.rgimv = :rgimv1 " +
+                           "UNION SELECT ie.tpurbrural, ie.`end` end, ie.num, ie.compl, " +
+                           "ie.cep, ie.codcid, ie.estado " +
+                           "FROM jgeral_excluidos.imoveis ie " +
+                           "WHERE ie.rgimv = :rgimv2 LIMIT 1;";
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"string", "rgimv1", rgimv},
+            {"string", "rgimv2", rgimv}
+        });
+        
+        try {                    
+            String _tpurbrural = null, _end = null, _num = null, _compl = null;
+            String _cep = null, _codcid = null, _estado = null;
+            while (rs.next()) {
+                try { _tpurbrural = rs.getString("tpurbrural"); } catch (SQLException ex) { _tpurbrural = null; }
+                try { _end = rs.getString("end"); } catch (SQLException ex) { _end = null; }
+                try { _num = rs.getString("num"); } catch (SQLException ex) { _num = null; }
+                try { _compl = rs.getString("compl"); } catch (SQLException ex) { _compl = null; }
+                try { _cep = rs.getString("cep"); } catch (SQLException ex) { _cep = null; }
+                try { _codcid = rs.getString("codcid"); } catch (SQLException ex) { _codcid = null; }
+                try { _estado = rs.getString("estado"); } catch (SQLException ex) { _estado = null; }
+                
+                Object[] tpurbrural = new Object[] {null, null, null, _tpurbrural};
+                Object[] end = new Object[] {null, null, null, _end};
+                Object[] num = new Object[] {null, null, null, _num};
+                Object[] compl = new Object[] {null, null, null, _compl};
+                Object[] cep = new Object[] {null, null, null, _cep};
+                Object[] codcid = new Object[] {null, null, null, _codcid};
+                Object[] estado = new Object[] {null, null, null, _estado};
+                
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, tpurbrural);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, end);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, num);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, compl);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, cep);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, codcid);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, estado);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        return (retorno.length > 0 ? retorno : null);
+    }
+    
+    private Object[][] pegaDadosCarteira(String contrato, String[] campos) {
+        Object[][] retorno = {};
+        
+        String selectSQL = "select c.dtinicio from carteira c WHERE c.contrato = :contrato1 " +
+                           "union " +
+                           "select ce.dtinicio from jgeral_excluidos.carteira ce WHERE ce.contrato = :contrato2 " +
+                           "LIMIT 1;";
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"string", "contrato1", contrato},
+            {"string", "contrato2", contrato}
+        });
+        
+        try {                    
+            String _dtinicio = null;
+            while (rs.next()) {
+                try { _dtinicio = rs.getString("dtinicio"); } catch (SQLException ex) { _dtinicio = null; }
+                
+                Object[] dtinicio = new Object[] {null, null, null, _dtinicio};
+                
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, dtinicio);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        return (retorno.length > 0 ? retorno : null);
+    }
+    
+    private Object[][] pegaDadosLocatarios(String contrato, String[] campos) {
+        Object[][] retorno = {};
+        
+        String selectSQL = "SELECT l.cpfcnpj, l.nomerazao, l.contrato FROM locatarios l " +
+                           "WHERE l.contrato = :contrato1 UNION " +
+                           "SELECT le.cpfcnpj, le.nomerazao, le.contrato FROM jgeral_excluidos.locatarios le " +
+                           "WHERE le.contrato = :contrato2 LIMIT 1;";
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"string", "contrato1", contrato},
+            {"string", "contrato2", contrato}
+        });
+        
+        try {                    
+            String _cpfcnpj = null, _nomerazao = null, _contrato = null;
+            while (rs.next()) {
+                try { _cpfcnpj = rs.getString("cpfcnpj"); } catch (SQLException ex) { _cpfcnpj = null; }
+                try { _nomerazao = rs.getString("nomerazao"); } catch (SQLException ex) { _nomerazao = null; }
+                try { _contrato = rs.getString("contrato"); } catch (SQLException ex) { _contrato = null; }
+                
+                Object[] cpfcnpj = new Object[] {null, null, null, _cpfcnpj};
+                Object[] nomerazao = new Object[] {null, null, null, _nomerazao};
+                Object[] tcontrato = new Object[] {null, null, null, _contrato};
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, cpfcnpj);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, nomerazao);
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, tcontrato);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        return (retorno.length > 0 ? retorno : null);
+    }
+
+    private Object[][] pegaDadosAuxiliar(String contrato, String[] campos) {
+        Object[][] retorno = {};
+        
+        String selectSQL = "select a.campo from auxiliar a WHERE a.conta = 'CAR' AND a.contrato = :contrato1 " +
+                           "union " +
+                           "select ae.campo from jgeral_excluidos.auxiliar ae WHERE ae.conta = 'CAR' AND ae.contrato = :contrato2 " +
+                           "LIMIT 1;";
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"string", "contrato1", contrato},
+            {"string", "contrato2", contrato}
+        });
+        
+        try {                    
+            String _campo = null;
+            while (rs.next()) {
+                try { _campo = rs.getString("campo"); } catch (SQLException ex) { _campo = null; }
+                
+                Object[] campo = new Object[] {null, null, null, _campo};
+                
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, campo);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        return (retorno.length > 0 ? retorno : null);
+    }
+    
+    private Object[][] pegaDadosDivisao(String rgimv, String[] campos) {
+        Object[][] retorno = {};
+        
+        String selectSQL = "select d.rgprp from divisao d WHERE d.rgimv = :rgimv1 " +
+                           "union " +
+                           "select de.rgprp from jgeral_excluidos.divisao de WHERE de.rgimv = :rgimv2 " +
+                           "LIMIT 1;";
+        ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
+            {"string", "rgimv1", rgimv},
+            {"string", "rgimv2", rgimv}
+        });
+        
+        try {                    
+            String _rgprp = null;
+            while (rs.next()) {
+                try { _rgprp = rs.getString("rgprp"); } catch (SQLException ex) { _rgprp = null; }
+                
+                Object[] rgprp = new Object[] {null, null, null, _rgprp};
+                
+                retorno = FuncoesGlobais.ObjectsAdd(retorno, rgprp);
+            }
+        } catch (SQLException sqlEx) {}
+        db.CloseTable(rs);
+        return (retorno.length > 0 ? retorno : null);
     }
     
     private String FuncaoN(String Value, int tam) {
