@@ -150,9 +150,9 @@ public class jExtrato extends javax.swing.JInternalFrame {
     public jExtrato() throws JRException {
         initComponents();
 
-        int inset = 50;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(inset, inset, screenSize.width - inset*2,screenSize.height-inset*2);
+//        int inset = 50;
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        setBounds(inset, inset, screenSize.width - inset*2,screenSize.height-inset*2);
                 
         //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //this.setBounds(0, 80, (int)screenSize.getWidth() - 50, (int)screenSize.getHeight() - 50);
@@ -965,17 +965,21 @@ public class jExtrato extends javax.swing.JInternalFrame {
     private void RefreshVisor() {
         jView.addContainerListener(new java.awt.event.ContainerAdapter() {
             public void componentAdded(java.awt.event.ContainerEvent evt) {
-                visor.setBounds(0, 0, jView.getWidth(), jView.getHeight());
-                visor.setFitPageZoomRatio();
-                jView.revalidate();
+                try {
+                    visor.setBounds(0, 0, jView.getWidth(), jView.getHeight());
+                    visor.setFitPageZoomRatio();
+                    jView.revalidate();
+                } catch (Exception e) {}
             }
         });
 
         jView.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                visor.setBounds(0, 0, jView.getWidth(), jView.getHeight());
-                jView.revalidate();
-                visor.setFitWidthZoomRatio();
+                try {
+                    visor.setBounds(0, 0, jView.getWidth(), jView.getHeight());
+                    jView.revalidate();
+                    visor.setFitWidthZoomRatio();
+                } catch (Exception e) {}
             }
         });
     }
@@ -1040,6 +1044,8 @@ public class jExtrato extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setResizable(true);
         setTitle(".:: Extrato de Proprietário ::.");
+        setMinimumSize(new java.awt.Dimension(1002, 683));
+        setPreferredSize(new java.awt.Dimension(1002, 683));
         setVisible(true);
 
         jView.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -1272,7 +1278,7 @@ public class jExtrato extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jpRecebe, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+                        .addComponent(jpRecebe, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jDemais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jView, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1297,6 +1303,7 @@ public class jExtrato extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jNomePropActionPerformed
 
     private void jDepositosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDepositosActionPerformed
+        System.out.println("W: " + getWidth() + " H: " + getHeight());
         FillCombos(jDepositos.isSelected());
     }//GEN-LAST:event_jDepositosActionPerformed
 

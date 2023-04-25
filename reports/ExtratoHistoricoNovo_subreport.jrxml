@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ExtratoHistoricoNovo_subreport" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7d79b9d7-c0d3-43de-bdd4-8335a9757643">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="extmomento" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<field name="dtpagamento" class="java.util.Date"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="referencia" class="java.lang.String"/>
+	<field name="credito" class="java.math.BigDecimal"/>
+	<field name="debito" class="java.math.BigDecimal"/>
+	<field name="saldo" class="java.math.BigDecimal"/>
+	<pageHeader>
+		<band height="44" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="21d8c566-9a77-4e3c-89e9-8ebf953eda7f" x="0" y="30" width="555" height="14"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="0">
+				<reportElement uuid="3d7cc894-6ca9-4da5-9eac-269e855bbdcd" x="0" y="0" width="555" height="30"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="48f67a6e-7b4a-4b95-865b-0f9ac66de3d6" x="5" y="5" width="243" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RETIRADAS NO PERÍODO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2b4786c9-b9de-436e-8933-19d46f5bcf12" x="5" y="30" width="67" height="14"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Dt.Pagto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5972ce6b-678a-4a39-b360-573dd42139ae" x="72" y="30" width="410" height="14"/>
+				<textElement/>
+				<text><![CDATA[Historico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0950d938-357b-46d2-b396-14d7ec10ef1d" x="482" y="30" width="71" height="14"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[valor]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="910dec0d-a606-43ab-b107-1e7d1613534a" x="0" y="0" width="555" height="14"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="b517175b-2ab5-46b3-84cc-c9deb0009a10" mode="Opaque" x="1" y="0" width="553" height="14" forecolor="#FFFFFF" backcolor="#D9D9E1">
+					<printWhenExpression><![CDATA[new Boolean(($V{COLUMN_COUNT}.intValue() % 2) == 0)]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<textField pattern="dd-MM-yyyy">
+				<reportElement uuid="56e4e2e5-1182-4d16-8d44-37ca7b75420c" x="5" y="0" width="67" height="14"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{dtpagamento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d28f4e73-a076-4c56-a036-967a491d0b54" x="72" y="0" width="268" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement uuid="24fac6d6-1b9a-4722-9ce2-c81d4d4c36da" x="483" y="0" width="71" height="14"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{debito}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

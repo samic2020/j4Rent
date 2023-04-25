@@ -11,6 +11,7 @@ import Funcoes.StringUtils;
 import Funcoes.VariaveisGlobais;
 import Funcoes.tempFile;
 import Funcoes.toPreview;
+import Movimento.jRelSdProp;
 import com.lowagie.text.Font;
 import j4rent.Partida.Collections;
 import java.math.BigDecimal;
@@ -135,19 +136,8 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
         "RetAvDataRid2(ae.campo) dtvencimento, RetAvDataRid2(ae.campo) dtrecebimento, " +
         "ae.tag, ae.autenticacao rc_aut, ae.et_aut, 0 pr_sdant FROM jgeral_excluidos.avisos ae " +
         "where (ae.registro = :registro2) AND ae.rid = 0 and ae.tag != 'B' AND " + 
-        "RetAvDataRid2(ae.campo) BETWEEN :dtini4 AND :dtfim4 " + 
-                
-        "union SELECT 'AUX' tipo, x.contrato rgprp, null rgimv, null contrato, x.campo, "  +
-        "x.dtvencimento, x.dtrecebimento, ' ' tag, x.rc_aut, x.rc_aut et_aut, 0 pr_sdant " +
-        "FROM auxiliar x WHERE x.conta = 'EXT' AND x.contrato = :auxiliar1 AND " +
-        "x.dtrecebimento BETWEEN :dtini5 AND :dtfim5 " +
-                
-        "union SELECT 'AUX' tipo, xe.contrato rgprp, null rgimv, null contrato, xe.campo, "  +
-        "xe.dtvencimento, xe.dtrecebimento, ' ' tag, xe.rc_aut, xe.rc_aut et_aut, 0 pr_sdant " +
-        "FROM jgeral_excluidos.auxiliar xe WHERE xe.conta = 'EXT' AND xe.contrato = :auxiliar2 AND " +
-        "xe.dtrecebimento BETWEEN :dtini6 AND :dtfim6 " +
-                
-        "ORDER BY 7;";
+        "RetAvDataRid2(ae.campo) BETWEEN :dtini4 AND :dtfim4 " +                 
+        "ORDER BY 7, 10;";
 
         ehStatus.setText("Montando o relatório...  [AGUARDE!]");
         ehProgress.setIndeterminate(false);
@@ -172,14 +162,12 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
                     lista.add(new classExtratoHistorico(data, "Saldo Abertura", null, null, null, saldoAbertura));
                 }
             }
-
+            
             ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
                 {"string", "rgprp1", rgprp},
                 {"string", "rgprp2", rgprp},
                 {"string", "registro1", rgprp},
                 {"string", "registro2", rgprp},
-                {"string", "auxiliar1", rgprp},
-                {"string", "auxiliar2", rgprp},
                 {"date", "dtini1", data},
                 {"date", "dtfim1", data},
                 {"date", "dtini2", data},
@@ -187,11 +175,7 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
                 {"date", "dtini3", data},
                 {"date", "dtfim3", data},
                 {"date", "dtini4", data},
-                {"date", "dtfim4", data},
-                {"date", "dtini5", data},
-                {"date", "dtfim5", data},
-                {"date", "dtini6", data},
-                {"date", "dtfim6", data}
+                {"date", "dtfim4", data}
             });
             
             try {
@@ -347,22 +331,67 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
                                 lista.add(new classExtratoHistorico(data, tpCampo, null, new BigDecimal(LerValor.FormatNumber(rCampos[j][2],2).replace(".", "").replace(",", ".")), (bRetc ? new BigDecimal(LerValor.FormatNumber(rCampos[j][2],2).replace(".", "").replace(",", ".")) : null), saldo));
                             }
                         }
-                    } else if (_tipo.equalsIgnoreCase("AUX")) {
-                        // AUXILIAR
-                        String tmpCampo = "" + rs.getString("campo");
-                        String tmpAuten = "" + rs.getString("rc_aut");
-                        String tmpValor = LerValor.FormatNumber(tmpCampo.substring(5,15),2);
-                        lista.add(new classExtratoHistorico(data, "Retirada", tmpAuten, null, null, null)); 
-                        int posicaoValor = lista.size() - 1;
-                        saldo = saldo.subtract(new BigDecimal(tmpValor.replace(".", "").replace(",", ".")));
-                        lista.get(posicaoValor).setDebito(new BigDecimal(tmpValor.replace(".", "").replace(",", ".")));
-                        lista.get(posicaoValor).setSaldo(saldo);
                     }
                 }
             } catch (SQLException sqlEx) {}
             db.CloseTable(rs);
         }
 
+        // Retiradas no Período
+        List<classExtratoHistorico> listaRet = new ArrayList<>();        
+        BigDecimal saldoRet = new BigDecimal("0");
+        for (Date data : dataExtHist) {
+            ehStatus.setText("Montando o relatório...  [AGUARDE!]");
+            ehProgress.setValue(posPg++);
+            
+            String sSql = "SELECT 'AUX' tipo, x.contrato rgprp, null rgimv, null contrato, x.campo, "  +
+            "x.dtvencimento, x.dtrecebimento, ' ' tag, x.rc_aut, x.rc_aut et_aut, 0 pr_sdant " +
+            "FROM auxiliar x WHERE x.conta = 'EXT' AND x.contrato = :auxiliar1 AND " +
+            "x.dtrecebimento BETWEEN :dtini5 AND :dtfim5 " +
+
+            "union SELECT 'AUX' tipo, xe.contrato rgprp, null rgimv, null contrato, xe.campo, "  +
+            "xe.dtvencimento, xe.dtrecebimento, ' ' tag, xe.rc_aut, xe.rc_aut et_aut, 0 pr_sdant " +
+            "FROM jgeral_excluidos.auxiliar xe WHERE xe.conta = 'EXT' AND xe.contrato = :auxiliar2 AND " +
+            "xe.dtrecebimento BETWEEN :dtini6 AND :dtfim6 " +
+            "ORDER BY 7, 10;";
+
+            ResultSet rs = db.OpenTable(sSql, new Object[][] {
+                {"string", "auxiliar1", rgprp},
+                {"string", "auxiliar2", rgprp}, 
+                {"date", "dtini5", data},
+                {"date", "dtfim5", data},
+                {"date", "dtini6", data},
+                {"date", "dtfim6", data}
+            });
+
+            try {
+                    String _tipo = null, _rgprp = null, _rgimv = null, _contrato = null;
+                    while (rs.next()) {
+                        try { _tipo = rs.getString("tipo"); } catch (SQLException e) { _tipo = null; }
+                        try { _rgprp = rs.getString("rgprp"); } catch (SQLException e) { _rgprp = null; }
+                        try { _rgimv = rs.getString("rgimv"); } catch (SQLException e) { _rgimv = null; }
+                        try { _contrato = rs.getString("contrato"); } catch (SQLException e) { _contrato = null; }
+
+                        if (_tipo.equalsIgnoreCase("AUX")) {
+                            // AUXILIAR
+                            String tmpCampo = "" + rs.getString("campo");
+                            String tmpAuten = "" + rs.getString("rc_aut");
+                            String tmpValor = LerValor.FormatNumber(tmpCampo.substring(5,15),2);
+                            listaRet.add(new classExtratoHistorico(data, "Retirada", tmpAuten, null, null, null)); 
+                            int posicaoValor = listaRet.size() - 1;
+                            saldoRet = saldoRet.subtract(new BigDecimal(tmpValor.replace(".", "").replace(",", ".")));
+                            listaRet.get(posicaoValor).setDebito(new BigDecimal(tmpValor.replace(".", "").replace(",", ".")));
+                            listaRet.get(posicaoValor).setSaldo(saldoRet);
+                        }
+                    }
+            } catch (SQLException sqlEx) {}
+            db.CloseTable(rs);
+        }
+                
+        // Saldo do extrato no momento
+        jRelSdProp sdExtDia = new jRelSdProp();
+        float sdExtMom = LerValor.FloatNumber(sdExtDia.Imprimir(rgprp),2);
+        
         ehStatus.setText("Relatório pronto...   [Visualização!]");
         ehProgress.setIndeterminate(false);
         ehProgress.setMaximum(0);
@@ -376,6 +405,7 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
         }
         
         JRBeanCollectionDataSource jrds = new JRBeanCollectionDataSource(lista);
+        JRBeanCollectionDataSource jrdsRet = new JRBeanCollectionDataSource(listaRet);
 
         String sFileName = new tempFile("pdf").getsPathNameExt();
         String docName = new tempFile().getTempFileName(sFileName);
@@ -389,8 +419,9 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
             parametros.put("proprietario", rgprp.trim() + " - " + nomeProp.trim());
             parametros.put("dtini", dtini);
             parametros.put("dtfim", dtfim);
+            parametros.put("retiradas", jrdsRet);
 
-            String nameReport = "ExtratoHistorico.jasper"; // Aqui vai o nome do relatório
+            String nameReport = "ExtratoHistoricoNovo.jasper"; // Aqui vai o nome do relatório
             String fileName = "reports\\" + nameReport;
             JasperPrint print = JasperFillManager.fillReport(fileName, parametros, jrds);
 
@@ -619,7 +650,8 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
         "x.contrato = :auxiliar1 AND x.dtrecebimento BETWEEN :dtini5 AND :dtfim5 " +
 
         "union SELECT distinct xx.dtrecebimento FROM jgeral_excluidos.auxiliar xx WHERE xx.conta = 'EXT' AND " +
-        "xx.contrato = :auxiliar2 AND xx.dtrecebimento BETWEEN :dtini6 AND :dtfim6 ORDER BY 1;";
+        "xx.contrato = :auxiliar2 AND xx.dtrecebimento BETWEEN :dtini6 AND :dtfim6 " + 
+          "ORDER BY 1;";
 
         ResultSet rs = db.OpenTable(selectSQL, new Object[][] {
             {"string", "rgprp1", rgprp},
@@ -824,3 +856,11 @@ public class ExtratoHistorico extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox jRgprp;
     // End of variables declaration//GEN-END:variables
 }
+
+/*
+        // Inclusao
+        if (listaRet.size() - 2 >= 0) {
+            lista.add(0, new classExtratoHistorico(listaRet.get(listaRet.size() - 2).getDtpagamento(), "Saldo", null, null, null, listaRet.get(listaRet.size() - 2).getDebito()));
+            saldo = saldo.add( listaRet.get(listaRet.size() - 2).getDebito());
+        }
+*/

@@ -220,6 +220,9 @@ public class VariaveisGlobais {
     
     // Marca
     public static String Marca;
+    
+    // Localização do arquivo de retorno
+    public static String pathRetorno = System.getProperty("user.dir") + "/Retorno/";
         
     public static void LerConf() {
         VariaveisGlobais.myLogo = System.getProperty("myLogo", "resources/login.jpg");
@@ -286,5 +289,7 @@ public class VariaveisGlobais {
         VariaveisGlobais.dimob = Boolean.valueOf(System.getProperty("Dimob", "false"));   
         
         VariaveisGlobais.Marca = System.getProperty("Marca", "samic");
+        
+        VariaveisGlobais.pathRetorno = System.getProperty("pathRetorno", System.getProperty("user.dir") + "/Retorno/");
     }
 }

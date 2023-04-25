@@ -1216,21 +1216,50 @@ public class jViewerDoc extends javax.swing.JInternalFrame {
         
         // MU; JU; CO
         Collections gVar = VariaveisGlobais.dCliente;
-        int MPos = -1; int JPos = -1; int CPos = -1;
+        int MPos = -1; int JPos = -1; int CPos = -1; int FMPos = -1, FJPos = -1, FCPos = -1;
         MPos = cCampos[0].indexOf("MU");
-        if (MPos > -1) {
-            String muVr = LerValor.FormatNumber(cCampos[0].substring(MPos + 2, MPos + 12),2);
-            linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("MU"),"",muVr});
+        if (MPos > - 1) {
+            String MFrente = cCampos[0].substring(MPos + 2);
+            if (MFrente.length() > 0) {
+                if (!MFrente.substring(0,1).equalsIgnoreCase(";")) {
+                    FMPos = MFrente.indexOf(":", 0);
+                    if (FMPos > 0) {
+                        String muVr = MFrente.substring(0, FMPos - 1);
+                        muVr = LerValor.FormatNumber(muVr,2);
+                        linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("MU"),"",muVr});                
+                    }
+                }
+            }
         }
+        
         JPos = cCampos[0].indexOf("JU");
         if (JPos > -1) {
-            String juVr = LerValor.FormatNumber(cCampos[0].substring(JPos + 2, JPos + 12),2);
-            linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("JU"),"",juVr});
+            String JFrente = cCampos[0].substring(JPos + 2);
+            if (JFrente.length() > 0) {
+                if (!JFrente.substring(0,1).equalsIgnoreCase(";")) {
+                    FJPos = JFrente.indexOf(":", 0);
+                    if (FJPos > 0) {
+                        String juVr = JFrente.substring(0, FJPos - 1);
+                        juVr = LerValor.FormatNumber(juVr,2);
+                        linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("JU"),"",juVr});                
+                    }
+                }
+            }
         }
+        
         CPos = cCampos[0].indexOf("CO");
         if (CPos > -1) {
-            String coVr = LerValor.FormatNumber(cCampos[0].substring(CPos + 2, CPos + 12),2);
-            linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("CO"),"",coVr});
+            String CFrente = cCampos[0].substring(CPos + 2);
+            if (CFrente.length() > 0) {
+                if (!CFrente.substring(0,1).equalsIgnoreCase(";")) {
+                    FCPos = CFrente.indexOf(":", 0);
+                    if (FCPos > 0) {
+                        String coVr = CFrente.substring(0, FCPos - 1);
+                        coVr = LerValor.FormatNumber(coVr,2);
+                        linhas =  FuncoesGlobais.ObjectsAdd(linhas, new Object[] {gVar.get("CO"),"",coVr});                
+                    }
+                }
+            }
         }
         
         return linhas;

@@ -6,6 +6,8 @@
 package Funcoes;
 
 import static Funcoes.StringManager.ConvStr;
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,10 +15,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -728,5 +732,52 @@ public class FuncoesGlobais {
 
         return result;
     }
+    
+    public static String[] escolherArquivos(String title) {
+        File[] arquivos = null;
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle(title);
+        fc.setDialogType(0);
+        fc.setApproveButtonText("OK");
+        fc.setFileSelectionMode(0);
+        fc.setMultiSelectionEnabled(true);
+        fc.showOpenDialog(fc);
+        arquivos = fc.getSelectedFiles();
+        String[] aArquivos = new String[0];
+        File[] var4 = arquivos;
+        int var5 = arquivos.length;
+
+        for(int var6 = 0; var6 < var5; ++var6) {
+            File f = var4[var6];
+
+            try {
+                aArquivos = FuncoesGlobais.ArrayAdd(aArquivos, f.getCanonicalPath().substring(2));
+            } catch (IOException var9) {
+                var9.printStackTrace();
+            }
+        }
+
+        return aArquivos;
+    }
+    
+    // filters = {"REM, RET E TXT trasasional bancário","rem", "ret", "txt"}
+    public static String escolherArquivo(String title, String directory, String filterText, String... filterExtencao) {
+        File arquivo = null;
+        JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(filterText, filterExtencao);
+        fc.setFileFilter(filter);
+        fc.setDialogTitle(title);
+        fc.setCurrentDirectory(new File(directory));
+        fc.setDialogType(0);
+        fc.setApproveButtonText("OK");
+        fc.setFileSelectionMode(0);
+        fc.setMultiSelectionEnabled(false);
+        fc.showOpenDialog(fc);
+        arquivo = fc.getSelectedFile();
+        
+        String retorno = "";
+        try { retorno = arquivo == null ? null : arquivo.getCanonicalPath(); } catch (IOException ioEx) { retorno = null; }
+        return retorno;
+    }    
 }
 

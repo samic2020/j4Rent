@@ -12,8 +12,6 @@ import Funcoes.CEPEndereco;
 import Funcoes.ClienteViaCepWS;
 import Funcoes.TableControl;
 import Funcoes.newTable;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
 import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.List;

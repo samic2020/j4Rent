@@ -42,12 +42,12 @@
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jDadosIniciais" min="0" max="32767" attributes="1"/>
-                          <Component id="jDados" pref="0" max="32767" attributes="1"/>
+                          <Component id="jDados" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jBotoes" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="mFiaCorHist" alignment="1" min="0" pref="0" max="32767" attributes="1"/>
+                  <Component id="mFiaCorHist" alignment="1" min="0" max="32767" attributes="1"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -61,14 +61,14 @@
                   <Group type="102" attributes="0">
                       <Component id="jDadosIniciais" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jDados" min="-2" pref="365" max="-2" attributes="0"/>
+                      <Component id="jDados" min="-2" pref="370" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jBotoes" max="32767" attributes="1"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="jDadosAvisos" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="mFiaCorHist" min="-2" pref="123" max="-2" attributes="0"/>
+              <Component id="mFiaCorHist" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -124,9 +124,8 @@
                           <Component id="mCnpj" min="-2" pref="162" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                           <Component id="mIdentidade" min="-2" pref="124" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -135,39 +134,30 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="mContrato" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel4" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="jLabel1" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mRgprp" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel2" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mRgimv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel3" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mTpImv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="mContrato" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel4" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="mTpImv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel3" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="mRgimv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel2" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="mRgprp" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="2" pref="2" max="2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel6" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="mIdentidade" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="jrbFisica" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jrbJuridica" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="mCpf" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel5" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mCnpj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel7" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="mIdentidade" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel6" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="mCnpj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel5" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="mCpf" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel7" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jrbJuridica" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jrbFisica" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="8" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -305,6 +295,17 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="jDados">
+      <Properties>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[808, 370]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[808, 370]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[808, 370]"/>
+        </Property>
+      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -314,6 +315,12 @@
               <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
                 <BevelBorder bevelType="1"/>
               </Border>
+            </Property>
+            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[808, 329]"/>
+            </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[808, 329]"/>
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[808, 329]"/>
@@ -331,65 +338,44 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
+                          <Component id="jPanel1" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel47" linkSize="11" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="jLabel47" linkSize="11" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mjFantasia" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="1" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="jLabel53" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                                              <Component id="mjEstado" min="-2" pref="36" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" attributes="0">
-                                              <Component id="jLabel48" linkSize="11" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="mjEndereco" min="-2" pref="282" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jbtBuscaCep" min="-2" pref="32" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
-                                              <Component id="jLabel49" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="mjNumero" min="-2" pref="61" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jLabel50" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="mjCplto" max="32767" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jLabel54" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                  </Group>
-                              </Group>
+                              <Component id="mjFantasia" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
+                              <Component id="jLabel48" linkSize="11" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="mjEndereco" min="-2" pref="282" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jbtBuscaCep" min="-2" pref="32" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                              <Component id="jLabel49" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="mjNumero" min="-2" pref="61" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jLabel50" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="mjCplto" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel46" linkSize="11" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="mjRazao" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
                               <Component id="jLabel60" linkSize="11" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="mjEmail" min="-2" pref="542" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="mjEmail" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btEmailPlus" min="-2" pref="24" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Component id="btEmailMinus" min="-2" pref="24" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel55" linkSize="11" min="-2" max="-2" attributes="0"/>
@@ -410,21 +396,23 @@
                                       <Component id="jLabel52" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="mjCidade" min="-2" pref="172" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="11" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="12" max="32767" attributes="0"/>
+                                      <Component id="jLabel53" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                                      <Component id="mjEstado" min="-2" pref="36" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="jLabel54" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="mjCep" min="-2" pref="105" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="mjDtContratoSocial" max="32767" attributes="0"/>
                               </Group>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jPanel1" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -434,7 +422,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel46" linkSize="12" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="mjRazao" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
@@ -447,14 +435,14 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="jLabel48" linkSize="12" pref="24" max="32767" attributes="0"/>
-                          <Component id="jLabel49" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jLabel50" alignment="0" max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                               <Component id="mjEndereco" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
                               <Component id="mjNumero" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
                               <Component id="mjCplto" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                              <Component id="jLabel49" alignment="3" max="32767" attributes="0"/>
+                              <Component id="jLabel50" alignment="3" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="jbtBuscaCep" alignment="0" pref="0" max="32767" attributes="0"/>
+                          <Component id="jbtBuscaCep" alignment="0" min="-2" pref="0" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -467,8 +455,6 @@
                               <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                                   <Component id="jLabel54" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
                                   <Component id="mjCep" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel53" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
                                   <Component id="mjEstado" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
                               </Group>
@@ -490,16 +476,18 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jLabel60" linkSize="12" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel60" linkSize="12" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                              <Component id="mjEmail" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="103" alignment="1" groupAlignment="0" attributes="0">
                               <Component id="btEmailPlus" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
                               <Component id="btEmailMinus" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="mjEmail" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel1" min="-2" pref="137" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jPanel1" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -669,7 +657,6 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jScrollPane4" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -682,21 +669,13 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jScrollPane4" min="-2" pref="97" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="btFicha" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="btExcluirFicha" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
+                          <Component id="btFicha" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="49" max="32767" attributes="0"/>
+                          <Component id="btExcluirFicha" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="jScrollPane4" alignment="0" pref="0" max="32767" attributes="1"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -845,6 +824,15 @@
               </Border>
             </Property>
             <Property name="enabled" type="boolean" value="false"/>
+            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[808, 370]"/>
+            </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[808, 370]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[808, 370]"/>
+            </Property>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -862,13 +850,8 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="mfNome" max="32767" attributes="0"/>
-                                          </Group>
                                           <Group type="102" alignment="1" attributes="0">
                                               <Component id="jLabel14" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -887,15 +870,6 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" attributes="0">
-                                              <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="mfSexo" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="mfDtNasc" max="32767" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" attributes="0">
                                               <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="mfPai" max="32767" attributes="0"/>
@@ -904,24 +878,37 @@
                                               <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="mfTel1" max="32767" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
+                                              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                                               <Component id="plus1" min="-2" pref="18" max="-2" attributes="0"/>
                                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                                               <Component id="minus1" min="-2" pref="17" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                   </Group>
-                                  <Group type="102" alignment="1" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <Component id="jLabel13" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfEmpresa" min="-2" pref="442" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                                      <Component id="mfEmpresa" max="32767" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="mfDtAdmis" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfDtAdmis" min="-2" pref="108" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="jLabel8" min="-2" pref="70" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfNome" max="32767" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfSexo" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfDtNasc" min="-2" pref="112" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
@@ -936,39 +923,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel36" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                                      <Component id="mfEmpresaRamalConj" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="jLabel17" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfEndereco" min="-2" pref="338" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jbtBuscaCep1" min="-2" pref="32" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                                      <Component id="mfNumero" min="-2" pref="53" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                                      <Component id="jLabel61" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                                      <Component id="mfCplto" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="1">
-                                      <Component id="jLabel20" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfBairro" min="-2" pref="163" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfCidade" min="-2" pref="169" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfEstado" min="-2" pref="30" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                                      <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfCep" max="32767" attributes="0"/>
+                                      <Component id="mfEmpresaRamalConj" pref="137" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -977,187 +932,209 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="mfEmail" max="32767" attributes="0"/>
                                           <Group type="102" attributes="0">
                                               <Component id="mfConjugue" max="32767" attributes="0"/>
-                                              <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel62" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="mfConjSexo" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                                           </Group>
+                                      </Group>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Group type="102" attributes="0">
-                                              <Component id="mfEmail" max="32767" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="btEmailPlus1" min="-2" pref="24" max="-2" attributes="0"/>
                                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                                               <Component id="btEmailMinus1" min="-2" pref="24" max="-2" attributes="0"/>
                                           </Group>
+                                          <Component id="mfConjSexo" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jLabel30" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfDtNascConj" min="-2" pref="130" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfDtNascConj" min="-2" pref="114" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
                                       <Component id="jLabel31" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="mfCpfConj" min="-2" pref="120" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
                                       <Component id="jLabel32" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfIdentidadeConj" max="32767" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfIdentidadeConj" min="-2" pref="169" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jLabel33" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                                      <Component id="mfSalarioConj" min="-2" pref="111" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfSalarioConj" min="-2" pref="84" max="-2" attributes="0"/>
                                   </Group>
-                                  <Group type="102" alignment="1" attributes="0">
+                              </Group>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="jLabel17" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="mfEndereco" min="-2" pref="396" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                              <Component id="jbtBuscaCep1" min="-2" pref="32" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                              <Component id="mfNumero" min="-2" pref="53" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jLabel61" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                              <Component id="mfCplto" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="jLabel20" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfBairro" min="-2" pref="163" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfCidade" max="32767" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="mfEstado" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jLabel23" min="-2" pref="31" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
                                       <Component id="jLabel24" linkSize="4" min="-2" pref="70" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="mfTelEmpresa" min="-2" pref="123" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                                       <Component id="mfRamalEmpresa" min="-2" pref="53" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel26" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mfCargo" min="-2" pref="135" max="-2" attributes="0"/>
+                                      <Component id="mfCargo" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel27" min="-2" pref="59" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                                      <Component id="mfSalario" min="-2" pref="123" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="120" pref="120" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
+                                      <Component id="mfSalario" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="mfCep" alignment="1" min="-2" pref="86" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="mfNome" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel8" alignment="2" pref="25" max="32767" attributes="0"/>
-                          <Component id="jLabel9" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfDtNasc" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel19" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="mfSexo" alignment="2" min="-2" max="-2" attributes="0"/>
-                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="2" attributes="0">
-                                  <Component id="jLabel15" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="mfNacionalidade" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="jLabel14" alignment="2" max="32767" attributes="0"/>
-                                  <Component id="jLabel10" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="mfEstCivil" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="minus1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="plus1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="mfTel1" min="-2" pref="24" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="jLabel11" alignment="2" max="32767" attributes="0"/>
+                          <Component id="mfDtNasc" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel9" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfSexo" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel19" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="mfNome" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel8" alignment="2" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="minus1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="plus1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfTel1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel10" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfEstCivil" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel15" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="mfNacionalidade" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel14" alignment="2" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="mfPai" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="mfMae" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="jLabel12" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="jLabel12" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfMae" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel11" alignment="2" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="mfDtAdmis" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="jLabel16" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel13" alignment="2" pref="25" max="32767" attributes="0"/>
                           <Component id="mfEmpresa" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel13" alignment="2" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="jLabel17" alignment="2" max="32767" attributes="0"/>
-                          <Component id="mfEndereco" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel18" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfNumero" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel61" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="mfCplto" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel61" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfNumero" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel18" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="jbtBuscaCep1" alignment="2" max="32767" attributes="0"/>
+                          <Component id="mfEndereco" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel17" alignment="2" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="jLabel20" alignment="2" pref="26" max="32767" attributes="0"/>
+                          <Component id="mfCep" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel23" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfEstado" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel22" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="mfCidade" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="jLabel21" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="mfBairro" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel22" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfEstado" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel23" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfCep" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="mfTelEmpresa" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel24" alignment="2" pref="28" max="32767" attributes="0"/>
-                          <Component id="mfCargo" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel26" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel27" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfSalario" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfRamalEmpresa" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel25" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                              <Component id="jLabel28" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btEmailPlus1" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="btEmailMinus1" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="mfEmail" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
+                          <Component id="jLabel20" alignment="2" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel29" alignment="3" max="32767" attributes="0"/>
-                          <Component id="mfConjugue" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel62" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="mfConjSexo" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mfSalario" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel27" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfCargo" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel26" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfRamalEmpresa" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel25" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfTelEmpresa" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel24" alignment="2" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="mfDtNascConj" alignment="1" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel30" alignment="1" max="32767" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel31" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="mfIdentidadeConj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="jLabel32" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="jLabel33" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="mfSalarioConj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                                  <Component id="mfCpfConj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="btEmailMinus1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="btEmailPlus1" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfEmail" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel28" alignment="2" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mfConjSexo" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel62" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="mfConjugue" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel29" alignment="2" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mfSalarioConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel33" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfIdentidadeConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel32" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfCpfConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel31" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfDtNascConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel30" alignment="2" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mfEmpresaRamalConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel36" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfEmpresaTelConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel35" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mfEmpresaConj" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel34" alignment="2" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel34" alignment="3" max="32767" attributes="0"/>
-                          <Component id="mfEmpresaConj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel35" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfEmpresaTelConj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="jLabel36" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mfEmpresaRamalConj" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1231,7 +1208,7 @@
                   <Font name="SansSerif" size="12" style="1"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="Nacionalidade:"/>
+                <Property name="text" type="java.lang.String" value="Nacional.:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel10">
@@ -1462,6 +1439,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="12" style="1"/>
                 </Property>
+                <Property name="horizontalAlignment" type="int" value="4"/>
                 <Property name="text" type="java.lang.String" value="Sal&#xe1;rio:"/>
               </Properties>
             </Component>
@@ -1743,6 +1721,15 @@
             <EtchetBorder/>
           </Border>
         </Property>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[918, 67]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[918, 67]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[918, 67]"/>
+        </Property>
       </Properties>
 
       <Layout>
@@ -1751,24 +1738,24 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel37" linkSize="7" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="mBoleta" linkSize="7" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="mAviso" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="mBoleta" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jcbxBcoBoleta" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="105" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="jLabel63" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel37" min="-2" pref="41" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="mAviso" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="jLabel38" min="-2" pref="86" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel38" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="mMsgBol" min="-2" pref="342" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jcbxEnvio" max="32767" attributes="0"/>
@@ -1779,25 +1766,22 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="jLabel38" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mMsgBol" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel37" linkSize="6" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mAviso" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="mMsgBol" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel38" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="mAviso" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                      <Component id="jLabel37" linkSize="6" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="mBoleta" linkSize="6" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      <Component id="jcbxBcoBoleta" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel63" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jcbxEnvio" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="jcbxEnvio" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel63" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jcbxBcoBoleta" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="mBoleta" linkSize="6" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -1823,6 +1807,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel38">
           <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="Mensagem:"/>
           </Properties>
         </Component>
@@ -1864,6 +1849,17 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="mFiaCorHist">
+      <Properties>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[918, 120]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[918, 120]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[918, 120]"/>
+        </Property>
+      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -1912,12 +1908,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="846" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" pref="910" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="84" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" pref="81" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -1946,6 +1942,15 @@
                 <BevelBorder bevelType="1"/>
               </Border>
             </Property>
+            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[918, 120]"/>
+            </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[918, 120]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[918, 120]"/>
+            </Property>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -1964,7 +1969,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel59" linkSize="8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="mNomeEnv" pref="836" max="32767" attributes="0"/>
+                              <Component id="mNomeEnv" pref="818" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -1988,12 +1993,12 @@
                                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                                       <Component id="jLabel44" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mCpltoEnv" pref="198" max="32767" attributes="0"/>
+                                      <Component id="mCpltoEnv" pref="190" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel41" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mCidadeEnv" pref="163" max="32767" attributes="0"/>
+                                      <Component id="mCidadeEnv" pref="168" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel43" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
@@ -2013,38 +2018,32 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel59" linkSize="9" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="mNomeEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mNomeEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel59" linkSize="9" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel39" linkSize="9" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="mEnderecoEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="jLabel42" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="mNumeroEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="jLabel44" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="mCpltoEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          </Group>
+                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mCpltoEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel44" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mNumeroEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel42" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mEnderecoEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel39" linkSize="9" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel40" linkSize="9" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="mCepEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="jLabel45" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="mEstadoEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="jLabel43" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel41" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                              <Component id="mCidadeEnv" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="mBairroEnv" min="-2" pref="24" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="mCepEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel45" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mEstadoEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel43" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mCidadeEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel41" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="mBairroEnv" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
+                          <Component id="jLabel40" linkSize="9" alignment="2" min="-2" pref="24" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="31" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2196,6 +2195,7 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="btIncluir" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btExcluir" min="-2" max="-2" attributes="0"/>

@@ -104,7 +104,7 @@ public class jRelSdProp extends javax.swing.JInternalFrame {
         DbMain.FecharTabela(rst);
     }
     
-    private String Imprimir(String jRgprp) {
+    public String Imprimir(String jRgprp) {
         float fTotCred = 0; float fTotDeb = 0; float fTotAdi = 0; float fSaldoAnt = 0;
         try {
             String sdant = conn.LerCamposTabela(new String[] {"saldoant"}, "proprietarios", "rgprp = '" + jRgprp + "'")[0][3];
