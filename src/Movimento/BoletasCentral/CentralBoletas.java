@@ -1965,53 +1965,46 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         String codBanco = jcbConsultaBancos.getSelectedItem().toString().substring(0,3);
         List<cRetorno> baixadas = new ArrayList();
         List<cRetorno> cBanco = null;
-        if (arqRetorno.getText().trim().isEmpty()) {
+        if (arqRetorno.getText().trim().isEmpty() && jTipoListagem.getSelectedIndex() == 2) {
             JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");            
         } else {        
-            if (codBanco.equalsIgnoreCase("341")) {
+            if (codBanco.equalsIgnoreCase("341") && jTipoListagem.getSelectedIndex() == 2) {
                 cBanco = itau.retorno(arqRetorno.getText());
-            } else if (codBanco.equalsIgnoreCase("033")) {
+            } else if (codBanco.equalsIgnoreCase("033") && jTipoListagem.getSelectedIndex() == 2) {
                 cBanco = Santander.retorno(arqRetorno.getText());
             } else {
                 cBanco = null;
             }
             
-            if (cBanco == null) {
-                JOptionPane.showMessageDialog(this, "Retorno para este banco ainda não implantado!");
-                
-                // Retorna cursor
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                conBtnListar.setEnabled(true);
-                return;
-            }
-
-            for (cRetorno lst : cBanco) {
-                List<cSegmentoT> segt = lst.getSegmentot();
-                List<cSegmentoT> baisgt = new ArrayList();
-                for (cSegmentoT stl : segt) {
-                    if (codBanco.equalsIgnoreCase("033")) {
-                        if (stl.getSegmentou().getCodocor().equalsIgnoreCase("06")) {
-                            baisgt.add(stl);
+            if (cBanco != null) {
+                for (cRetorno lst : cBanco) {
+                    List<cSegmentoT> segt = lst.getSegmentot();
+                    List<cSegmentoT> baisgt = new ArrayList();
+                    for (cSegmentoT stl : segt) {
+                        if (codBanco.equalsIgnoreCase("033")) {
+                            if (stl.getSegmentou().getCodocor().equalsIgnoreCase("06")) {
+                                baisgt.add(stl);
+                            }
+                        } else if (codBanco.equalsIgnoreCase("341")) {
+                            if (stl.getCodocor().trim().equalsIgnoreCase("06") && !stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
+                                baisgt.add(stl);
+                            }
+                        } else {
+                            // Não Implantado ainda...
                         }
-                    } else if (codBanco.equalsIgnoreCase("341")) {
-                        if (stl.getCodocor().trim().equalsIgnoreCase("06") && !stl.getCodliquidacao().trim().equalsIgnoreCase("")) {
-                            baisgt.add(stl);
-                        }
-                    } else {
-                        // Não Implantado ainda...
                     }
+                    baixadas.add(new cRetorno(lst.getBanco(), lst.getTipoInsc(), lst.getInscr(), 
+                            lst.getTparquivo(), lst.getDatacredito(), baisgt, 
+                            lst.getQuantidadereg(), lst.getQuantidadesimples(), 
+                            lst.getQuantidadevinc(), lst.getValorvinc(), lst.getCodigolote(), lst.getTotalreg()));
                 }
-                baixadas.add(new cRetorno(lst.getBanco(), lst.getTipoInsc(), lst.getInscr(), 
-                        lst.getTparquivo(), lst.getDatacredito(), baisgt, 
-                        lst.getQuantidadereg(), lst.getQuantidadesimples(), 
-                        lst.getQuantidadevinc(), lst.getValorvinc(), lst.getCodigolote(), lst.getTotalreg()));
-            }
 
-            if (!baixadas.get(0).getBanco().equalsIgnoreCase(codBanco)) {
-                JOptionPane.showMessageDialog(this, "Banco selecionado diferente do arquivo de retorno!");
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                conBtnListar.setEnabled(true);
-                return;
+                if (!baixadas.get(0).getBanco().equalsIgnoreCase(codBanco)) {
+                    JOptionPane.showMessageDialog(this, "Banco selecionado diferente do arquivo de retorno!");
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    conBtnListar.setEnabled(true);
+                    return;
+                }
             }
         }
         
@@ -2069,7 +2062,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         String conDataFim = Dates.DateFormata("yyyy-MM-dd", conDataFinal.getDate());
         
         String selectSQL = "SELECT r.rgprp, r.rgimv, r.contrato, IF(ISNULL(r.dtvencbol), r.dtvencimento, r.dtvencbol) dtvencimento, " +
-        "(SELECT e.dtrecebimento FROM jgeral.extrato e WHERE e.rgprp = r.rgprp AND e.rgimv = r.rgimv AND e.contrato = r.contrato AND e.DTVENCIMENTO = r.DTVENCIMENTO) as dtrecebimento, " +
+        "(SELECT e.dtrecebimento FROM extrato e WHERE e.rgprp = r.rgprp AND e.rgimv = r.rgimv AND e.contrato = r.contrato AND e.DTVENCIMENTO = r.DTVENCIMENTO) as dtrecebimento, " +
         "l.nomerazao, l.cpfcnpj, r.nnumero, r.tag FROM recibo r, locatarios l WHERE " +
         "(r.contrato = l.contrato) AND (r.remessa = 'S' AND NOT ISNULL(r.nnumero)) AND " +
         (!tipoListagem.equalsIgnoreCase("") ? tipoListagem : "") +
@@ -2108,53 +2101,55 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 try { tcpfcnpj = rs.getString("cpfcnpj"); } catch (SQLException exSQL) { tcpfcnpj = ""; }
                 try { tnnumero = rs.getString("nnumero"); } catch (SQLException exSQL) { tnnumero = ""; }
                 try { ttag = rs.getString("tag"); } catch (SQLException exSQL) { ttag = ""; }
-                                                              
-                // Checa se esta no arquivo de remessa
+                                                           
                 String isRetorno = "N";
-                for (cRetorno ret : baixadas) {
-                    for (cSegmentoT segt : ret.getSegmentot()) {
-                        String _nnumero = segt.getNnumero() + segt.getDacnnumero();
-                        String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
-                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3)));                        
-                        String _meunumero = segt.getSeunumero();
-                        
-                        if (_nnumero.contains(_tnnumero) && !_meunumero.equalsIgnoreCase("AVULSA")) {
-                            isRetorno = "S";
-                            trecebimento = Dates.StringtoDate(fmtDataCredito(segt.getSegmentou().getDataocorr()),"dd-MM-yyyy");
-                            tmu = LerValor.FormatNumber(segt.getSegmentou().getJurousmulta().substring(5),2);
-                            tju = "0,00";
-                            if (codBanco.equalsIgnoreCase("341")) {
-                                tvr = LerValor.FormatNumber(fmtVrCredito(segt.getSegmentou().getValorcred()),2);
-                            } else if (codBanco.equalsIgnoreCase("033")) {
-                                tvr = LerValor.FormatNumber(fmtVrCredito(segt.getVrtitulo()),2);
+                if (cBanco != null) {
+                    // Checa se esta no arquivo de remessa
+                    for (cRetorno ret : baixadas) {
+                        for (cSegmentoT segt : ret.getSegmentot()) {
+                            String _nnumero = segt.getNnumero() + segt.getDacnnumero();
+                            String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
+                            _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3)));                        
+                            String _meunumero = segt.getSeunumero();
+
+                            if (_nnumero.contains(_tnnumero) && !_meunumero.equalsIgnoreCase("AVULSA")) {
+                                isRetorno = "S";
+                                trecebimento = Dates.StringtoDate(fmtDataCredito(segt.getSegmentou().getDataocorr()),"dd-MM-yyyy");
+                                tmu = LerValor.FormatNumber(segt.getSegmentou().getJurousmulta().substring(5),2);
+                                tju = "0,00";
+                                if (codBanco.equalsIgnoreCase("341")) {
+                                    tvr = LerValor.FormatNumber(fmtVrCredito(segt.getSegmentou().getValorcred()),2);
+                                } else if (codBanco.equalsIgnoreCase("033")) {
+                                    tvr = LerValor.FormatNumber(fmtVrCredito(segt.getVrtitulo()),2);
+                                } else {
+                                    // Not yet
+                                }                            
+
+                                break;
                             } else {
-                                // Not yet
+                                tmu = "0,00"; tju = "0,00"; tvr = "0,00";
                             }                            
-                            
-                            break;
-                        } else {
-                            tmu = "0,00"; tju = "0,00"; tvr = "0,00";
-                        }                            
-                    }
-                }
-                
-                // Quando não estiver na lista
-                boolean isList = false;
-                for (cRetorno ret : baixadas) {
-                    isList = false;
-                    for (cSegmentoT segt : ret.getSegmentot()) {
-                        String _nnumero = segt.getNnumero() + segt.getDacnnumero();
-                        String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
-                        _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3)));           
-                        String _meunumero = segt.getSeunumero();
-                        if (_nnumero.contains(_tnnumero)) {
-                            isList = true;
-                            break;
                         }
                     }
-                    if (isList) break;
+
+                    // Quando não estiver na lista
+                    boolean isList = false;
+                    for (cRetorno ret : baixadas) {
+                        isList = false;
+                        for (cSegmentoT segt : ret.getSegmentot()) {
+                            String _nnumero = segt.getNnumero() + segt.getDacnnumero();
+                            String _tnnumero = (tnnumero.substring(0,3).equalsIgnoreCase("000") ? tnnumero : tnnumero.substring(3));
+                            _tnnumero = String.valueOf(Integer.parseInt(tnnumero.substring(3)));           
+                            String _meunumero = segt.getSeunumero();
+                            if (_nnumero.contains(_tnnumero)) {
+                                isList = true;
+                                break;
+                            }
+                        }
+                        if (isList) break;
+                    }
+                    if (!isList) continue;
                 }
-                if (!isList) continue;
                 
                 // Pega valor da boleta, multa, juros e correção do arquivo de retorno
                 float[] tboleta = CalcularRecibo(
@@ -2277,12 +2272,6 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_conListaKeyPressed
 
     private void jBtnBaixarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBaixarActionPerformed
-        try {
-            ListaBoletasBanco();
-        } catch (Exception ex) {
-            System.out.println("Problema de comunicação com o banco ou sem Internet.");
-        }
-
         List<classBaixar> listas = new ArrayList<>();
         Map<String, Object> param = new HashMap();
         
@@ -2447,7 +2436,8 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         dataRetorno = null;
         String codBanco = jcbConsultaBancos.getSelectedItem().toString().substring(0,3);     
         if (arqRetorno.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");            
+            JOptionPane.showMessageDialog(this, "Sem arquivo de retorno selecionado.");   
+            return;
         } else {        
             if (codBanco.equalsIgnoreCase("341")) {
                 dataRetorno = Dates.StringtoDate(fmtDataCredito(itau.retorno(arqRetorno.getText()).get(0).getDatacredito()), "dd-MM-yyyy");
@@ -2465,6 +2455,13 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 conBtnListar.setEnabled(true);
                 return;
             }
+            
+            jBtnBaixar.setEnabled(true);
+            try {
+                ListaBoletasBanco();
+            } catch (Exception ex) {
+                System.out.println("Problema de comunicação com o banco ou sem Internet.");
+            }            
         }        
     }//GEN-LAST:event_arqRetornoMouseClicked
 
@@ -2490,9 +2487,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             conDataFinal.setVisible(false);
             jLabel11.setVisible(false);
             jLabel12.setVisible(false);
-            jBtnBaixar.setEnabled(true);
+            jBtnBaixar.setEnabled(false);
             conBtnListar.setVisible(false);
-            arqRetorno.setEnabled(true);
+            arqRetorno.setEnabled(true);            
         }
     }//GEN-LAST:event_jTipoListagemItemStateChanged
 
