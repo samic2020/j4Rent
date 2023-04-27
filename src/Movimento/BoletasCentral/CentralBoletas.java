@@ -242,18 +242,18 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setTitle(".:: Central de Boletas");
-        setMaximumSize(new java.awt.Dimension(842, 626));
-        setMinimumSize(new java.awt.Dimension(842, 626));
-        setPreferredSize(new java.awt.Dimension(842, 626));
+        setMaximumSize(new java.awt.Dimension(910, 626));
+        setMinimumSize(new java.awt.Dimension(910, 626));
+        setPreferredSize(new java.awt.Dimension(910, 626));
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 formMousePressed(evt);
             }
         });
 
-        jTabbedPaneBoletas.setMaximumSize(new java.awt.Dimension(836, 586));
-        jTabbedPaneBoletas.setMinimumSize(new java.awt.Dimension(836, 586));
-        jTabbedPaneBoletas.setPreferredSize(new java.awt.Dimension(836, 586));
+        jTabbedPaneBoletas.setMaximumSize(new java.awt.Dimension(892, 586));
+        jTabbedPaneBoletas.setMinimumSize(new java.awt.Dimension(892, 586));
+        jTabbedPaneBoletas.setPreferredSize(new java.awt.Dimension(892, 586));
 
         jPanel1.setMaximumSize(new java.awt.Dimension(836, 586));
         jPanel1.setMinimumSize(new java.awt.Dimension(836, 586));
@@ -536,8 +536,14 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         );
 
         ListaBancosPessoas.setBackground(new java.awt.Color(255, 255, 255));
+        ListaBancosPessoas.setMaximumSize(new java.awt.Dimension(601, 328));
+        ListaBancosPessoas.setMinimumSize(new java.awt.Dimension(601, 328));
+        ListaBancosPessoas.setPreferredSize(new java.awt.Dimension(601, 328));
 
         ListaBancosPessoasImpressas.setBackground(new java.awt.Color(255, 255, 255));
+        ListaBancosPessoasImpressas.setMaximumSize(new java.awt.Dimension(601, 153));
+        ListaBancosPessoasImpressas.setMinimumSize(new java.awt.Dimension(601, 153));
+        ListaBancosPessoasImpressas.setPreferredSize(new java.awt.Dimension(601, 153));
 
         jLabel6.setBackground(new java.awt.Color(153, 204, 255));
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -568,9 +574,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ListaBancosPessoasImpressas, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(17, Short.MAX_VALUE))
+                    .addComponent(ListaBancosPessoasImpressas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -585,20 +591,22 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ListaBancosPessoas)))
+                        .addComponent(ListaBancosPessoas, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
         jTabbedPaneBoletas.addTab("Geração", jPanel1);
 
         jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel7.setMaximumSize(new java.awt.Dimension(836, 305));
-        jPanel7.setMinimumSize(new java.awt.Dimension(836, 305));
-        jPanel7.setPreferredSize(new java.awt.Dimension(836, 305));
+        jPanel7.setMaximumSize(new java.awt.Dimension(866, 304));
+        jPanel7.setMinimumSize(new java.awt.Dimension(866, 304));
+        jPanel7.setPreferredSize(new java.awt.Dimension(866, 304));
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Remessa(s)"));
         jPanel8.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jPanel8.setPreferredSize(new java.awt.Dimension(809, 300));
+        jPanel8.setMaximumSize(new java.awt.Dimension(838, 276));
+        jPanel8.setMinimumSize(new java.awt.Dimension(838, 276));
+        jPanel8.setPreferredSize(new java.awt.Dimension(838, 276));
 
         tblBancosRemessa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -639,14 +647,14 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 804, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -654,18 +662,22 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 781, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39))
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
+
+        ListaBancosPessoasRemessa.setMaximumSize(new java.awt.Dimension(669, 219));
+        ListaBancosPessoasRemessa.setMinimumSize(new java.awt.Dimension(669, 219));
+        ListaBancosPessoasRemessa.setPreferredSize(new java.awt.Dimension(669, 219));
 
         jPanel14.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel14.setMaximumSize(new java.awt.Dimension(237, 219));
@@ -724,12 +736,14 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 810, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 669, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -739,7 +753,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                     .addComponent(ListaBancosPessoasRemessa, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 304, Short.MAX_VALUE)
+                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -912,9 +926,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         jPanel12.setPreferredSize(new java.awt.Dimension(800, 504));
 
         jPanel13.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel13.setMaximumSize(new java.awt.Dimension(811, 50));
-        jPanel13.setMinimumSize(new java.awt.Dimension(811, 50));
-        jPanel13.setPreferredSize(new java.awt.Dimension(811, 50));
+        jPanel13.setMaximumSize(new java.awt.Dimension(866, 50));
+        jPanel13.setMinimumSize(new java.awt.Dimension(866, 50));
+        jPanel13.setPreferredSize(new java.awt.Dimension(866, 50));
 
         jLabel13.setText("Banco:");
 
@@ -956,7 +970,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcbConsultaBancos, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jcbConsultaBancos, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -971,7 +985,7 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addComponent(conDataFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(conBtnListar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(70, 70, 70)
+                .addGap(18, 18, 18)
                 .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(55, 55, 55))
         );
@@ -998,9 +1012,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         );
 
         jPanel16.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel16.setMaximumSize(new java.awt.Dimension(811, 371));
-        jPanel16.setMinimumSize(new java.awt.Dimension(811, 371));
-        jPanel16.setPreferredSize(new java.awt.Dimension(811, 371));
+        jPanel16.setMaximumSize(new java.awt.Dimension(866, 371));
+        jPanel16.setMinimumSize(new java.awt.Dimension(866, 371));
+        jPanel16.setPreferredSize(new java.awt.Dimension(866, 371));
 
         jLabel14.setBackground(new java.awt.Color(153, 204, 255));
         jLabel14.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -1107,9 +1121,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         );
 
         jPanel17.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jPanel17.setMaximumSize(new java.awt.Dimension(811, 97));
-        jPanel17.setMinimumSize(new java.awt.Dimension(811, 97));
-        jPanel17.setPreferredSize(new java.awt.Dimension(811, 97));
+        jPanel17.setMaximumSize(new java.awt.Dimension(866, 97));
+        jPanel17.setMinimumSize(new java.awt.Dimension(866, 97));
+        jPanel17.setPreferredSize(new java.awt.Dimension(866, 97));
         jPanel17.setLayout(new javax.swing.BoxLayout(jPanel17, javax.swing.BoxLayout.LINE_AXIS));
         jPanel17.add(filler3);
 
@@ -1333,9 +1347,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1355,7 +1369,9 @@ public class CentralBoletas extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPaneBoletas, javax.swing.GroupLayout.PREFERRED_SIZE, 836, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPaneBoletas, javax.swing.GroupLayout.PREFERRED_SIZE, 892, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
